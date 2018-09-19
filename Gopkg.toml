@@ -1,3 +1,7 @@
+[[constraint]]
+  name = "github.com/go-resty/resty"
+  version = "1.9.1"
+
 [prune]
   non-go = true
   go-tests = true
