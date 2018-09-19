@@ -10,7 +10,7 @@ import (
 	"github.com/go-resty/resty"
 )
 
-func TestClient(t *testing.T) {
+func TestClient_retryLogic(t *testing.T) {
 	type input struct {
 		retryCount  int
 		okAtAttempt int
