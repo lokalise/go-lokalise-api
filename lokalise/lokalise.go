@@ -10,6 +10,10 @@ import (
 	"github.com/go-resty/resty"
 )
 
+const (
+	apiTokenHeader = "X-Api-Token"
+)
+
 type client struct {
 	timeout    time.Duration
 	baseURL    string
@@ -23,6 +27,7 @@ type option func(*client) error
 
 func newClient(apiToken string, options ...option) (*client, error) {
 	c := client{
+		apiToken:   apiToken,
 		retryCount: 3,
 	}
 	for _, o := range options {
@@ -33,6 +38,7 @@ func newClient(apiToken string, options ...option) (*client, error) {
 	}
 	c.client = resty.New().
 		SetRetryCount(c.retryCount).
+		SetHeader(apiTokenHeader, c.apiToken).
 		AddRetryCondition(requestRetryCondition())
 
 	return &c, nil

@@ -145,6 +145,31 @@ func TestClient_contextCancelation(t *testing.T) {
 	}
 }
 
+func TestClient_apiTokenHeader(t *testing.T) {
+	apiToken := "api-token"
+	var requestHeaderContent string
+	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		requestHeaderContent = req.Header.Get(apiTokenHeader)
+		rw.WriteHeader(http.StatusOK)
+	}))
+	c, err := newClient(apiToken)
+	if err != nil {
+		t.Fatalf("client instantiation error: %v", err)
+	}
+
+	response, err := c.client.R().Get(server.URL)
+
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if response.StatusCode() != http.StatusOK {
+		t.Fatalf("expected status code 200 OK: got %d", response.StatusCode())
+	}
+	if requestHeaderContent != apiToken {
+		t.Fatalf("expected header %s to contain '%s': got '%s'", apiTokenHeader, apiToken, requestHeaderContent)
+	}
+}
+
 func TestClient_negativeRetries(t *testing.T) {
 	_, err := newClient("token", withRetryCount(-1))
 	if err == nil {
