@@ -245,3 +245,36 @@ func TestRequestRetryCondition(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_nilLogger(t *testing.T) {
+	client, err := newClient("", withLogger(nil))
+	if err == nil {
+		t.Errorf("expected error but got nil")
+	} else {
+		if err.Error() != "lokalise: logger value required" {
+			t.Errorf("expected error %s but got %s", "lokalise: logger value required", err.Error())
+		}
+	}
+	if client != nil {
+		t.Errorf("expected client to be nil but got %v", *client)
+	}
+}
+
+type testWriter struct {
+	lines []string
+}
+
+func (tw *testWriter) Write(p []byte) (n int, err error) {
+	tw.lines = append(tw.lines, string(p))
+	return len(p), nil
+}
+
+func TestClient_customLogger(t *testing.T) {
+	client, err := newClient("", withLogger(&testWriter{}))
+	if err != nil {
+		t.Errorf("expected no error but got '%s'", err.Error())
+	}
+	if client == nil {
+		t.Error("expected client to be instantiated but got nil")
+	}
+}

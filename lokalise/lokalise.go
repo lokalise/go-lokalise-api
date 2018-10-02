@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/go-resty/resty"
@@ -36,9 +37,13 @@ func newClient(apiToken string, options ...option) (*client, error) {
 			return nil, err
 		}
 	}
+	if c.logger == nil {
+		c.logger = os.Stderr
+	}
 	c.client = resty.New().
 		SetRetryCount(c.retryCount).
 		SetHeader(apiTokenHeader, c.apiToken).
+		SetLogger(c.logger).
 		AddRetryCondition(requestRetryCondition())
 
 	return &c, nil
@@ -68,5 +73,16 @@ func requestRetryCondition() resty.RetryConditionFunc {
 			return true, nil
 		}
 		return false, nil
+	}
+}
+
+// WithLoggerFunc returns a RestyOption configurring the logging function for internal Resty logs.
+func withLogger(l io.Writer) option {
+	return func(c *client) error {
+		if l == nil {
+			return errors.New("lokalise: logger value required")
+		}
+		c.logger = l
+		return nil
 	}
 }
