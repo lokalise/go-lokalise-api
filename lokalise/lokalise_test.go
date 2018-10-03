@@ -2,6 +2,7 @@ package lokalise
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -276,5 +277,53 @@ func TestClient_customLogger(t *testing.T) {
 	}
 	if client == nil {
 		t.Error("expected client to be instantiated but got nil")
+	}
+}
+
+func TestClient_errorModel(t *testing.T) {
+	serverResponse := RequestError{
+		Code:    http.StatusInternalServerError,
+		Message: "some server error",
+	}
+	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		data, err := json.Marshal(serverResponse)
+		if err != nil {
+			t.Fatalf("failed to marshal server error: %v", err)
+		}
+		rw.Header().Set("Content-Type", "application/json")
+		rw.WriteHeader(serverResponse.Code)
+		rw.Write(data)
+	}))
+	c, err := newClient("token", withRetryCount(0))
+	if err != nil {
+		t.Fatalf("client instantiation error: %v", err)
+	}
+
+	response, err := c.client.R().
+		SetResult(make(map[string]interface{})).
+		Get(server.URL)
+
+	if err != nil {
+		t.Fatalf("expected no error but got '%s'", err.Error())
+	}
+	if response == nil {
+		t.Fatal("expected a response but got nil")
+	}
+	if response.StatusCode() != serverResponse.Code {
+		t.Errorf("wrong response status code: expected %d: got %d", serverResponse.Code, response.StatusCode())
+	}
+	requestErr := response.Error()
+	if requestErr == nil {
+		t.Fatal("expected request error but got nil")
+	}
+	requestErrModel, ok := requestErr.(*RequestError)
+	if !ok {
+		t.Fatalf("expected request error to be type %T but got %T", &RequestError{}, requestErr)
+	}
+	if requestErrModel.Code != http.StatusInternalServerError {
+		t.Errorf("wrong error code: expected %d: got %d", http.StatusInternalServerError, requestErrModel.Code)
+	}
+	if requestErrModel.Message != "some server error" {
+		t.Errorf("wrong message: expected '%s': got '%s'", "some server error", requestErrModel.Message)
 	}
 }

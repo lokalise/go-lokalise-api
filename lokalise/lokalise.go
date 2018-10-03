@@ -44,6 +44,7 @@ func newClient(apiToken string, options ...option) (*client, error) {
 		SetRetryCount(c.retryCount).
 		SetHeader(apiTokenHeader, c.apiToken).
 		SetLogger(c.logger).
+		SetError(RequestError{}).
 		AddRetryCondition(requestRetryCondition())
 
 	return &c, nil
@@ -85,4 +86,10 @@ func withLogger(l io.Writer) option {
 		c.logger = l
 		return nil
 	}
+}
+
+// RequestError is the API error model.
+type RequestError struct {
+	Code    int    `json:"code,omitempty"`
+	Message string `json:"message,omitempty"`
 }
