@@ -13,6 +13,7 @@ import (
 
 const (
 	apiTokenHeader = "X-Api-Token"
+	defaultBaseURL = "https://api.lokalise.co/api2"
 )
 
 type Client struct {
@@ -30,6 +31,7 @@ func NewClient(apiToken string, options ...ClientOption) (*Client, error) {
 	c := Client{
 		apiToken:   apiToken,
 		retryCount: 3,
+		baseURL:    defaultBaseURL,
 	}
 	for _, o := range options {
 		err := o(&c)
@@ -41,6 +43,7 @@ func NewClient(apiToken string, options ...ClientOption) (*Client, error) {
 		c.logger = os.Stderr
 	}
 	c.httpClient = resty.New().
+		SetHostURL(c.baseURL).
 		SetRetryCount(c.retryCount).
 		SetHeader(apiTokenHeader, c.apiToken).
 		SetLogger(c.logger).
@@ -84,6 +87,17 @@ func WithLogger(l io.Writer) ClientOption {
 			return errors.New("lokalise: logger value required")
 		}
 		c.logger = l
+		return nil
+	}
+}
+
+// WithBaseURL returns a ClientOption setting the base URL of the client.
+//
+// This should only be used for testing different API versions or for using a mocked
+// backend in tests.
+func WithBaseURL(url string) ClientOption {
+	return func(c *Client) error {
+		c.baseURL = url
 		return nil
 	}
 }
