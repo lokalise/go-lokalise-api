@@ -86,7 +86,7 @@ func TestClient_retryLogic(t *testing.T) {
 				}
 				rw.WriteHeader(http.StatusInternalServerError)
 			}))
-			var opts []ClientOption
+			opts := []ClientOption{WithLogger(&testLogger{T: t})}
 			if tc.input.retryCount >= 0 {
 				opts = append(opts, WithRetryCount(tc.input.retryCount))
 			}
@@ -127,7 +127,7 @@ func TestClient_contextCancelation(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 		rw.WriteHeader(http.StatusOK)
 	}))
-	c, err := NewClient("token")
+	c, err := NewClient("token", WithLogger(&testLogger{T: t}))
 	if err != nil {
 		t.Fatalf("client instantiation error: %v", err)
 	}
@@ -153,7 +153,7 @@ func TestClient_apiTokenHeader(t *testing.T) {
 		requestHeaderContent = req.Header.Get(apiTokenHeader)
 		rw.WriteHeader(http.StatusOK)
 	}))
-	c, err := NewClient(apiToken)
+	c, err := NewClient(apiToken, WithLogger(&testLogger{T: t}))
 	if err != nil {
 		t.Fatalf("client instantiation error: %v", err)
 	}
@@ -172,7 +172,7 @@ func TestClient_apiTokenHeader(t *testing.T) {
 }
 
 func TestClient_negativeRetries(t *testing.T) {
-	_, err := NewClient("token", WithRetryCount(-1))
+	_, err := NewClient("token", WithLogger(&testLogger{T: t}), WithRetryCount(-1))
 	if err == nil {
 		t.Fatal("expected an error but got nil")
 	}
@@ -294,7 +294,7 @@ func TestClient_errorModel(t *testing.T) {
 		rw.WriteHeader(serverResponse.Code)
 		rw.Write(data)
 	}))
-	c, err := NewClient("token", WithRetryCount(0))
+	c, err := NewClient("token", WithLogger(&testLogger{T: t}), WithRetryCount(0))
 	if err != nil {
 		t.Fatalf("client instantiation error: %v", err)
 	}
@@ -326,4 +326,13 @@ func TestClient_errorModel(t *testing.T) {
 	if requestErrModel.Message != "some server error" {
 		t.Errorf("wrong message: expected '%s': got '%s'", "some server error", requestErrModel.Message)
 	}
+}
+
+type testLogger struct {
+	T *testing.T
+}
+
+func (l *testLogger) Write(p []byte) (n int, err error) {
+	l.T.Log(string(p))
+	return len(p), nil
 }
