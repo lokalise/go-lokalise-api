@@ -15,7 +15,7 @@ const (
 	apiTokenHeader = "X-Api-Token"
 )
 
-type client struct {
+type Client struct {
 	timeout    time.Duration
 	baseURL    string
 	apiToken   string
@@ -24,10 +24,10 @@ type client struct {
 	logger     io.Writer
 }
 
-type option func(*client) error
+type ClientOption func(*Client) error
 
-func newClient(apiToken string, options ...option) (*client, error) {
-	c := client{
+func NewClient(apiToken string, options ...ClientOption) (*Client, error) {
+	c := Client{
 		apiToken:   apiToken,
 		retryCount: 3,
 	}
@@ -50,10 +50,10 @@ func newClient(apiToken string, options ...option) (*client, error) {
 	return &c, nil
 }
 
-// withRetryCount returns a client option setting the retry count of outgoing requests.
+// WithRetryCount returns a client ClientOption setting the retry count of outgoing requests.
 // if count is zero retries are disabled.
-func withRetryCount(count int) option {
-	return func(c *client) error {
+func WithRetryCount(count int) ClientOption {
+	return func(c *Client) error {
 		if count < 0 {
 			return errors.New("lokalise: retry count must be positive")
 		}
@@ -77,9 +77,9 @@ func requestRetryCondition() resty.RetryConditionFunc {
 	}
 }
 
-// WithLoggerFunc returns a RestyOption configurring the logging function for internal Resty logs.
-func withLogger(l io.Writer) option {
-	return func(c *client) error {
+// WithLogger returns a ClientOption setting the output destination of any log messages.
+func WithLogger(l io.Writer) ClientOption {
+	return func(c *Client) error {
 		if l == nil {
 			return errors.New("lokalise: logger value required")
 		}

@@ -86,11 +86,11 @@ func TestClient_retryLogic(t *testing.T) {
 				}
 				rw.WriteHeader(http.StatusInternalServerError)
 			}))
-			var opts []option
+			var opts []ClientOption
 			if tc.input.retryCount >= 0 {
-				opts = append(opts, withRetryCount(tc.input.retryCount))
+				opts = append(opts, WithRetryCount(tc.input.retryCount))
 			}
-			c, err := newClient("token", opts...)
+			c, err := NewClient("token", opts...)
 			if err != nil {
 				t.Fatalf("client instantiation error: %v", err)
 			}
@@ -127,7 +127,7 @@ func TestClient_contextCancelation(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 		rw.WriteHeader(http.StatusOK)
 	}))
-	c, err := newClient("token")
+	c, err := NewClient("token")
 	if err != nil {
 		t.Fatalf("client instantiation error: %v", err)
 	}
@@ -153,7 +153,7 @@ func TestClient_apiTokenHeader(t *testing.T) {
 		requestHeaderContent = req.Header.Get(apiTokenHeader)
 		rw.WriteHeader(http.StatusOK)
 	}))
-	c, err := newClient(apiToken)
+	c, err := NewClient(apiToken)
 	if err != nil {
 		t.Fatalf("client instantiation error: %v", err)
 	}
@@ -172,7 +172,7 @@ func TestClient_apiTokenHeader(t *testing.T) {
 }
 
 func TestClient_negativeRetries(t *testing.T) {
-	_, err := newClient("token", withRetryCount(-1))
+	_, err := NewClient("token", WithRetryCount(-1))
 	if err == nil {
 		t.Fatal("expected an error but got nil")
 	}
@@ -248,7 +248,7 @@ func TestRequestRetryCondition(t *testing.T) {
 }
 
 func TestClient_nilLogger(t *testing.T) {
-	client, err := newClient("", withLogger(nil))
+	client, err := NewClient("", WithLogger(nil))
 	if err == nil {
 		t.Errorf("expected error but got nil")
 	} else {
@@ -271,7 +271,7 @@ func (tw *testWriter) Write(p []byte) (n int, err error) {
 }
 
 func TestClient_customLogger(t *testing.T) {
-	client, err := newClient("", withLogger(&testWriter{}))
+	client, err := NewClient("", WithLogger(&testWriter{}))
 	if err != nil {
 		t.Errorf("expected no error but got '%s'", err.Error())
 	}
@@ -294,7 +294,7 @@ func TestClient_errorModel(t *testing.T) {
 		rw.WriteHeader(serverResponse.Code)
 		rw.Write(data)
 	}))
-	c, err := newClient("token", withRetryCount(0))
+	c, err := NewClient("token", WithRetryCount(0))
 	if err != nil {
 		t.Fatalf("client instantiation error: %v", err)
 	}
