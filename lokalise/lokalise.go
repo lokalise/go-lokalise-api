@@ -20,7 +20,7 @@ type Client struct {
 	baseURL    string
 	apiToken   string
 	retryCount int
-	client     *resty.Client
+	httpClient *resty.Client
 	logger     io.Writer
 }
 
@@ -40,7 +40,7 @@ func NewClient(apiToken string, options ...ClientOption) (*Client, error) {
 	if c.logger == nil {
 		c.logger = os.Stderr
 	}
-	c.client = resty.New().
+	c.httpClient = resty.New().
 		SetRetryCount(c.retryCount).
 		SetHeader(apiTokenHeader, c.apiToken).
 		SetLogger(c.logger).

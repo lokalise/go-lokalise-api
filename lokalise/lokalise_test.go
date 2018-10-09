@@ -94,7 +94,7 @@ func TestClient_retryLogic(t *testing.T) {
 			if err != nil {
 				t.Fatalf("client instantiation error: %v", err)
 			}
-			response, err := c.client.R().Get(server.URL)
+			response, err := c.httpClient.R().Get(server.URL)
 			if tc.output.err != nil {
 				if err == nil {
 					t.Fatalf("expected error %s but got nil", tc.output.err)
@@ -134,7 +134,7 @@ func TestClient_contextCancelation(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	_, err = c.client.R().SetContext(ctx).Get(server.URL)
+	_, err = c.httpClient.R().SetContext(ctx).Get(server.URL)
 	if err == nil {
 		t.Fatal("expected an error but got nil")
 	}
@@ -158,7 +158,7 @@ func TestClient_apiTokenHeader(t *testing.T) {
 		t.Fatalf("client instantiation error: %v", err)
 	}
 
-	response, err := c.client.R().Get(server.URL)
+	response, err := c.httpClient.R().Get(server.URL)
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -299,7 +299,7 @@ func TestClient_errorModel(t *testing.T) {
 		t.Fatalf("client instantiation error: %v", err)
 	}
 
-	response, err := c.client.R().
+	response, err := c.httpClient.R().
 		SetResult(make(map[string]interface{})).
 		Get(server.URL)
 
