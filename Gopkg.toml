@@ -6,3 +6,7 @@
   non-go = true
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  name = "github.com/stretchr/testify"
+  version = "1.*"

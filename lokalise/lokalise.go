@@ -23,6 +23,8 @@ type Client struct {
 	retryCount int
 	httpClient *resty.Client
 	logger     io.Writer
+
+	Teams TeamsService
 }
 
 type ClientOption func(*Client) error
@@ -50,6 +52,7 @@ func NewClient(apiToken string, options ...ClientOption) (*Client, error) {
 		SetError(RequestError{}).
 		AddRetryCondition(requestRetryCondition())
 
+	c.Teams = TeamsService{httpClient: c.httpClient}
 	return &c, nil
 }
 
