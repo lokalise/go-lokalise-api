@@ -2,19 +2,13 @@ package lokalise
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/go-resty/resty"
+	"github.com/lokalise/lokalise-go-sdk/model"
 )
 
-// RequestError is the API error model.
-type RequestError struct {
-	Code    int    `json:"code,omitempty"`
-	Message string `json:"message,omitempty"`
-}
-
-func (r RequestError) Error() string {
-	return fmt.Sprintf("API request error %d %s", r.Code, r.Message)
+type errorResponse struct {
+	Error model.Error `json:"error"`
 }
 
 // apiError indentifies whether the response contains an API error.
@@ -26,9 +20,9 @@ func apiError(res *resty.Response) error {
 	if responseError == nil {
 		return errors.New("lokalise: response marked as error but no data returned")
 	}
-	responseErrorModel, ok := responseError.(*RequestError)
+	responseErrorModel, ok := responseError.(*errorResponse)
 	if !ok {
 		return errors.New("lokalise: response error model unknown")
 	}
-	return responseErrorModel
+	return responseErrorModel.Error
 }

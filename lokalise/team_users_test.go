@@ -72,14 +72,16 @@ func TestClient_TeamUsers_Retrieve(t *testing.T) {
 			serverResponse: serverResponse{
 				statusCode: http.StatusNotFound,
 				body: `{
-					"code": 404,
-					"message": "team not found"
+					"error": {
+						"code": 404,
+						"message": "team not found"
+					}
 				}`,
 			},
 			output: output{
 				calledPath: "/teams/1/users/2",
 				response:   model.TeamUserResponse{},
-				err: &lokalise.RequestError{
+				err: &model.Error{
 					Code:    404,
 					Message: "team not found",
 				},

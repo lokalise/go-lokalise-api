@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-resty/resty"
+	"github.com/lokalise/lokalise-go-sdk/model"
 )
 
 func TestClient_retryLogic(t *testing.T) {
@@ -281,9 +282,11 @@ func TestClient_customLogger(t *testing.T) {
 }
 
 func TestClient_errorModel(t *testing.T) {
-	serverResponse := RequestError{
-		Code:    http.StatusInternalServerError,
-		Message: "some server error",
+	serverResponse := errorResponse{
+		Error: model.Error{
+			Code:    http.StatusInternalServerError,
+			Message: "some server error",
+		},
 	}
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		data, err := json.Marshal(serverResponse)
@@ -291,7 +294,7 @@ func TestClient_errorModel(t *testing.T) {
 			t.Fatalf("failed to marshal server error: %v", err)
 		}
 		rw.Header().Set("Content-Type", "application/json")
-		rw.WriteHeader(serverResponse.Code)
+		rw.WriteHeader(serverResponse.Error.Code)
 		rw.Write(data)
 	}))
 	c, err := NewClient("token", WithLogger(&testLogger{T: t}), WithRetryCount(0))
@@ -309,22 +312,22 @@ func TestClient_errorModel(t *testing.T) {
 	if response == nil {
 		t.Fatal("expected a response but got nil")
 	}
-	if response.StatusCode() != serverResponse.Code {
-		t.Errorf("wrong response status code: expected %d: got %d", serverResponse.Code, response.StatusCode())
+	if response.StatusCode() != serverResponse.Error.Code {
+		t.Errorf("wrong response status code: expected %d: got %d", serverResponse.Error.Code, response.StatusCode())
 	}
 	requestErr := response.Error()
 	if requestErr == nil {
 		t.Fatal("expected request error but got nil")
 	}
-	requestErrModel, ok := requestErr.(*RequestError)
+	requestErrModel, ok := requestErr.(*errorResponse)
 	if !ok {
-		t.Fatalf("expected request error to be type %T but got %T", &RequestError{}, requestErr)
+		t.Fatalf("expected request error to be type %T but got %T", &model.Error{}, requestErr)
 	}
-	if requestErrModel.Code != http.StatusInternalServerError {
-		t.Errorf("wrong error code: expected %d: got %d", http.StatusInternalServerError, requestErrModel.Code)
+	if requestErrModel.Error.Code != http.StatusInternalServerError {
+		t.Errorf("wrong error code: expected %d: got %d", http.StatusInternalServerError, requestErrModel.Error.Code)
 	}
-	if requestErrModel.Message != "some server error" {
-		t.Errorf("wrong message: expected '%s': got '%s'", "some server error", requestErrModel.Message)
+	if requestErrModel.Error.Message != "some server error" {
+		t.Errorf("wrong message: expected '%s': got '%s'", "some server error", requestErrModel.Error.Message)
 	}
 }
 

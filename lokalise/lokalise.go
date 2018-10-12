@@ -49,7 +49,7 @@ func NewClient(apiToken string, options ...ClientOption) (*Client, error) {
 		SetRetryCount(c.retryCount).
 		SetHeader(apiTokenHeader, c.apiToken).
 		SetLogger(c.logger).
-		SetError(RequestError{}).
+		SetError(errorResponse{}).
 		AddRetryCondition(requestRetryCondition())
 
 	c.TeamUsers = TeamUsersService{httpClient: c.httpClient}
