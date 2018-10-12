@@ -31,3 +31,18 @@ func (c *TeamUsersService) Retrieve(ctx context.Context, teamID, userID int64) (
 	}
 	return res, apiError(resp)
 }
+
+func (c *TeamUsersService) UpdateRole(ctx context.Context, teamID, userID int64, role model.TeamUserRole) (model.TeamUserResponse, error) {
+	var res model.TeamUserResponse
+	req := c.httpClient.R().
+		SetResult(&res).
+		SetContext(ctx).
+		SetBody(map[string]interface{}{
+			"role": role,
+		})
+	resp, err := req.Put(fmt.Sprintf("%s/%d", pathTeamUsers(teamID), userID))
+	if err != nil {
+		return model.TeamUserResponse{}, err
+	}
+	return res, apiError(resp)
+}
