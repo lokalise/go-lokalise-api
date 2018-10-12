@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestClient_Teams_RetrieveTeamUser(t *testing.T) {
+func TestClient_TeamUsers_Retrieve(t *testing.T) {
 	type input struct {
 		teamID int64
 		userID int64
@@ -107,7 +107,7 @@ func TestClient_Teams_RetrieveTeamUser(t *testing.T) {
 				return
 			}
 
-			resp, err := client.Teams.RetrieveTeamUser(context.Background(), tc.input.teamID, tc.input.userID)
+			resp, err := client.TeamUsers.Retrieve(context.Background(), tc.input.teamID, tc.input.userID)
 
 			if tc.output.err != nil {
 				assert.EqualError(err, tc.output.err.Error(), "output error not as expected")

@@ -4,17 +4,31 @@ package integration_test_test
 
 import (
 	"context"
+	"flag"
 	"testing"
 
 	"github.com/lokalise/lokalise-go-sdk/lokalise"
 )
 
+var (
+	token string
+)
+
+func init() {
+	flag.StringVar(&token, "token", "", "Lokalise API token")
+}
+
 func TestGetTeamUser(t *testing.T) {
-	client, err := lokalise.NewClient("20a1a5f5154f826b32eb92a3da1ea7579ce08b12")
+	flag.Parse()
+	if token == "" {
+		t.Errorf("set token flag to run integration tests")
+		return
+	}
+	client, err := lokalise.NewClient(token)
 	if err != nil {
 		t.Fatalf("client instantiation: %v", err)
 	}
-	resp, err := client.Teams.RetrieveTeamUser(context.Background(), 178017, 5715)
+	resp, err := client.TeamUsers.Retrieve(context.Background(), 178017, 5715)
 	if err != nil {
 		t.Fatalf("request err: %v", err)
 	}
