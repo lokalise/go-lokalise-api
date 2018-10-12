@@ -46,3 +46,15 @@ func (c *TeamUsersService) UpdateRole(ctx context.Context, teamID, userID int64,
 	}
 	return res, apiError(resp)
 }
+
+func (c *TeamUsersService) Delete(ctx context.Context, teamID, userID int64) (model.TeamUserDeleteResponse, error) {
+	var res model.TeamUserDeleteResponse
+	req := c.httpClient.R().
+		SetResult(&res).
+		SetContext(ctx)
+	resp, err := req.Delete(fmt.Sprintf("%s/%d", pathTeamUsers(teamID), userID))
+	if err != nil {
+		return model.TeamUserDeleteResponse{}, err
+	}
+	return res, apiError(resp)
+}

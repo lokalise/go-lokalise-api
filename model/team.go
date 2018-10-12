@@ -20,3 +20,8 @@ const (
 	TeamUserRoleAdmin  TeamUserRole = "admin"
 	TeamUserRoleMember TeamUserRole = "member"
 )
+
+type TeamUserDeleteResponse struct {
+	TeamID  int64 `json:"team_id,omitempty"`
+	Deleted bool  `json:"team_user_deleted"`
+}
