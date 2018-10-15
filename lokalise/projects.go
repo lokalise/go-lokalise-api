@@ -37,3 +37,28 @@ func (c *ProjectsService) List(ctx context.Context, pageOptions ProjectsOptions)
 	applyPaged(resp, &res.Paged)
 	return res, apiError(resp)
 }
+
+func (c *ProjectsService) Create(ctx context.Context, name, description string) (model.Project, error) {
+	var res model.Project
+	resp, err := c.client.post(ctx, pathProjects, &res, map[string]interface{}{
+		"name":        name,
+		"description": description,
+	})
+	if err != nil {
+		return model.Project{}, err
+	}
+	return res, apiError(resp)
+}
+
+func (c *ProjectsService) CreateForTeam(ctx context.Context, name, description string, teamID int64) (model.Project, error) {
+	var res model.Project
+	resp, err := c.client.post(ctx, pathProjects, &res, map[string]interface{}{
+		"name":        name,
+		"description": description,
+		"team_id":     teamID,
+	})
+	if err != nil {
+		return model.Project{}, err
+	}
+	return res, apiError(resp)
+}

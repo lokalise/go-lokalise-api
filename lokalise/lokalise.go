@@ -120,6 +120,10 @@ func (c *Client) getList(ctx context.Context, path string, res interface{}, opti
 	return req.Get(path)
 }
 
+func (c *Client) post(ctx context.Context, path string, res, body interface{}) (*resty.Response, error) {
+	return c.reqWithBody(ctx, path, res, body).Post(path)
+}
+
 func (c *Client) put(ctx context.Context, path string, res, body interface{}) (*resty.Response, error) {
 	return c.reqWithBody(ctx, path, res, body).Put(path)
 }
