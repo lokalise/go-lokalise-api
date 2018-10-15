@@ -27,6 +27,7 @@ type Client struct {
 
 	TeamUsers TeamUsersService
 	Teams     TeamsService
+	Projects  ProjectsService
 }
 
 type ClientOption func(*Client) error
@@ -56,6 +57,7 @@ func NewClient(apiToken string, options ...ClientOption) (*Client, error) {
 
 	c.TeamUsers = TeamUsersService{client: &c}
 	c.Teams = TeamsService{client: &c}
+	c.Projects = ProjectsService{client: &c}
 	return &c, nil
 }
 
