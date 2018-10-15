@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-resty/resty"
 	"github.com/lokalise/lokalise-go-sdk/model"
 )
 
 type TeamUsersService struct {
-	httpClient *resty.Client
+	client *Client
 }
 
 const (
@@ -22,11 +21,7 @@ func pathTeamUsers(teamID int64) string {
 
 func (c *TeamUsersService) List(ctx context.Context, teamID int64, pageOptions PageOptions) (model.TeamUsersResponse, error) {
 	var res model.TeamUsersResponse
-	req := c.httpClient.R().
-		SetResult(&res).
-		SetContext(ctx)
-	applyPageOptions(req, pageOptions)
-	resp, err := req.Get(pathTeamUsers(teamID))
+	resp, err := c.client.getList(ctx, pathTeamUsers(teamID), &res, pageOptions)
 	if err != nil {
 		return model.TeamUsersResponse{}, err
 	}
@@ -36,10 +31,7 @@ func (c *TeamUsersService) List(ctx context.Context, teamID int64, pageOptions P
 
 func (c *TeamUsersService) Retrieve(ctx context.Context, teamID, userID int64) (model.TeamUserResponse, error) {
 	var res model.TeamUserResponse
-	req := c.httpClient.R().
-		SetResult(&res).
-		SetContext(ctx)
-	resp, err := req.Get(fmt.Sprintf("%s/%d", pathTeamUsers(teamID), userID))
+	resp, err := c.client.get(ctx, fmt.Sprintf("%s/%d", pathTeamUsers(teamID), userID), &res)
 	if err != nil {
 		return model.TeamUserResponse{}, err
 	}
@@ -48,13 +40,9 @@ func (c *TeamUsersService) Retrieve(ctx context.Context, teamID, userID int64) (
 
 func (c *TeamUsersService) UpdateRole(ctx context.Context, teamID, userID int64, role model.TeamUserRole) (model.TeamUserResponse, error) {
 	var res model.TeamUserResponse
-	req := c.httpClient.R().
-		SetResult(&res).
-		SetContext(ctx).
-		SetBody(map[string]interface{}{
-			"role": role,
-		})
-	resp, err := req.Put(fmt.Sprintf("%s/%d", pathTeamUsers(teamID), userID))
+	resp, err := c.client.put(ctx, fmt.Sprintf("%s/%d", pathTeamUsers(teamID), userID), &res, map[string]interface{}{
+		"role": role,
+	})
 	if err != nil {
 		return model.TeamUserResponse{}, err
 	}
@@ -63,10 +51,7 @@ func (c *TeamUsersService) UpdateRole(ctx context.Context, teamID, userID int64,
 
 func (c *TeamUsersService) Delete(ctx context.Context, teamID, userID int64) (model.TeamUserDeleteResponse, error) {
 	var res model.TeamUserDeleteResponse
-	req := c.httpClient.R().
-		SetResult(&res).
-		SetContext(ctx)
-	resp, err := req.Delete(fmt.Sprintf("%s/%d", pathTeamUsers(teamID), userID))
+	resp, err := c.client.delete(ctx, fmt.Sprintf("%s/%d", pathTeamUsers(teamID), userID), &res)
 	if err != nil {
 		return model.TeamUserDeleteResponse{}, err
 	}

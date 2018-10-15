@@ -2,6 +2,7 @@
 package lokalise
 
 import (
+	"context"
 	"errors"
 	"io"
 	"net/http"
@@ -52,7 +53,7 @@ func NewClient(apiToken string, options ...ClientOption) (*Client, error) {
 		SetError(errorResponse{}).
 		AddRetryCondition(requestRetryCondition())
 
-	c.TeamUsers = TeamUsersService{httpClient: c.httpClient}
+	c.TeamUsers = TeamUsersService{client: &c}
 	return &c, nil
 }
 
@@ -103,4 +104,32 @@ func WithBaseURL(url string) ClientOption {
 		c.baseURL = url
 		return nil
 	}
+}
+
+func (c *Client) get(ctx context.Context, path string, res interface{}) (*resty.Response, error) {
+	return c.req(ctx, path, res, nil).Get(path)
+}
+
+func (c *Client) getList(ctx context.Context, path string, res interface{}, options PageOptions) (*resty.Response, error) {
+	req := c.req(ctx, path, res, nil)
+	applyPageOptions(req, options)
+	return req.Get(path)
+}
+
+func (c *Client) put(ctx context.Context, path string, res, body interface{}) (*resty.Response, error) {
+	return c.req(ctx, path, res, body).Put(path)
+}
+
+func (c *Client) delete(ctx context.Context, path string, res interface{}) (*resty.Response, error) {
+	return c.req(ctx, path, res, nil).Delete(path)
+}
+
+func (c *Client) req(ctx context.Context, path string, res, body interface{}) *resty.Request {
+	req := c.httpClient.R().
+		SetResult(&res).
+		SetContext(ctx)
+	if body != nil {
+		req = req.SetBody(body)
+	}
+	return req
 }
