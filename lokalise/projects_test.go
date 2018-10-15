@@ -135,12 +135,7 @@ func TestClient_Projects_List(t *testing.T) {
 			input: input{},
 			serverResponse: serverResponse{
 				statusCode: http.StatusNotFound,
-				body: `{
-					"error": {
-						"code": 404,
-						"message": "team not found"
-					}
-				}`,
+				body:       notFoundResponseBody("project not found"),
 			},
 			output: output{
 				calledPath: "/projects",
@@ -154,7 +149,7 @@ func TestClient_Projects_List(t *testing.T) {
 				},
 				err: &model.Error{
 					Code:    404,
-					Message: "team not found",
+					Message: "project not found",
 				},
 			},
 		},
@@ -267,12 +262,7 @@ func TestClient_Projects_Create(t *testing.T) {
 			},
 			serverResponse: serverResponse{
 				statusCode: http.StatusNotFound,
-				body: `{
-					"error": {
-						"code": 404,
-						"message": "team not found"
-					}
-					}`,
+				body:       notFoundResponseBody("project not found"),
 			},
 			output: output{
 				calledPath:  "/projects",
@@ -280,7 +270,7 @@ func TestClient_Projects_Create(t *testing.T) {
 				response:    model.Project{},
 				err: &model.Error{
 					Code:    404,
-					Message: "team not found",
+					Message: "project not found",
 				},
 			},
 		},
@@ -396,12 +386,7 @@ func TestClient_Projects_CreateForTeam(t *testing.T) {
 			},
 			serverResponse: serverResponse{
 				statusCode: http.StatusNotFound,
-				body: `{
-					"error": {
-						"code": 404,
-						"message": "team not found"
-					}
-					}`,
+				body:       notFoundResponseBody("project not found"),
 			},
 			output: output{
 				calledPath:  "/projects",
@@ -409,7 +394,7 @@ func TestClient_Projects_CreateForTeam(t *testing.T) {
 				response:    model.Project{},
 				err: &model.Error{
 					Code:    404,
-					Message: "team not found",
+					Message: "project not found",
 				},
 			},
 		},
@@ -517,19 +502,14 @@ func TestClient_Projects_Retrieve(t *testing.T) {
 			},
 			serverResponse: serverResponse{
 				statusCode: http.StatusNotFound,
-				body: `{
-					"error": {
-						"code": 404,
-						"message": "team not found"
-					}
-				}`,
+				body:       notFoundResponseBody("project not found"),
 			},
 			output: output{
 				calledPath: "/projects/1",
 				response:   model.Project{},
 				err: &model.Error{
 					Code:    404,
-					Message: "team not found",
+					Message: "project not found",
 				},
 			},
 		},

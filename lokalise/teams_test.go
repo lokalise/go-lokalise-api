@@ -171,12 +171,7 @@ func TestClient_Teams_List(t *testing.T) {
 			input: input{},
 			serverResponse: serverResponse{
 				statusCode: http.StatusNotFound,
-				body: `{
-					"error": {
-						"code": 404,
-						"message": "team not found"
-					}
-				}`,
+				body:       notFoundResponseBody("team not found"),
 			},
 			output: output{
 				calledPath: "/teams",

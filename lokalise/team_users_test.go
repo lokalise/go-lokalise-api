@@ -161,12 +161,7 @@ func TestClient_TeamUsers_List(t *testing.T) {
 			},
 			serverResponse: serverResponse{
 				statusCode: http.StatusNotFound,
-				body: `{
-					"error": {
-						"code": 404,
-						"message": "team not found"
-					}
-				}`,
+				body:       notFoundResponseBody("team not found"),
 			},
 			output: output{
 				calledPath: "/teams/1/users",
@@ -292,12 +287,7 @@ func TestClient_TeamUsers_Retrieve(t *testing.T) {
 			},
 			serverResponse: serverResponse{
 				statusCode: http.StatusNotFound,
-				body: `{
-					"error": {
-						"code": 404,
-						"message": "team not found"
-					}
-				}`,
+				body:       notFoundResponseBody("team not found"),
 			},
 			output: output{
 				calledPath: "/teams/1/users/2",
@@ -408,12 +398,7 @@ func TestClient_TeamUsers_UpdateRole(t *testing.T) {
 			},
 			serverResponse: serverResponse{
 				statusCode: http.StatusNotFound,
-				body: `{
-					"error": {
-						"code": 404,
-						"message": "team not found"
-					}
-				}`,
+				body:       notFoundResponseBody("team not found"),
 			},
 			output: output{
 				calledPath:  "/teams/1/users/2",
@@ -516,12 +501,7 @@ func TestClient_TeamUsers_Delete(t *testing.T) {
 			},
 			serverResponse: serverResponse{
 				statusCode: http.StatusNotFound,
-				body: `{
-					"error": {
-						"code": 404,
-						"message": "team not found"
-					}
-				}`,
+				body:       notFoundResponseBody("team not found"),
 			},
 			output: output{
 				calledPath: "/teams/1/users/2",
