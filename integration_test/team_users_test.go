@@ -79,3 +79,26 @@ func TestGetTeamUsers(t *testing.T) {
 	t.Logf("users %v", resp.TeamUsers)
 	t.Logf("paged %+v", resp.Paged)
 }
+
+func TestGetTeams(t *testing.T) {
+	flag.Parse()
+	if token == "" {
+		t.Errorf("set token flag to run integration tests")
+		return
+	}
+	client, err := lokalise.NewClient(token, lokalise.WithRetryCount(5))
+	if err != nil {
+		t.Fatalf("client instantiation: %v", err)
+	}
+
+	resp, err := client.Teams.List(context.Background(), lokalise.PageOptions{
+		Limit: 1,
+		Page:  1,
+	})
+
+	if err != nil {
+		t.Fatalf("request err: %v", err)
+	}
+	t.Logf("teams %+v", resp.Teams)
+	t.Logf("paged %+v", resp.Paged)
+}

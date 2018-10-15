@@ -26,6 +26,7 @@ type Client struct {
 	logger     io.Writer
 
 	TeamUsers TeamUsersService
+	Teams     TeamsService
 }
 
 type ClientOption func(*Client) error
@@ -54,6 +55,7 @@ func NewClient(apiToken string, options ...ClientOption) (*Client, error) {
 		AddRetryCondition(requestRetryCondition())
 
 	c.TeamUsers = TeamUsersService{client: &c}
+	c.Teams = TeamsService{client: &c}
 	return &c, nil
 }
 

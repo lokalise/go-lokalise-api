@@ -11,10 +11,6 @@ type TeamUsersService struct {
 	client *Client
 }
 
-const (
-	pathTeams = "teams"
-)
-
 func pathTeamUsers(teamID int64) string {
 	return fmt.Sprintf("%s/%d/users", pathTeams, teamID)
 }
