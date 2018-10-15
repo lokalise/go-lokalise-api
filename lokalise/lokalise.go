@@ -107,29 +107,29 @@ func WithBaseURL(url string) ClientOption {
 }
 
 func (c *Client) get(ctx context.Context, path string, res interface{}) (*resty.Response, error) {
-	return c.req(ctx, path, res, nil).Get(path)
+	return c.req(ctx, path, res).Get(path)
 }
 
 func (c *Client) getList(ctx context.Context, path string, res interface{}, options PageOptions) (*resty.Response, error) {
-	req := c.req(ctx, path, res, nil)
+	req := c.req(ctx, path, res)
 	applyPageOptions(req, options)
 	return req.Get(path)
 }
 
 func (c *Client) put(ctx context.Context, path string, res, body interface{}) (*resty.Response, error) {
-	return c.req(ctx, path, res, body).Put(path)
+	return c.reqWithBody(ctx, path, res, body).Put(path)
 }
 
 func (c *Client) delete(ctx context.Context, path string, res interface{}) (*resty.Response, error) {
-	return c.req(ctx, path, res, nil).Delete(path)
+	return c.req(ctx, path, res).Delete(path)
 }
 
-func (c *Client) req(ctx context.Context, path string, res, body interface{}) *resty.Request {
-	req := c.httpClient.R().
+func (c *Client) req(ctx context.Context, path string, res interface{}) *resty.Request {
+	return c.httpClient.R().
 		SetResult(&res).
 		SetContext(ctx)
-	if body != nil {
-		req = req.SetBody(body)
-	}
-	return req
+}
+
+func (c *Client) reqWithBody(ctx context.Context, path string, res, body interface{}) *resty.Request {
+	return c.req(ctx, path, res).SetBody(body)
 }
