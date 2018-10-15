@@ -11,7 +11,7 @@ type errorResponse struct {
 	Error model.Error `json:"error"`
 }
 
-// apiError indentifies whether the response contains an API error.
+// apiError identifies whether the response contains an API error.
 func apiError(res *resty.Response) error {
 	if !res.IsError() {
 		return nil
