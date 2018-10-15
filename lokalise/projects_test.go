@@ -459,3 +459,113 @@ func TestClient_Projects_CreateForTeam(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_Projects_Retrieve(t *testing.T) {
+	type input struct {
+		projectID string
+	}
+	type output struct {
+		calledPath string
+		response   model.Project
+		err        error
+	}
+	type serverResponse struct {
+		body       string
+		statusCode int
+	}
+	tt := []struct {
+		name           string
+		input          input
+		serverResponse serverResponse
+		output         output
+	}{
+		{
+			name: "succesful json response",
+			input: input{
+				projectID: "1",
+			},
+			serverResponse: serverResponse{
+				statusCode: http.StatusOK,
+				body: `{
+					"project_id": "3002780358964f9bab5a92.87762498",
+					"name": "TheApp Project",
+					"description": "iOS + Android strings of TheApp. https://theapp.com",
+					"created_at": "2018-12-31 12:00:00",
+					"created_by": 420,
+					"created_by_email": "user@mycompany.com",
+					"team_id": 12345
+				}`,
+			},
+			output: output{
+				calledPath: "/projects/1",
+				response: model.Project{
+					ProjectID:      "3002780358964f9bab5a92.87762498",
+					Name:           "TheApp Project",
+					Description:    "iOS + Android strings of TheApp. https://theapp.com",
+					CreatedAt:      "2018-12-31 12:00:00",
+					CreatedBy:      420,
+					CreatedByEmail: "user@mycompany.com",
+					TeamID:         12345,
+				},
+				err: nil,
+			},
+		},
+		{
+			name: "404 error response",
+			input: input{
+				projectID: "1",
+			},
+			serverResponse: serverResponse{
+				statusCode: http.StatusNotFound,
+				body: `{
+					"error": {
+						"code": 404,
+						"message": "team not found"
+					}
+				}`,
+			},
+			output: output{
+				calledPath: "/projects/1",
+				response:   model.Project{},
+				err: &model.Error{
+					Code:    404,
+					Message: "team not found",
+				},
+			},
+		},
+	}
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			assert := assert.New(t)
+
+			var calledPath string
+			server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+				calledPath = req.URL.Path
+				rw.Header().Set("Content-Type", "application/json")
+				assert.Equal("GET", req.Method, "request HTTP verb not as expected")
+				rw.WriteHeader(tc.serverResponse.statusCode)
+				fmt.Fprintf(rw, tc.serverResponse.body)
+			}))
+			defer server.Close()
+			t.Logf("http server: %s", server.URL)
+			client, err := lokalise.NewClient("token",
+				lokalise.WithBaseURL(server.URL),
+				lokalise.WithLogger(&testLogger{T: t}),
+			)
+			if !assert.NoError(err, "unexpected client instantiation error") {
+				return
+			}
+
+			resp, err := client.Projects.Retrieve(context.Background(), tc.input.projectID)
+
+			if tc.output.err != nil {
+				assert.EqualError(err, tc.output.err.Error(), "output error not as expected")
+			} else {
+				assert.NoError(err, "output error not expected")
+			}
+			assert.Equal(tc.output.calledPath, calledPath, "called path not as expected")
+			assert.Equal(tc.output.response.TeamID, resp.TeamID, "response team id not as expected")
+			assert.Equal(tc.output.response.Name, resp.Name, "response name not as expected")
+		})
+	}
+}

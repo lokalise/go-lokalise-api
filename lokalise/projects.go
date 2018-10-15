@@ -62,3 +62,12 @@ func (c *ProjectsService) CreateForTeam(ctx context.Context, name, description s
 	}
 	return res, apiError(resp)
 }
+
+func (c *ProjectsService) Retrieve(ctx context.Context, projectID string) (model.Project, error) {
+	var res model.Project
+	resp, err := c.client.get(ctx, fmt.Sprintf("%s/%s", pathProjects, projectID), &res)
+	if err != nil {
+		return model.Project{}, err
+	}
+	return res, apiError(resp)
+}
