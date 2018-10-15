@@ -20,6 +20,20 @@ func pathTeamUsers(teamID int64) string {
 	return fmt.Sprintf("%s/%d/users", pathTeams, teamID)
 }
 
+func (c *TeamUsersService) List(ctx context.Context, teamID int64, pageOptions PageOptions) (model.TeamUsersResponse, error) {
+	var res model.TeamUsersResponse
+	req := c.httpClient.R().
+		SetResult(&res).
+		SetContext(ctx)
+	applyPageOptions(req, pageOptions)
+	resp, err := req.Get(pathTeamUsers(teamID))
+	if err != nil {
+		return model.TeamUsersResponse{}, err
+	}
+	applyPaged(resp, &res.Paged)
+	return res, apiError(resp)
+}
+
 func (c *TeamUsersService) Retrieve(ctx context.Context, teamID, userID int64) (model.TeamUserResponse, error) {
 	var res model.TeamUserResponse
 	req := c.httpClient.R().

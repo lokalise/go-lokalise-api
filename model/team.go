@@ -25,3 +25,16 @@ type TeamUserDeleteResponse struct {
 	TeamID  int64 `json:"team_id,omitempty"`
 	Deleted bool  `json:"team_user_deleted"`
 }
+
+type Paged struct {
+	TotalCount int64
+	PageCount  int64
+	Limit      int64
+	Page       int64
+}
+
+type TeamUsersResponse struct {
+	Paged
+	TeamID    int64      `json:"team_id,omitempty"`
+	TeamUsers []TeamUser `json:"team_users,omitempty"`
+}
