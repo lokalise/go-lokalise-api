@@ -16,7 +16,7 @@ const (
 
 func (c *TeamsService) List(ctx context.Context, pageOptions PageOptions) (model.TeamsResponse, error) {
 	var res model.TeamsResponse
-	resp, err := c.client.getList(ctx, pathTeams, &res, pageOptions)
+	resp, err := c.client.getList(ctx, pathTeams, &res, &pageOptions)
 	if err != nil {
 		return model.TeamsResponse{}, err
 	}

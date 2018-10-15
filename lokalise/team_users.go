@@ -17,7 +17,7 @@ func pathTeamUsers(teamID int64) string {
 
 func (c *TeamUsersService) List(ctx context.Context, teamID int64, pageOptions PageOptions) (model.TeamUsersResponse, error) {
 	var res model.TeamUsersResponse
-	resp, err := c.client.getList(ctx, pathTeamUsers(teamID), &res, pageOptions)
+	resp, err := c.client.getList(ctx, pathTeamUsers(teamID), &res, &pageOptions)
 	if err != nil {
 		return model.TeamUsersResponse{}, err
 	}

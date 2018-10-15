@@ -9,12 +9,16 @@ import (
 	"github.com/lokalise/lokalise-go-sdk/model"
 )
 
+type OptionsApplier interface {
+	Apply(req *resty.Request)
+}
+
 type PageOptions struct {
 	Limit int64
 	Page  int64
 }
 
-func applyPageOptions(req *resty.Request, options PageOptions) {
+func (options *PageOptions) Apply(req *resty.Request) {
 	if options.Limit != 0 {
 		req.SetQueryParam("limit", fmt.Sprintf("%d", options.Limit))
 	}

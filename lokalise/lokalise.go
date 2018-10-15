@@ -114,9 +114,9 @@ func (c *Client) get(ctx context.Context, path string, res interface{}) (*resty.
 	return c.req(ctx, path, res).Get(path)
 }
 
-func (c *Client) getList(ctx context.Context, path string, res interface{}, options PageOptions) (*resty.Response, error) {
+func (c *Client) getList(ctx context.Context, path string, res interface{}, options OptionsApplier) (*resty.Response, error) {
 	req := c.req(ctx, path, res)
-	applyPageOptions(req, options)
+	options.Apply(req)
 	return req.Get(path)
 }
 
