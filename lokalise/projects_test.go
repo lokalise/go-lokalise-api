@@ -14,7 +14,7 @@ import (
 
 func TestClient_Projects_List(t *testing.T) {
 	type input struct {
-		options lokalise.PageOptions
+		options lokalise.ProjectsOptions
 	}
 	type output struct {
 		calledPath string
@@ -77,11 +77,14 @@ func TestClient_Projects_List(t *testing.T) {
 			},
 		},
 		{
-			name: "with pagination succesful json response",
+			name: "with options succesful json response",
 			input: input{
-				options: lokalise.PageOptions{
-					Limit: 1,
-					Page:  2,
+				options: lokalise.ProjectsOptions{
+					TeamID: 3,
+					PageOptions: lokalise.PageOptions{
+						Limit: 1,
+						Page:  2,
+					},
 				},
 			},
 			serverResponse: serverResponse{
@@ -103,7 +106,7 @@ func TestClient_Projects_List(t *testing.T) {
 				}`,
 			},
 			output: output{
-				calledPath: "/projects?limit=1&page=2",
+				calledPath: "/projects?filter_team_id=3&limit=1&page=2",
 				response: model.ProjectsResponse{
 					Paged: model.Paged{
 						TotalCount: 1,

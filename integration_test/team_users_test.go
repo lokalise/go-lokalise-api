@@ -114,9 +114,12 @@ func TestGetProjects(t *testing.T) {
 		t.Fatalf("client instantiation: %v", err)
 	}
 
-	resp, err := client.Projects.List(context.Background(), lokalise.PageOptions{
-		Limit: 0,
-		Page:  1,
+	resp, err := client.Projects.List(context.Background(), lokalise.ProjectsOptions{
+		TeamID: 170090,
+		PageOptions: lokalise.PageOptions{
+			Limit: 0,
+			Page:  1,
+		},
 	})
 
 	if err != nil {
