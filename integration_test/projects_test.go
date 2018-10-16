@@ -7,7 +7,7 @@ import (
 	"flag"
 	"testing"
 
-	"github.com/lokalise/lokalise-go-sdk/lokalise"
+	"github.com/lokalise/go-lokalise-api/lokalise"
 )
 
 func TestGetProjects(t *testing.T) {

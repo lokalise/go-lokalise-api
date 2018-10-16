@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/go-resty/resty"
-	"github.com/lokalise/lokalise-go-sdk/model"
+	"github.com/lokalise/go-lokalise-api/model"
 )
 
 type ProjectsService struct {

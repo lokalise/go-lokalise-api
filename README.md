@@ -1,1 +1,1 @@
-# lokalise-go-sdk
+# go-lokalise-api

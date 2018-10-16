@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/lokalise/lokalise-go-sdk/lokalise"
-	"github.com/lokalise/lokalise-go-sdk/model"
+	"github.com/lokalise/go-lokalise-api/lokalise"
+	"github.com/lokalise/go-lokalise-api/model"
 	"github.com/stretchr/testify/assert"
 )
 

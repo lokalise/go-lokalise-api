@@ -7,8 +7,8 @@ import (
 	"flag"
 	"testing"
 
-	"github.com/lokalise/lokalise-go-sdk/lokalise"
-	"github.com/lokalise/lokalise-go-sdk/model"
+	"github.com/lokalise/go-lokalise-api/lokalise"
+	"github.com/lokalise/go-lokalise-api/model"
 )
 
 var (
