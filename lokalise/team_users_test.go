@@ -2,10 +2,7 @@ package lokalise_test
 
 import (
 	"context"
-	"fmt"
-	"io/ioutil"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/lokalise/go-lokalise-api/lokalise"
@@ -19,22 +16,14 @@ func TestClient_TeamUsers_List(t *testing.T) {
 		options lokalise.PageOptions
 	}
 	type output struct {
-		calledPath string
-		response   model.TeamUsersResponse
-		err        error
-	}
-	type serverResponse struct {
-		body                  string
-		statusCode            int
-		pagedTotalCountHeader string
-		pagedPageCountHeader  string
-		pagedLimitHeader      string
-		pagedPageHeader       string
+		expectedOutgoingRequest outgoingRequest
+		response                model.TeamUsersResponse
+		err                     error
 	}
 	tt := []struct {
 		name           string
 		input          input
-		serverResponse serverResponse
+		serverResponse serverListResponse
 		output         output
 	}{
 		{
@@ -42,7 +31,7 @@ func TestClient_TeamUsers_List(t *testing.T) {
 			input: input{
 				teamID: 1,
 			},
-			serverResponse: serverResponse{
+			serverResponse: serverListResponse{
 				statusCode: http.StatusOK,
 				body: `{
 					"team_id": 18821,
@@ -53,7 +42,10 @@ func TestClient_TeamUsers_List(t *testing.T) {
 				}`,
 			},
 			output: output{
-				calledPath: "/teams/1/users",
+				expectedOutgoingRequest: outgoingRequest{
+					path:   "/teams/1/users",
+					method: http.MethodGet,
+				},
 				response: model.TeamUsersResponse{
 					TeamID: 18821,
 					Paged: model.Paged{
@@ -81,7 +73,7 @@ func TestClient_TeamUsers_List(t *testing.T) {
 					Page:  2,
 				},
 			},
-			serverResponse: serverResponse{
+			serverResponse: serverListResponse{
 				statusCode:            http.StatusOK,
 				pagedTotalCountHeader: "1",
 				pagedPageCountHeader:  "2",
@@ -96,7 +88,10 @@ func TestClient_TeamUsers_List(t *testing.T) {
 				}`,
 			},
 			output: output{
-				calledPath: "/teams/1/users?limit=1&page=2",
+				expectedOutgoingRequest: outgoingRequest{
+					path:   "/teams/1/users?limit=1&page=2",
+					method: http.MethodGet,
+				},
 				response: model.TeamUsersResponse{
 					Paged: model.Paged{
 						TotalCount: 1,
@@ -120,7 +115,7 @@ func TestClient_TeamUsers_List(t *testing.T) {
 			input: input{
 				teamID: 1,
 			},
-			serverResponse: serverResponse{
+			serverResponse: serverListResponse{
 				statusCode:            http.StatusOK,
 				pagedTotalCountHeader: "a",
 				pagedPageCountHeader:  "b",
@@ -135,7 +130,10 @@ func TestClient_TeamUsers_List(t *testing.T) {
 				}`,
 			},
 			output: output{
-				calledPath: "/teams/1/users",
+				expectedOutgoingRequest: outgoingRequest{
+					path:   "/teams/1/users",
+					method: http.MethodGet,
+				},
 				response: model.TeamUsersResponse{
 					Paged: model.Paged{
 						TotalCount: -1,
@@ -159,12 +157,15 @@ func TestClient_TeamUsers_List(t *testing.T) {
 			input: input{
 				teamID: 1,
 			},
-			serverResponse: serverResponse{
+			serverResponse: serverListResponse{
 				statusCode: http.StatusNotFound,
 				body:       notFoundResponseBody("team not found"),
 			},
 			output: output{
-				calledPath: "/teams/1/users",
+				expectedOutgoingRequest: outgoingRequest{
+					path:   "/teams/1/users",
+					method: http.MethodGet,
+				},
 				response: model.TeamUsersResponse{
 					Paged: model.Paged{
 						TotalCount: -1,
@@ -183,35 +184,8 @@ func TestClient_TeamUsers_List(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			assert := assert.New(t)
-
-			var calledPath string
-			server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-				calledPath = req.URL.String()
-				rw.Header().Set("Content-Type", "application/json")
-				if tc.serverResponse.pagedTotalCountHeader != "" {
-					rw.Header().Set("X-Pagination-Total-Count", tc.serverResponse.pagedTotalCountHeader)
-				}
-				if tc.serverResponse.pagedPageCountHeader != "" {
-					rw.Header().Set("X-Pagination-Page-Count", tc.serverResponse.pagedPageCountHeader)
-				}
-				if tc.serverResponse.pagedLimitHeader != "" {
-					rw.Header().Set("X-Pagination-Limit", tc.serverResponse.pagedLimitHeader)
-				}
-				if tc.serverResponse.pagedPageHeader != "" {
-					rw.Header().Set("X-Pagination-Page", tc.serverResponse.pagedPageHeader)
-				}
-				rw.WriteHeader(tc.serverResponse.statusCode)
-				fmt.Fprintf(rw, tc.serverResponse.body)
-			}))
-			defer server.Close()
-			t.Logf("http server: %s", server.URL)
-			client, err := lokalise.NewClient("token",
-				lokalise.WithBaseURL(server.URL),
-				lokalise.WithLogger(&testLogger{T: t}),
-			)
-			if !assert.NoError(err, "unexpected client instantiation error") {
-				return
-			}
+			client, fixture, close := setupListClient(t, tc.serverResponse)
+			defer close()
 
 			resp, err := client.TeamUsers.List(context.Background(), tc.input.teamID, tc.input.options)
 
@@ -220,7 +194,7 @@ func TestClient_TeamUsers_List(t *testing.T) {
 			} else {
 				assert.NoError(err, "output error not expected")
 			}
-			assert.Equal(tc.output.calledPath, calledPath, "called path not as expected")
+			tc.output.expectedOutgoingRequest.Assert(t, fixture)
 			assert.Equal(tc.output.response.TeamID, resp.TeamID, "response team id not as expected")
 			assert.Equal(tc.output.response.Paged, resp.Paged, "paged response values not as expected")
 			assert.Equal(tc.output.response.TeamUsers, resp.TeamUsers, "response team user id not as expected")
@@ -229,323 +203,104 @@ func TestClient_TeamUsers_List(t *testing.T) {
 }
 
 func TestClient_TeamUsers_Retrieve(t *testing.T) {
-	type input struct {
-		teamID int64
-		userID int64
+	inputTeamID := int64(1)
+	inputUserID := int64(2)
+	mockedServerResponseBody := `{
+		"team_id": 18821,
+		"team_user": {
+			"user_id": 420,
+			"email": "jdoe@mycompany.com",
+			"fullname": "John Doe",
+			"created_at": "2018-12-31 12:00:00",
+			"role": "owner"
+		}
+	}`
+	expectedOutgoingRequest := outgoingRequest{
+		path:   "/teams/1/users/2",
+		method: http.MethodGet,
 	}
-	type output struct {
-		calledPath string
-		response   model.TeamUserResponse
-		err        error
-	}
-	type serverResponse struct {
-		body       string
-		statusCode int
-	}
-	tt := []struct {
-		name           string
-		input          input
-		serverResponse serverResponse
-		output         output
-	}{
-		{
-			name: "succesful json response",
-			input: input{
-				teamID: 1,
-				userID: 2,
-			},
-			serverResponse: serverResponse{
-				statusCode: http.StatusOK,
-				body: `{
-					"team_id": 18821,
-					"team_user": {
-						"user_id": 420,
-						"email": "jdoe@mycompany.com",
-						"fullname": "John Doe",
-						"created_at": "2018-12-31 12:00:00",
-						"role": "owner"
-					}
-				}`,
-			},
-			output: output{
-				calledPath: "/teams/1/users/2",
-				response: model.TeamUserResponse{
-					TeamID: 18821,
-					TeamUser: model.TeamUser{
-						UserID: 420,
-						Email:  "jdoe@mycompany.com",
-					},
-				},
-				err: nil,
-			},
-		},
-		{
-			name: "404 error response",
-			input: input{
-				teamID: 1,
-				userID: 2,
-			},
-			serverResponse: serverResponse{
-				statusCode: http.StatusNotFound,
-				body:       notFoundResponseBody("team not found"),
-			},
-			output: output{
-				calledPath: "/teams/1/users/2",
-				response:   model.TeamUserResponse{},
-				err: &model.Error{
-					Code:    404,
-					Message: "team not found",
-				},
-			},
+	expectedResult := model.TeamUserResponse{
+		TeamID: 18821,
+		TeamUser: model.TeamUser{
+			UserID: 420,
+			Email:  "jdoe@mycompany.com",
 		},
 	}
-	for _, tc := range tt {
-		t.Run(tc.name, func(t *testing.T) {
-			assert := assert.New(t)
+	assert := assert.New(t)
+	client, fixture, close := setupClient(t, mockedServerResponseBody)
+	defer close()
 
-			var calledPath string
-			server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-				calledPath = req.URL.Path
-				rw.Header().Set("Content-Type", "application/json")
-				rw.WriteHeader(tc.serverResponse.statusCode)
-				fmt.Fprintf(rw, tc.serverResponse.body)
-			}))
-			defer server.Close()
-			t.Logf("http server: %s", server.URL)
-			client, err := lokalise.NewClient("token",
-				lokalise.WithBaseURL(server.URL),
-				lokalise.WithLogger(&testLogger{T: t}),
-			)
-			if !assert.NoError(err, "unexpected client instantiation error") {
-				return
-			}
+	resp, err := client.TeamUsers.Retrieve(context.Background(), inputTeamID, inputUserID)
 
-			resp, err := client.TeamUsers.Retrieve(context.Background(), tc.input.teamID, tc.input.userID)
-
-			if tc.output.err != nil {
-				assert.EqualError(err, tc.output.err.Error(), "output error not as expected")
-			} else {
-				assert.NoError(err, "output error not expected")
-			}
-			assert.Equal(tc.output.calledPath, calledPath, "called path not as expected")
-			assert.Equal(tc.output.response.TeamID, resp.TeamID, "response team id not as expected")
-			assert.Equal(tc.output.response.TeamUser.UserID, resp.TeamUser.UserID, "response team user id not as expected")
-		})
-	}
+	assert.NoError(err, "output error not expected")
+	expectedOutgoingRequest.Assert(t, fixture)
+	assert.Equal(expectedResult.TeamID, resp.TeamID, "response team id not as expected")
+	assert.Equal(expectedResult.TeamUser.UserID, resp.TeamUser.UserID, "response team user id not as expected")
 }
 
 func TestClient_TeamUsers_UpdateRole(t *testing.T) {
-	type input struct {
-		teamID int64
-		userID int64
-		role   model.TeamUserRole
+	inputTeamID := int64(1)
+	inputUserID := int64(2)
+	inputRole := model.TeamUserRoleAdmin
+	mockedServerResponseBody := `{
+		"team_id": 18821,
+		"team_user": {
+			"user_id": 420,
+			"email": "jdoe@mycompany.com",
+			"fullname": "John Doe",
+			"created_at": "2018-12-31 12:00:00",
+			"role": "owner"
+		}
+	}`
+	expectedOutgoingRequest := outgoingRequest{
+		method: http.MethodPut,
+		path:   "/teams/1/users/2",
+		body:   `{"role":"admin"}`,
 	}
-	type output struct {
-		calledPath  string
-		requestbody string
-		response    model.TeamUserResponse
-		err         error
-	}
-	type serverResponse struct {
-		body       string
-		statusCode int
-	}
-	tt := []struct {
-		name           string
-		input          input
-		serverResponse serverResponse
-		output         output
-	}{
-		{
-			name: "succesful json response",
-			input: input{
-				teamID: 1,
-				userID: 2,
-				role:   model.TeamUserRoleAdmin,
-			},
-			serverResponse: serverResponse{
-				statusCode: http.StatusOK,
-				body: `{
-					"team_id": 18821,
-					"team_user": {
-						"user_id": 420,
-						"email": "jdoe@mycompany.com",
-						"fullname": "John Doe",
-						"created_at": "2018-12-31 12:00:00",
-						"role": "owner"
-					}
-				}`,
-			},
-			output: output{
-				calledPath:  "/teams/1/users/2",
-				requestbody: `{"role":"admin"}`,
-				response: model.TeamUserResponse{
-					TeamID: 18821,
-					TeamUser: model.TeamUser{
-						UserID: 420,
-						Email:  "jdoe@mycompany.com",
-					},
-				},
-				err: nil,
-			},
-		},
-		{
-			name: "404 error response",
-			input: input{
-				teamID: 1,
-				userID: 2,
-				role:   model.TeamUserRoleAdmin,
-			},
-			serverResponse: serverResponse{
-				statusCode: http.StatusNotFound,
-				body:       notFoundResponseBody("team not found"),
-			},
-			output: output{
-				calledPath:  "/teams/1/users/2",
-				requestbody: `{"role":"admin"}`,
-				response:    model.TeamUserResponse{},
-				err: &model.Error{
-					Code:    404,
-					Message: "team not found",
-				},
-			},
+	expectedResult := model.TeamUserResponse{
+		TeamID: 18821,
+		TeamUser: model.TeamUser{
+			UserID: 420,
+			Email:  "jdoe@mycompany.com",
 		},
 	}
-	for _, tc := range tt {
-		t.Run(tc.name, func(t *testing.T) {
-			assert := assert.New(t)
+	assert := assert.New(t)
+	client, fixture, close := setupClient(t, mockedServerResponseBody)
+	defer close()
 
-			var calledPath string
-			var requestbody []byte
-			server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-				calledPath = req.URL.Path
-				var err error
-				requestbody, err = ioutil.ReadAll(req.Body)
-				assert.NoError(err, "read request body failed")
-				rw.Header().Set("Content-Type", "application/json")
-				rw.WriteHeader(tc.serverResponse.statusCode)
-				fmt.Fprintf(rw, tc.serverResponse.body)
-			}))
-			defer server.Close()
-			t.Logf("http server: %s", server.URL)
-			client, err := lokalise.NewClient("token",
-				lokalise.WithBaseURL(server.URL),
-				lokalise.WithLogger(&testLogger{T: t}),
-			)
-			if !assert.NoError(err, "unexpected client instantiation error") {
-				return
-			}
+	resp, err := client.TeamUsers.UpdateRole(context.Background(), inputTeamID, inputUserID, inputRole)
 
-			resp, err := client.TeamUsers.UpdateRole(context.Background(), tc.input.teamID, tc.input.userID, tc.input.role)
-
-			if tc.output.err != nil {
-				assert.EqualError(err, tc.output.err.Error(), "output error not as expected")
-			} else {
-				assert.NoError(err, "output error not expected")
-			}
-			assert.Equal(tc.output.calledPath, calledPath, "called path not as expected")
-			assert.Equal(tc.output.requestbody, string(requestbody), "call body no as expected")
-			assert.Equal(tc.output.response.TeamID, resp.TeamID, "response team id not as expected")
-			assert.Equal(tc.output.response.TeamUser.UserID, resp.TeamUser.UserID, "response team user id not as expected")
-		})
-	}
+	assert.NoError(err, "output error not expected")
+	expectedOutgoingRequest.Assert(t, fixture)
+	assert.Equal(expectedResult.TeamID, resp.TeamID, "response team id not as expected")
+	assert.Equal(expectedResult.TeamUser.UserID, resp.TeamUser.UserID, "response team user id not as expected")
 }
 
 func TestClient_TeamUsers_Delete(t *testing.T) {
-	type input struct {
-		teamID int64
-		userID int64
+	inputTeamID := int64(1)
+	inputUserID := int64(2)
+	mockedServerResponseBody := `{
+		"team_id": 18821,
+		"team_user_deleted": true
+	}`
+	expectedOutgoingRequest := outgoingRequest{
+		path:   "/teams/1/users/2",
+		method: http.MethodDelete,
 	}
-	type output struct {
-		calledPath string
-		response   model.TeamUserDeleteResponse
-		err        error
+	expectedResult := model.TeamUserDeleteResponse{
+		TeamID:  18821,
+		Deleted: true,
 	}
-	type serverResponse struct {
-		body       string
-		statusCode int
-	}
-	tt := []struct {
-		name           string
-		input          input
-		serverResponse serverResponse
-		output         output
-	}{
-		{
-			name: "succesful json response",
-			input: input{
-				teamID: 1,
-				userID: 2,
-			},
-			serverResponse: serverResponse{
-				statusCode: http.StatusOK,
-				body: `{
-					"team_id": 18821,
-					"team_user_deleted": true
-				}`,
-			},
-			output: output{
-				calledPath: "/teams/1/users/2",
-				response: model.TeamUserDeleteResponse{
-					TeamID:  18821,
-					Deleted: true,
-				},
-				err: nil,
-			},
-		},
-		{
-			name: "404 error response",
-			input: input{
-				teamID: 1,
-				userID: 2,
-			},
-			serverResponse: serverResponse{
-				statusCode: http.StatusNotFound,
-				body:       notFoundResponseBody("team not found"),
-			},
-			output: output{
-				calledPath: "/teams/1/users/2",
-				response:   model.TeamUserDeleteResponse{},
-				err: &model.Error{
-					Code:    404,
-					Message: "team not found",
-				},
-			},
-		},
-	}
-	for _, tc := range tt {
-		t.Run(tc.name, func(t *testing.T) {
-			assert := assert.New(t)
+	assert := assert.New(t)
+	client, fixture, close := setupClient(t, mockedServerResponseBody)
+	defer close()
 
-			var calledPath string
-			server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-				calledPath = req.URL.Path
-				rw.Header().Set("Content-Type", "application/json")
-				rw.WriteHeader(tc.serverResponse.statusCode)
-				fmt.Fprintf(rw, tc.serverResponse.body)
-			}))
-			defer server.Close()
-			t.Logf("http server: %s", server.URL)
-			client, err := lokalise.NewClient("token",
-				lokalise.WithBaseURL(server.URL),
-				lokalise.WithLogger(&testLogger{T: t}),
-			)
-			if !assert.NoError(err, "unexpected client instantiation error") {
-				return
-			}
+	resp, err := client.TeamUsers.Delete(context.Background(), inputTeamID, inputUserID)
 
-			resp, err := client.TeamUsers.Delete(context.Background(), tc.input.teamID, tc.input.userID)
-
-			if tc.output.err != nil {
-				assert.EqualError(err, tc.output.err.Error(), "output error not as expected")
-			} else {
-				assert.NoError(err, "output error not expected")
-			}
-			assert.Equal(tc.output.calledPath, calledPath, "called path not as expected")
-			assert.Equal(tc.output.response.TeamID, resp.TeamID, "response team id not as expected")
-			assert.Equal(tc.output.response.Deleted, resp.Deleted, "response team user id not as expected")
-		})
-	}
+	assert.NoError(err, "output error not expected")
+	expectedOutgoingRequest.Assert(t, fixture)
+	assert.Equal(expectedResult.TeamID, resp.TeamID, "response team id not as expected")
+	assert.Equal(expectedResult.Deleted, resp.Deleted, "response team user id not as expected")
 }
 
 type testLogger struct {

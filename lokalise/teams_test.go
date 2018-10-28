@@ -2,9 +2,7 @@ package lokalise_test
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/lokalise/go-lokalise-api/lokalise"
@@ -17,28 +15,20 @@ func TestClient_Teams_List(t *testing.T) {
 		options lokalise.PageOptions
 	}
 	type output struct {
-		calledPath string
-		response   model.TeamsResponse
-		err        error
-	}
-	type serverResponse struct {
-		body                  string
-		statusCode            int
-		pagedTotalCountHeader string
-		pagedPageCountHeader  string
-		pagedLimitHeader      string
-		pagedPageHeader       string
+		expectedOutgoingRequest outgoingRequest
+		response                model.TeamsResponse
+		err                     error
 	}
 	tt := []struct {
 		name           string
 		input          input
-		serverResponse serverResponse
+		serverResponse serverListResponse
 		output         output
 	}{
 		{
 			name:  "no pagination succesful json response",
 			input: input{},
-			serverResponse: serverResponse{
+			serverResponse: serverListResponse{
 				statusCode: http.StatusOK,
 				body: `{
 					"teams": [
@@ -64,7 +54,10 @@ func TestClient_Teams_List(t *testing.T) {
 				}`,
 			},
 			output: output{
-				calledPath: "/teams",
+				expectedOutgoingRequest: outgoingRequest{
+					path:   "/teams",
+					method: http.MethodGet,
+				},
 				response: model.TeamsResponse{
 					Paged: model.Paged{
 						TotalCount: 1,
@@ -104,7 +97,7 @@ func TestClient_Teams_List(t *testing.T) {
 					Page:  2,
 				},
 			},
-			serverResponse: serverResponse{
+			serverResponse: serverListResponse{
 				statusCode:            http.StatusOK,
 				pagedTotalCountHeader: "1",
 				pagedPageCountHeader:  "2",
@@ -134,7 +127,10 @@ func TestClient_Teams_List(t *testing.T) {
 				}`,
 			},
 			output: output{
-				calledPath: "/teams?limit=1&page=2",
+				expectedOutgoingRequest: outgoingRequest{
+					path:   "/teams?limit=1&page=2",
+					method: http.MethodGet,
+				},
 				response: model.TeamsResponse{
 					Paged: model.Paged{
 						TotalCount: 1,
@@ -169,12 +165,15 @@ func TestClient_Teams_List(t *testing.T) {
 		{
 			name:  "404 error response",
 			input: input{},
-			serverResponse: serverResponse{
+			serverResponse: serverListResponse{
 				statusCode: http.StatusNotFound,
 				body:       notFoundResponseBody("team not found"),
 			},
 			output: output{
-				calledPath: "/teams",
+				expectedOutgoingRequest: outgoingRequest{
+					path:   "/teams",
+					method: http.MethodGet,
+				},
 				response: model.TeamsResponse{
 					Paged: model.Paged{
 						TotalCount: -1,
@@ -193,35 +192,8 @@ func TestClient_Teams_List(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			assert := assert.New(t)
-
-			var calledPath string
-			server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-				calledPath = req.URL.String()
-				rw.Header().Set("Content-Type", "application/json")
-				if tc.serverResponse.pagedTotalCountHeader != "" {
-					rw.Header().Set("X-Pagination-Total-Count", tc.serverResponse.pagedTotalCountHeader)
-				}
-				if tc.serverResponse.pagedPageCountHeader != "" {
-					rw.Header().Set("X-Pagination-Page-Count", tc.serverResponse.pagedPageCountHeader)
-				}
-				if tc.serverResponse.pagedLimitHeader != "" {
-					rw.Header().Set("X-Pagination-Limit", tc.serverResponse.pagedLimitHeader)
-				}
-				if tc.serverResponse.pagedPageHeader != "" {
-					rw.Header().Set("X-Pagination-Page", tc.serverResponse.pagedPageHeader)
-				}
-				rw.WriteHeader(tc.serverResponse.statusCode)
-				fmt.Fprintf(rw, tc.serverResponse.body)
-			}))
-			defer server.Close()
-			t.Logf("http server: %s", server.URL)
-			client, err := lokalise.NewClient("token",
-				lokalise.WithBaseURL(server.URL),
-				lokalise.WithLogger(&testLogger{T: t}),
-			)
-			if !assert.NoError(err, "unexpected client instantiation error") {
-				return
-			}
+			client, fixture, close := setupListClient(t, tc.serverResponse)
+			defer close()
 
 			resp, err := client.Teams.List(context.Background(), tc.input.options)
 
@@ -230,7 +202,7 @@ func TestClient_Teams_List(t *testing.T) {
 			} else {
 				assert.NoError(err, "output error not expected")
 			}
-			assert.Equal(tc.output.calledPath, calledPath, "called path not as expected")
+			tc.output.expectedOutgoingRequest.Assert(t, fixture)
 			assert.Equal(tc.output.response.Teams, resp.Teams, "response not as expected")
 		})
 	}
