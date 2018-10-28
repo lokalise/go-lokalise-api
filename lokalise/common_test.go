@@ -59,7 +59,7 @@ func setupClient(t *testing.T, serverResponseBody string) (*lokalise.Client, *fi
 			f.requestBody = string(requestBody)
 			rw.Header().Set("Content-Type", "application/json")
 			rw.WriteHeader(http.StatusOK)
-			fmt.Fprintf(rw, serverResponseBody)
+			fmt.Fprint(rw, serverResponseBody)
 		}
 	})
 }
@@ -101,7 +101,7 @@ func setupListClient(t *testing.T, serverResponse serverListResponse) (*lokalise
 				rw.Header().Set("X-Pagination-Page", serverResponse.pagedPageHeader)
 			}
 			rw.WriteHeader(serverResponse.statusCode)
-			fmt.Fprintf(rw, serverResponse.body)
+			fmt.Fprint(rw, serverResponse.body)
 		}
 	})
 }
