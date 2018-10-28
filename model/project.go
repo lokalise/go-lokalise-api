@@ -14,3 +14,8 @@ type ProjectsResponse struct {
 	Paged
 	Projects []Project `json:"projects,omitempty"`
 }
+
+type ProjectEmptyResponse struct {
+	ProjectID   string `json:"project_id,omitempty"`
+	KeysDeleted bool   `json:"keys_deleted,omitempty"`
+}

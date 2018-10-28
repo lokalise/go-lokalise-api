@@ -83,3 +83,12 @@ func (c *ProjectsService) Update(ctx context.Context, projectID, name, descripti
 	}
 	return res, apiError(resp)
 }
+
+func (c *ProjectsService) Empty(ctx context.Context, projectID string) (model.ProjectEmptyResponse, error) {
+	var res model.ProjectEmptyResponse
+	resp, err := c.client.put(ctx, fmt.Sprintf("%s/%s/empty", pathProjects, projectID), &res, nil)
+	if err != nil {
+		return model.ProjectEmptyResponse{}, err
+	}
+	return res, apiError(resp)
+}

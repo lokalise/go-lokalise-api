@@ -673,3 +673,106 @@ func TestClient_Projects_Update(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_Projects_Empty(t *testing.T) {
+	type input struct {
+		projectID string
+	}
+	type output struct {
+		calledPath  string
+		requestbody string
+		response    model.ProjectEmptyResponse
+		err         error
+	}
+	type serverResponse struct {
+		body       string
+		statusCode int
+	}
+	tt := []struct {
+		name           string
+		input          input
+		serverResponse serverResponse
+		output         output
+	}{
+		{
+			name: "succesful json response",
+			input: input{
+				projectID: "3002780358964f9bab5a92.87762498",
+			},
+			serverResponse: serverResponse{
+				statusCode: http.StatusOK,
+				body: `{
+					"project_id": "3002780358964f9bab5a92.87762498",
+					"keys_deleted": true
+				}`,
+			},
+			output: output{
+				calledPath:  "/projects/3002780358964f9bab5a92.87762498/empty",
+				requestbody: ``,
+				response: model.ProjectEmptyResponse{
+					ProjectID:   "3002780358964f9bab5a92.87762498",
+					KeysDeleted: true,
+				},
+				err: nil,
+			},
+		},
+		{
+			name: "404 error response",
+			input: input{
+				projectID: "12345",
+			},
+			serverResponse: serverResponse{
+				statusCode: http.StatusNotFound,
+				body:       notFoundResponseBody("project not found"),
+			},
+			output: output{
+				calledPath:  "/projects/12345/empty",
+				requestbody: ``,
+				response:    model.ProjectEmptyResponse{},
+				err: &model.Error{
+					Code:    404,
+					Message: "project not found",
+				},
+			},
+		},
+	}
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			assert := assert.New(t)
+
+			var calledPath string
+			var requestbody []byte
+			server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+				calledPath = req.URL.Path
+				var err error
+				requestbody, err = ioutil.ReadAll(req.Body)
+				assert.NoError(err, "read request body failed")
+				assert.Equal(req.Method, "PUT", "wrong HTTP request verb")
+				rw.Header().Set("Content-Type", "application/json")
+				rw.WriteHeader(tc.serverResponse.statusCode)
+				fmt.Fprintf(rw, tc.serverResponse.body)
+			}))
+			defer server.Close()
+			t.Logf("http server: %s", server.URL)
+			client, err := lokalise.NewClient("token",
+				lokalise.WithBaseURL(server.URL),
+				lokalise.WithLogger(&testLogger{T: t}),
+			)
+			if !assert.NoError(err, "unexpected client instantiation error") {
+				return
+			}
+
+			resp, err := client.Projects.Empty(context.Background(), tc.input.projectID)
+
+			if tc.output.err != nil {
+				assert.EqualError(err, tc.output.err.Error(), "output error not as expected")
+			} else {
+				assert.NoError(err, "output error not expected")
+			}
+			assert.Equal(tc.output.calledPath, calledPath, "called path not as expected")
+			assert.Equal(tc.output.requestbody, string(requestbody), "call body no as expected")
+			assert.Equal(tc.output.response.ProjectID, resp.ProjectID, "response project id not as expected")
+			assert.Equal(tc.output.response.KeysDeleted, resp.KeysDeleted, "response keys deleted not as expected")
+		})
+	}
+}
