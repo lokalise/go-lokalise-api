@@ -92,3 +92,12 @@ func (c *ProjectsService) Empty(ctx context.Context, projectID string) (model.Pr
 	}
 	return res, apiError(resp)
 }
+
+func (c *ProjectsService) Delete(ctx context.Context, projectID string) (model.ProjectDeleteResponse, error) {
+	var res model.ProjectDeleteResponse
+	resp, err := c.client.delete(ctx, fmt.Sprintf("%s/%s", pathProjects, projectID), &res)
+	if err != nil {
+		return model.ProjectDeleteResponse{}, err
+	}
+	return res, apiError(resp)
+}

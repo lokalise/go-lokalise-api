@@ -19,3 +19,8 @@ type ProjectEmptyResponse struct {
 	ProjectID   string `json:"project_id,omitempty"`
 	KeysDeleted bool   `json:"keys_deleted,omitempty"`
 }
+
+type ProjectDeleteResponse struct {
+	ProjectID string `json:"project_id,omitempty"`
+	Deleted   bool   `json:"project_deleted,omitempty"`
+}
