@@ -71,3 +71,15 @@ func (c *ProjectsService) Retrieve(ctx context.Context, projectID string) (model
 	}
 	return res, apiError(resp)
 }
+
+func (c *ProjectsService) Update(ctx context.Context, projectID, name, description string) (model.Project, error) {
+	var res model.Project
+	resp, err := c.client.put(ctx, fmt.Sprintf("%s/%s", pathProjects, projectID), &res, map[string]interface{}{
+		"name":        name,
+		"description": description,
+	})
+	if err != nil {
+		return model.Project{}, err
+	}
+	return res, apiError(resp)
+}
