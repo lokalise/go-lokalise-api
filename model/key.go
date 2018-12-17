@@ -9,7 +9,7 @@ type PlatformStrings struct {
 
 type Key struct {
 	KeyID        int64           `json:"key_id,omitempty"`
-	createdAt    string          `json:"created_at,omitempty"`
+	CreatedAt    string          `json:"created_at,omitempty"`
 	KeyName      PlatformStrings `json:"key_name,omitempty"`
 	Filenames    PlatformStrings `json:"filenames,omitempty"`
 	Description  string          `json:"description,omitempty"`
