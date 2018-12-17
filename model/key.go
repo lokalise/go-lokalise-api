@@ -19,3 +19,9 @@ type Key struct {
 	Screenshots  []Screenshot    `json:"screenshots,omitempty"`
 	Translations []Translation   `json:"translations,omitempty"`
 }
+
+type KeysResponse struct {
+	Paged
+	ProjectID string `json:"project_id,omitempty"`
+	Keys      []Key  `json:"keys,omitempty"`
+}
