@@ -2,7 +2,7 @@ package model
 
 type Screenshot struct {
 	ScreenshotID   int64    `json:"screenshot_id,omitempty"`
-	keyIDs         []int64  `json:"key_ids,omitempty"`
+	KeyIDs         []int64  `json:"key_ids,omitempty"`
 	URL            string   `json:"url,omitempty"`
 	Title          string   `json:"title,omitempty"`
 	Description    string   `json:"description,omitempty"`
