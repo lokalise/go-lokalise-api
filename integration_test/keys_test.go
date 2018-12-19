@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/17media/go-lokalise-api/lokalise"
-	"github.com/17media/go-lokalise-api/model"
+	"github.com/lokalise/go-lokalise-api/lokalise"
+	"github.com/lokalise/go-lokalise-api/model"
 )
 
 func TestListKeys(t *testing.T) {
@@ -23,7 +23,7 @@ func TestListKeys(t *testing.T) {
 		t.Fatalf("client instantiation: %v", err)
 	}
 
-	resp, err := client.Keys.List(context.Background(), "8749166159795d02ca9bd6.54233877", lokalise.ListKeysOptions{
+	resp, err := client.Keys.List(context.Background(), "3002780358964f9bab5a92.87762498", lokalise.ListKeysOptions{
 		IncludeTranslations: true,
 		PageOptions: lokalise.PageOptions{
 			Limit: 10,
@@ -50,17 +50,13 @@ func TestCreateKeys(t *testing.T) {
 		t.Fatalf("client instantiation: %v", err)
 	}
 
-	resp, err := client.Keys.Create(context.Background(), "8749166159795d02ca9bd6.54233877", []lokalise.KeyOptions{lokalise.KeyOptions{
-		KeyName:   "test_from_readper",
+	resp, err := client.Keys.Create(context.Background(), "3002780358964f9bab5a92.87762498", []lokalise.KeyOptions{lokalise.KeyOptions{
+		KeyName:   "integration_test",
 		Platforms: []string{"ios", "android"},
 		Translations: []model.Translation{
 			model.Translation{
-				LanguageISO: "en",
+				LanguageISO: "en_US",
 				Translation: "test",
-			},
-			model.Translation{
-				LanguageISO: "id",
-				Translation: "testID",
 			},
 		},
 	},

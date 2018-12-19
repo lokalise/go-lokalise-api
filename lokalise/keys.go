@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-resty/resty"
 
-	"github.com/17media/go-lokalise-api/model"
+	"github.com/lokalise/go-lokalise-api/model"
 )
 
 const (
