@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/lokalise/go-lokalise-api/lokalise"
+	"github.com/17media/go-lokalise-api/lokalise"
 	"github.com/stretchr/testify/assert"
 )
 

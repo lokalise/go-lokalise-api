@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/17media/go-lokalise-api/model"
 	"github.com/go-resty/resty"
-	"github.com/lokalise/go-lokalise-api/model"
 )
 
 func TestClient_retryLogic(t *testing.T) {

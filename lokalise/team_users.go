@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lokalise/go-lokalise-api/model"
+	"github.com/17media/go-lokalise-api/model"
 )
 
 type TeamUsersService struct {

@@ -3,8 +3,8 @@ package lokalise
 import (
 	"errors"
 
+	"github.com/17media/go-lokalise-api/model"
 	"github.com/go-resty/resty"
-	"github.com/lokalise/go-lokalise-api/model"
 )
 
 type errorResponse struct {
