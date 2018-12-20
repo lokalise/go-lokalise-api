@@ -34,7 +34,6 @@ func TestListKeys(t *testing.T) {
 	if err != nil {
 		t.Fatalf("request err: %v", err)
 	}
-	fmt.Println(resp.Keys)
 	t.Logf("keys %+v", resp.Keys)
 	t.Logf("paged %+v", resp.Paged)
 }
