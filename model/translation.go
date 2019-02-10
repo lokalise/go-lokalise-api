@@ -10,6 +10,7 @@ type Translation struct {
 	Translation     string `json:"translation,omitempty"`
 	IsFuzzy         bool   `json:"is_fuzzy,omitempty"`
 	IsReviewed      bool   `json:"is_reviewed,omitempty"`
+	ReviewedBy      int64  `json:"reviewed_by,omitempty"`
 	Words           int64  `json:"words,omitempty"`
 }
 

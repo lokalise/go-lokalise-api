@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/go-resty/resty"
-
 	"github.com/lokalise/go-lokalise-api/model"
 )
 
@@ -24,11 +23,12 @@ type ListKeysOptions struct {
 	DisableReferences         bool
 	IncludeComments           bool
 	IncludeScreenshots        bool
-	filterTags                []string
-	filterKeys                []string
-	filterKeyIDs              []string
-	filterPlatforms           []string
-	filterPlaceholderMismatch bool
+	FilterTags                []string
+	FilterKeys                []string
+	FilterKeyIDs              []string
+	FilterPlatforms           []string
+	FilterQAIssues            []string
+	FilterPlaceholderMismatch bool
 }
 
 func (options ListKeysOptions) Apply(req *resty.Request) {
@@ -45,19 +45,22 @@ func (options ListKeysOptions) Apply(req *resty.Request) {
 	if options.IncludeScreenshots {
 		req.SetQueryParam("include_screenshots", "1")
 	}
-	if len(options.filterTags) > 0 {
-		req.SetQueryParam("filter_tags", strings.Join(options.filterTags, ","))
+	if len(options.FilterTags) > 0 {
+		req.SetQueryParam("filter_tags", strings.Join(options.FilterTags, ","))
 	}
-	if len(options.filterKeys) > 0 {
-		req.SetQueryParam("filter_keys", strings.Join(options.filterKeys, ","))
+	if len(options.FilterKeys) > 0 {
+		req.SetQueryParam("filter_keys", strings.Join(options.FilterKeys, ","))
 	}
-	if len(options.filterKeyIDs) > 0 {
-		req.SetQueryParam("filter_key_ids", strings.Join(options.filterKeyIDs, ","))
+	if len(options.FilterKeyIDs) > 0 {
+		req.SetQueryParam("filter_key_ids", strings.Join(options.FilterKeyIDs, ","))
 	}
-	if len(options.filterPlatforms) > 0 {
-		req.SetQueryParam("filter_platforms", strings.Join(options.filterPlatforms, ","))
+	if len(options.FilterPlatforms) > 0 {
+		req.SetQueryParam("filter_platforms", strings.Join(options.FilterPlatforms, ","))
 	}
-	if options.filterPlaceholderMismatch {
+	if len(options.FilterQAIssues) > 0 {
+		req.SetQueryParam("filter_qa_issues", strings.Join(options.FilterQAIssues, ","))
+	}
+	if options.FilterPlaceholderMismatch {
 		req.SetQueryParam("filter_placeholder_mismatch", "1")
 	}
 }
@@ -72,7 +75,7 @@ func (c *KeysService) List(ctx context.Context, projectID string, options ListKe
 	return res, apiError(resp)
 }
 
-func (c *KeysService) Create(ctx context.Context, projectID string, keys []model.Key) (model.KeysResponse, error) {
+func (c *KeysService) Create(ctx context.Context, projectID string, keys []model.CreateKeyRequest) (model.KeysResponse, error) {
 	var res model.KeysResponse
 	resp, err := c.client.post(ctx, fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &res, map[string]interface{}{
 		"keys": keys,

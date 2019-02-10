@@ -9,4 +9,5 @@ type Screenshot struct {
 	ScreenshotTags []string `json:"screenshot_tags,omitempty"`
 	Width          int64    `json:"width,omitempty"`
 	Height         int64    `json:"height,omitempty"`
+	CreatedAt      string   `json:"created_at,omitempty"`
 }
