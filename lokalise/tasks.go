@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-resty/resty"
 	"github.com/lokalise/go-lokalise-api/model"
+	"gopkg.in/resty.v1"
 )
 
 type TasksService struct {

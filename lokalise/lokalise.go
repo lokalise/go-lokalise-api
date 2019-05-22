@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/go-resty/resty"
+	"gopkg.in/resty.v1"
 )
 
 const (
