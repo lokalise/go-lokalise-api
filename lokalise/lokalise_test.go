@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-resty/resty"
+	"gopkg.in/resty.v1"
 	"github.com/lokalise/go-lokalise-api/model"
 )
 
