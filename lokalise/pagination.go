@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-resty/resty"
 	"github.com/lokalise/go-lokalise-api/model"
+	"gopkg.in/resty.v1"
 )
 
 type OptionsApplier interface {
