@@ -117,7 +117,8 @@ func TestClient_Keys_List(t *testing.T) {
 							"is_fuzzy": true,
 							"is_reviewed": false,
 							"words": 2
-						}]
+						}],
+						"custom_attributes": "{\"notes\": [{\"from\": \"description\", \"value\": \"Welcomes the user to the page\", \"priority\": \"1\"}, {\"from\": \"meaning\", \"value\": \"heading\", \"priority\": \"1\"}], \"datatype\": \"html\", \"context-groups\": [{\"purpose\": \"location\", \"contexts\": [{\"value\": \"app/app.component.ts\", \"context-type\": \"sourcefile\"}, {\"value\": \"1\", \"context-type\": \"linenumber\"}]}]}"
 					}]
 				}`,
 			},
@@ -147,6 +148,38 @@ func TestClient_Keys_List(t *testing.T) {
 									IsFuzzy:         true,
 									IsReviewed:      false,
 									Words:           2,
+								},
+							},
+							CustomAttributes: &model.CustomAttributes{
+								Attributes: map[string]interface{}{
+									"notes": []interface{}{
+										map[string]interface{}{
+											"from":     "description",
+											"value":    "Welcomes the user to the page",
+											"priority": "1",
+										},
+										map[string]interface{}{
+											"from":     "meaning",
+											"value":    "heading",
+											"priority": "1",
+										},
+									},
+									"datatype": "html",
+									"context-groups": []interface{}{
+										map[string]interface{}{
+											"purpose": "location",
+											"contexts": []interface{}{
+												map[string]interface{}{
+													"context-type": "sourcefile",
+													"value":        "app/app.component.ts",
+												},
+												map[string]interface{}{
+													"context-type": "linenumber",
+													"value":        "1",
+												},
+											},
+										},
+									},
 								},
 							},
 						},
