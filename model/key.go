@@ -37,12 +37,17 @@ type Key struct {
 
 func (ca *CustomAttributes) UnmarshalJSON(data []byte) error {
 
-	var caJsonString string
+	caJsonString := ""
 	var customAttributes CustomAttributes
 
 	//First unmarshal the data to a string.
 	if err := json.Unmarshal(data, &caJsonString); err != nil {
 		return err
+	}
+
+	//Escape if the string is empty
+	if caJsonString == "" {
+		return nil
 	}
 
 	//Unmarshal the string further into a map[string]interface{} structure
