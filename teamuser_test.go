@@ -5,8 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/lokalise/go-lokalise-api/lokalise"
-	"github.com/lokalise/go-lokalise-api/model"
+	"github.com/lokalise/go-lokalise-api"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,7 +16,7 @@ func TestClient_TeamUsers_List(t *testing.T) {
 	}
 	type output struct {
 		expectedOutgoingRequest outgoingRequest
-		response                model.TeamUsersResponse
+		response                lokalise.TeamUsersResponse
 		err                     error
 	}
 	tt := []struct {
@@ -46,15 +45,15 @@ func TestClient_TeamUsers_List(t *testing.T) {
 					path:   "/teams/1/users",
 					method: http.MethodGet,
 				},
-				response: model.TeamUsersResponse{
+				response: lokalise.TeamUsersResponse{
 					TeamID: 18821,
-					Paged: model.Paged{
+					Paged: lokalise.Paged{
 						TotalCount: -1,
 						PageCount:  -1,
 						Limit:      -1,
 						Page:       -1,
 					},
-					TeamUsers: []model.TeamUser{
+					TeamUsers: []lokalise.TeamUser{
 						{
 							UserID: 420,
 							Email:  "jdoe@mycompany.com",
@@ -92,15 +91,15 @@ func TestClient_TeamUsers_List(t *testing.T) {
 					path:   "/teams/1/users?limit=1&page=2",
 					method: http.MethodGet,
 				},
-				response: model.TeamUsersResponse{
-					Paged: model.Paged{
+				response: lokalise.TeamUsersResponse{
+					Paged: lokalise.Paged{
 						TotalCount: 1,
 						PageCount:  2,
 						Limit:      3,
 						Page:       4,
 					},
 					TeamID: 18821,
-					TeamUsers: []model.TeamUser{
+					TeamUsers: []lokalise.TeamUser{
 						{
 							UserID: 420,
 							Email:  "jdoe@mycompany.com",
@@ -134,15 +133,15 @@ func TestClient_TeamUsers_List(t *testing.T) {
 					path:   "/teams/1/users",
 					method: http.MethodGet,
 				},
-				response: model.TeamUsersResponse{
-					Paged: model.Paged{
+				response: lokalise.TeamUsersResponse{
+					Paged: lokalise.Paged{
 						TotalCount: -1,
 						PageCount:  -1,
 						Limit:      -1,
 						Page:       -1,
 					},
 					TeamID: 18821,
-					TeamUsers: []model.TeamUser{
+					TeamUsers: []lokalise.TeamUser{
 						{
 							UserID: 420,
 							Email:  "jdoe@mycompany.com",
@@ -166,15 +165,15 @@ func TestClient_TeamUsers_List(t *testing.T) {
 					path:   "/teams/1/users",
 					method: http.MethodGet,
 				},
-				response: model.TeamUsersResponse{
-					Paged: model.Paged{
+				response: lokalise.TeamUsersResponse{
+					Paged: lokalise.Paged{
 						TotalCount: -1,
 						PageCount:  -1,
 						Limit:      -1,
 						Page:       -1,
 					},
 				},
-				err: &model.Error{
+				err: &lokalise.Error{
 					Code:    404,
 					Message: "team not found",
 				},
@@ -219,9 +218,9 @@ func TestClient_TeamUsers_Retrieve(t *testing.T) {
 		path:   "/teams/1/users/2",
 		method: http.MethodGet,
 	}
-	expectedResult := model.TeamUserResponse{
+	expectedResult := lokalise.TeamUserResponse{
 		TeamID: 18821,
-		TeamUser: model.TeamUser{
+		TeamUser: lokalise.TeamUser{
 			UserID: 420,
 			Email:  "jdoe@mycompany.com",
 		},
@@ -241,7 +240,7 @@ func TestClient_TeamUsers_Retrieve(t *testing.T) {
 func TestClient_TeamUsers_UpdateRole(t *testing.T) {
 	inputTeamID := int64(1)
 	inputUserID := int64(2)
-	inputRole := model.TeamUserRoleAdmin
+	inputRole := lokalise.TeamUserRoleAdmin
 	mockedServerResponseBody := `{
 		"team_id": 18821,
 		"team_user": {
@@ -257,9 +256,9 @@ func TestClient_TeamUsers_UpdateRole(t *testing.T) {
 		path:   "/teams/1/users/2",
 		body:   `{"role":"admin"}`,
 	}
-	expectedResult := model.TeamUserResponse{
+	expectedResult := lokalise.TeamUserResponse{
 		TeamID: 18821,
-		TeamUser: model.TeamUser{
+		TeamUser: lokalise.TeamUser{
 			UserID: 420,
 			Email:  "jdoe@mycompany.com",
 		},
@@ -287,7 +286,7 @@ func TestClient_TeamUsers_Delete(t *testing.T) {
 		path:   "/teams/1/users/2",
 		method: http.MethodDelete,
 	}
-	expectedResult := model.TeamUserDeleteResponse{
+	expectedResult := lokalise.TeamUserDeleteResponse{
 		TeamID:  18821,
 		Deleted: true,
 	}

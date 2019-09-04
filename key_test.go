@@ -5,8 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/lokalise/go-lokalise-api/lokalise"
-	"github.com/lokalise/go-lokalise-api/model"
+	"github.com/lokalise/go-lokalise-api"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,7 +16,7 @@ func TestClient_Keys_List(t *testing.T) {
 	}
 	type output struct {
 		expectedOutgoingRequest outgoingRequest
-		response                model.KeysResponse
+		response                lokalise.KeysResponse
 		err                     error
 	}
 	tt := []struct {
@@ -56,16 +55,16 @@ func TestClient_Keys_List(t *testing.T) {
 					path:   "/projects/20008339586cded200e0d8.29879849/keys",
 					method: http.MethodGet,
 				},
-				response: model.KeysResponse{
-					Paged: model.Paged{
+				response: lokalise.KeysResponse{
+					Paged: lokalise.Paged{
 						TotalCount: 1,
 						PageCount:  2,
 						Limit:      3,
 						Page:       4,
 					},
-					Keys: []model.Key{
-						model.Key{
-							Translations: []model.Translation{
+					Keys: []lokalise.Key{
+						lokalise.Key{
+							Translations: []lokalise.Translation{
 								{
 									TranslationID:   344412,
 									KeyID:           553662,
@@ -127,16 +126,16 @@ func TestClient_Keys_List(t *testing.T) {
 					path:   "/projects/20008339586cded200e0d8.29879849/keys?disable_references=1&limit=1&page=2",
 					method: http.MethodGet,
 				},
-				response: model.KeysResponse{
-					Paged: model.Paged{
+				response: lokalise.KeysResponse{
+					Paged: lokalise.Paged{
 						TotalCount: 1,
 						PageCount:  2,
 						Limit:      3,
 						Page:       4,
 					},
-					Keys: []model.Key{
-						model.Key{
-							Translations: []model.Translation{
+					Keys: []lokalise.Key{
+						lokalise.Key{
+							Translations: []lokalise.Translation{
 								{
 									TranslationID:   344412,
 									KeyID:           553662,
@@ -150,7 +149,7 @@ func TestClient_Keys_List(t *testing.T) {
 									Words:           2,
 								},
 							},
-							CustomAttributes: &model.CustomAttributes{
+							CustomAttributes: &lokalise.CustomAttributes{
 								Attributes: map[string]interface{}{
 									"notes": []interface{}{
 										map[string]interface{}{
@@ -202,15 +201,15 @@ func TestClient_Keys_List(t *testing.T) {
 					path:   "/projects/12345/keys",
 					method: http.MethodGet,
 				},
-				response: model.KeysResponse{
-					Paged: model.Paged{
+				response: lokalise.KeysResponse{
+					Paged: lokalise.Paged{
 						TotalCount: -1,
 						PageCount:  -1,
 						Limit:      -1,
 						Page:       -1,
 					},
 				},
-				err: &model.Error{
+				err: &lokalise.Error{
 					Code:    404,
 					Message: "keys not found",
 				},
@@ -238,11 +237,11 @@ func TestClient_Keys_List(t *testing.T) {
 
 func TestClient_Keys_Create(t *testing.T) {
 	inputProjectID := "1"
-	inputKeys := []model.Key{
-		model.Key{
+	inputKeys := []lokalise.Key{
+		lokalise.Key{
 			KeyName:   "testName",
 			Platforms: []string{"ios", "android"},
-			Translations: []model.Translation{
+			Translations: []lokalise.Translation{
 				{
 					LanguageISO: "en_US",
 					Translation: "Hello, world!",
@@ -279,11 +278,11 @@ func TestClient_Keys_Create(t *testing.T) {
 		path:   "/projects/1/keys",
 		body:   `{"keys":[{"key_name":"testName","filenames":{},"platforms":["ios","android"],"translations":[{"language_iso":"en_US","translation":"Hello, world!"}]}]}`,
 	}
-	expectedResult := model.KeysResponse{
+	expectedResult := lokalise.KeysResponse{
 		ProjectID: "3002780358964f9bab5a92.87762498",
-		Keys: []model.Key{
-			model.Key{
-				Translations: []model.Translation{
+		Keys: []lokalise.Key{
+			lokalise.Key{
+				Translations: []lokalise.Translation{
 					{
 						TranslationID:   344412,
 						KeyID:           553662,
@@ -299,13 +298,13 @@ func TestClient_Keys_Create(t *testing.T) {
 				},
 			},
 		},
-		Errors: []model.ErrorKeys{
-			model.ErrorKeys{
-				model.Error{
+		Errors: []lokalise.ErrorKeys{
+			lokalise.ErrorKeys{
+				lokalise.Error{
 					Message: "test msg",
 					Code:    400,
 				},
-				model.ErrorKey{
+				lokalise.ErrorKey{
 					KeyName: "name",
 				},
 			},

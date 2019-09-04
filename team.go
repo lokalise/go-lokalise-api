@@ -1,4 +1,8 @@
-package model
+package lokalise
+
+import (
+	"context"
+)
 
 type TeamsResponse struct {
 	Paged
@@ -47,15 +51,26 @@ type TeamUserDeleteResponse struct {
 	Deleted bool  `json:"team_user_deleted"`
 }
 
-type Paged struct {
-	TotalCount int64
-	PageCount  int64
-	Limit      int64
-	Page       int64
-}
-
 type TeamUsersResponse struct {
 	Paged
 	TeamID    int64      `json:"team_id,omitempty"`
 	TeamUsers []TeamUser `json:"team_users,omitempty"`
+}
+
+type TeamsService struct {
+	client *Client
+}
+
+const (
+	pathTeams = "teams"
+)
+
+func (c *TeamsService) List(ctx context.Context, pageOptions PageOptions) (TeamsResponse, error) {
+	var res TeamsResponse
+	resp, err := c.client.getList(ctx, pathTeams, &res, &pageOptions)
+	if err != nil {
+		return TeamsResponse{}, err
+	}
+	applyPaged(resp, &res.Paged)
+	return res, apiError(resp)
 }

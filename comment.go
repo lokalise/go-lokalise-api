@@ -1,4 +1,4 @@
-package model
+package lokalise
 
 type Comment struct {
 	CommentID    int64  `json:"comment_id,omitempty"`

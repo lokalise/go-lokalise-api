@@ -1,4 +1,11 @@
-package model
+package lokalise
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/go-resty/resty/v2"
+)
 
 type TaskStatus string
 
@@ -129,4 +136,70 @@ type TaskResponse struct {
 type TaskDeleteResponse struct {
 	ProjectID string `json:"project_id,omitempty"`
 	Deleted   bool   `json:"task_deleted,omitempty"`
+}
+
+type TasksService struct {
+	client *Client
+}
+
+const (
+	pathTasks = "tasks"
+)
+
+type TasksOptions struct {
+	PageOptions
+	Title string
+}
+
+func (options TasksOptions) Apply(req *resty.Request) {
+	options.PageOptions.Apply(req)
+	if options.Title != "" {
+		req.SetQueryParam("filter_title", options.Title)
+	}
+}
+
+func (c *TasksService) List(ctx context.Context, projectID string, pageOptions TasksOptions) (TasksResponse, error) {
+	var res TasksResponse
+	resp, err := c.client.getList(ctx, fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTasks), &res, pageOptions)
+	if err != nil {
+		return TasksResponse{}, err
+	}
+	applyPaged(resp, &res.Paged)
+	return res, apiError(resp)
+}
+
+func (c *TasksService) Create(ctx context.Context, projectID string, task CreateTaskRequest) (TaskResponse, error) {
+	var res TaskResponse
+	resp, err := c.client.post(ctx, fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTasks), &res, task)
+	if err != nil {
+		return TaskResponse{}, err
+	}
+	return res, apiError(resp)
+}
+
+func (c *TasksService) Retrieve(ctx context.Context, projectID string, taskID int64) (TaskResponse, error) {
+	var res TaskResponse
+	resp, err := c.client.get(ctx, fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &res)
+	if err != nil {
+		return TaskResponse{}, err
+	}
+	return res, apiError(resp)
+}
+
+func (c *TasksService) Update(ctx context.Context, projectID string, taskID int64, task UpdateTaskRequest) (TaskResponse, error) {
+	var res TaskResponse
+	resp, err := c.client.put(ctx, fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &res, task)
+	if err != nil {
+		return TaskResponse{}, err
+	}
+	return res, apiError(resp)
+}
+
+func (c *TasksService) Delete(ctx context.Context, projectID string, taskID int64) (TaskDeleteResponse, error) {
+	var res TaskDeleteResponse
+	resp, err := c.client.delete(ctx, fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &res)
+	if err != nil {
+		return TaskDeleteResponse{}, err
+	}
+	return res, apiError(resp)
 }

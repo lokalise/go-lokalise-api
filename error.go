@@ -2,13 +2,23 @@ package lokalise
 
 import (
 	"errors"
+	"fmt"
 
-	"github.com/lokalise/go-lokalise-api/model"
-	"gopkg.in/resty.v1"
+	"github.com/go-resty/resty/v2"
 )
 
+// Error is an API error.
+type Error struct {
+	Code    int    `json:"code,omitempty"`
+	Message string `json:"message,omitempty"`
+}
+
+func (r Error) Error() string {
+	return fmt.Sprintf("API request error %d %s", r.Code, r.Message)
+}
+
 type errorResponse struct {
-	Error model.Error `json:"error"`
+	Error Error `json:"error"`
 }
 
 // apiError identifies whether the response contains an API error.

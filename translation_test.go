@@ -5,8 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/lokalise/go-lokalise-api/lokalise"
-	"github.com/lokalise/go-lokalise-api/model"
+	"github.com/lokalise/go-lokalise-api"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,7 +16,7 @@ func TestClient_Translations_List(t *testing.T) {
 	}
 	type output struct {
 		expectedOutgoingRequest outgoingRequest
-		response                model.TranslationsResponse
+		response                lokalise.TranslationsResponse
 		err                     error
 	}
 	tt := []struct {
@@ -54,14 +53,14 @@ func TestClient_Translations_List(t *testing.T) {
 					path:   "/projects/20008339586cded200e0d8.29879849/translations",
 					method: http.MethodGet,
 				},
-				response: model.TranslationsResponse{
-					Paged: model.Paged{
+				response: lokalise.TranslationsResponse{
+					Paged: lokalise.Paged{
 						TotalCount: 1,
 						PageCount:  2,
 						Limit:      3,
 						Page:       4,
 					},
-					Translations: []model.Translation{
+					Translations: []lokalise.Translation{
 						{
 							TranslationID:   344412,
 							KeyID:           553662,
@@ -118,14 +117,14 @@ func TestClient_Translations_List(t *testing.T) {
 					path:   "/projects/20008339586cded200e0d8.29879849/translations?disable_references=1&limit=1&page=2",
 					method: http.MethodGet,
 				},
-				response: model.TranslationsResponse{
-					Paged: model.Paged{
+				response: lokalise.TranslationsResponse{
+					Paged: lokalise.Paged{
 						TotalCount: 1,
 						PageCount:  2,
 						Limit:      3,
 						Page:       4,
 					},
-					Translations: []model.Translation{
+					Translations: []lokalise.Translation{
 						{
 							TranslationID:   344412,
 							KeyID:           553662,
@@ -157,15 +156,15 @@ func TestClient_Translations_List(t *testing.T) {
 					path:   "/projects/12345/translations",
 					method: http.MethodGet,
 				},
-				response: model.TranslationsResponse{
-					Paged: model.Paged{
+				response: lokalise.TranslationsResponse{
+					Paged: lokalise.Paged{
 						TotalCount: -1,
 						PageCount:  -1,
 						Limit:      -1,
 						Page:       -1,
 					},
 				},
-				err: &model.Error{
+				err: &lokalise.Error{
 					Code:    404,
 					Message: "translation not found",
 				},
@@ -213,9 +212,9 @@ func TestClient_Translations_Retrieve(t *testing.T) {
 		method: http.MethodGet,
 		path:   "/projects/1/translations/2",
 	}
-	expectedResult := model.TranslationResponse{
+	expectedResult := lokalise.TranslationResponse{
 		ProjectID: "3002780358964f9bab5a92.87762498",
-		Translation: model.Translation{
+		Translation: lokalise.Translation{
 			TranslationID:   344412,
 			KeyID:           553662,
 			LanguageISO:     "en_US",
@@ -266,9 +265,9 @@ func TestClient_Translations_Update(t *testing.T) {
 		path:   "/projects/1/translations/2",
 		body:   `{"is_fuzzy":true,"is_reviewed":true,"translation":"updated translation"}`,
 	}
-	expectedResult := model.TranslationResponse{
+	expectedResult := lokalise.TranslationResponse{
 		ProjectID: "3002780358964f9bab5a92.87762498",
-		Translation: model.Translation{
+		Translation: lokalise.Translation{
 			TranslationID:   344412,
 			KeyID:           553662,
 			LanguageISO:     "en_US",

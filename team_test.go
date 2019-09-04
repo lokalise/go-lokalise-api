@@ -5,8 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/lokalise/go-lokalise-api/lokalise"
-	"github.com/lokalise/go-lokalise-api/model"
+	"github.com/lokalise/go-lokalise-api"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,7 +15,7 @@ func TestClient_Teams_List(t *testing.T) {
 	}
 	type output struct {
 		expectedOutgoingRequest outgoingRequest
-		response                model.TeamsResponse
+		response                lokalise.TeamsResponse
 		err                     error
 	}
 	tt := []struct {
@@ -58,26 +57,26 @@ func TestClient_Teams_List(t *testing.T) {
 					path:   "/teams",
 					method: http.MethodGet,
 				},
-				response: model.TeamsResponse{
-					Paged: model.Paged{
+				response: lokalise.TeamsResponse{
+					Paged: lokalise.Paged{
 						TotalCount: 1,
 						PageCount:  2,
 						Limit:      3,
 						Page:       4,
 					},
-					Teams: []model.Team{
+					Teams: []lokalise.Team{
 						{
 							TeamID:    178017,
 							Name:      "test",
 							Plan:      "Free",
 							CreatedAt: "2018-10-09 21:08:05 (Etc/UTC)",
-							QuotaUsage: model.Quota{
+							QuotaUsage: lokalise.Quota{
 								Users:    1,
 								Keys:     0,
 								Projects: 0,
 								MAU:      0,
 							},
-							QuotaAllowed: model.Quota{
+							QuotaAllowed: lokalise.Quota{
 								Users:    999999999,
 								Keys:     999999999,
 								Projects: 999999999,
@@ -131,26 +130,26 @@ func TestClient_Teams_List(t *testing.T) {
 					path:   "/teams?limit=1&page=2",
 					method: http.MethodGet,
 				},
-				response: model.TeamsResponse{
-					Paged: model.Paged{
+				response: lokalise.TeamsResponse{
+					Paged: lokalise.Paged{
 						TotalCount: 1,
 						PageCount:  2,
 						Limit:      3,
 						Page:       4,
 					},
-					Teams: []model.Team{
+					Teams: []lokalise.Team{
 						{
 							TeamID:    178017,
 							Name:      "test",
 							Plan:      "Free",
 							CreatedAt: "2018-10-09 21:08:05 (Etc/UTC)",
-							QuotaUsage: model.Quota{
+							QuotaUsage: lokalise.Quota{
 								Users:    1,
 								Keys:     0,
 								Projects: 0,
 								MAU:      0,
 							},
-							QuotaAllowed: model.Quota{
+							QuotaAllowed: lokalise.Quota{
 								Users:    999999999,
 								Keys:     999999999,
 								Projects: 999999999,
@@ -174,15 +173,15 @@ func TestClient_Teams_List(t *testing.T) {
 					path:   "/teams",
 					method: http.MethodGet,
 				},
-				response: model.TeamsResponse{
-					Paged: model.Paged{
+				response: lokalise.TeamsResponse{
+					Paged: lokalise.Paged{
 						TotalCount: -1,
 						PageCount:  -1,
 						Limit:      -1,
 						Page:       -1,
 					},
 				},
-				err: &model.Error{
+				err: &lokalise.Error{
 					Code:    404,
 					Message: "team not found",
 				},

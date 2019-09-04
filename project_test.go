@@ -5,8 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/lokalise/go-lokalise-api/lokalise"
-	"github.com/lokalise/go-lokalise-api/model"
+	"github.com/lokalise/go-lokalise-api"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,7 +15,7 @@ func TestClient_Projects_List(t *testing.T) {
 	}
 	type output struct {
 		expectedOutgoingRequest outgoingRequest
-		response                model.ProjectsResponse
+		response                lokalise.ProjectsResponse
 		err                     error
 	}
 	tt := []struct {
@@ -47,14 +46,14 @@ func TestClient_Projects_List(t *testing.T) {
 					path:   "/projects",
 					method: http.MethodGet,
 				},
-				response: model.ProjectsResponse{
-					Paged: model.Paged{
+				response: lokalise.ProjectsResponse{
+					Paged: lokalise.Paged{
 						TotalCount: 1,
 						PageCount:  2,
 						Limit:      3,
 						Page:       4,
 					},
-					Projects: []model.Project{
+					Projects: []lokalise.Project{
 						{
 							ProjectID:      "20008339586cded200e0d8.29879849",
 							Name:           "SuperApp (iOS + Android)",
@@ -103,14 +102,14 @@ func TestClient_Projects_List(t *testing.T) {
 					path:   "/projects?filter_team_id=3&limit=1&page=2",
 					method: http.MethodGet,
 				},
-				response: model.ProjectsResponse{
-					Paged: model.Paged{
+				response: lokalise.ProjectsResponse{
+					Paged: lokalise.Paged{
 						TotalCount: 1,
 						PageCount:  2,
 						Limit:      3,
 						Page:       4,
 					},
-					Projects: []model.Project{
+					Projects: []lokalise.Project{
 						{
 							ProjectID:      "20008339586cded200e0d8.29879849",
 							Name:           "SuperApp (iOS + Android)",
@@ -137,15 +136,15 @@ func TestClient_Projects_List(t *testing.T) {
 					path:   "/projects",
 					method: http.MethodGet,
 				},
-				response: model.ProjectsResponse{
-					Paged: model.Paged{
+				response: lokalise.ProjectsResponse{
+					Paged: lokalise.Paged{
 						TotalCount: -1,
 						PageCount:  -1,
 						Limit:      -1,
 						Page:       -1,
 					},
 				},
-				err: &model.Error{
+				err: &lokalise.Error{
 					Code:    404,
 					Message: "project not found",
 				},
@@ -188,7 +187,7 @@ func TestClient_Projects_Create(t *testing.T) {
 		method: http.MethodPost,
 		body:   `{"description":"iOS + Android strings of TheApp. https://theapp.com","name":"TheApp Project"}`,
 	}
-	expectedResult := model.Project{
+	expectedResult := lokalise.Project{
 		ProjectID:      "3002780358964f9bab5a92.87762498",
 		Name:           "TheApp Project",
 		Description:    "iOS + Android strings of TheApp. https://theapp.com",
@@ -232,7 +231,7 @@ func TestClient_Projects_CreateForTeam(t *testing.T) {
 		method: http.MethodPost,
 		body:   `{"description":"iOS + Android strings of TheApp. https://theapp.com","name":"TheApp Project","team_id":12345}`,
 	}
-	expectedResult := model.Project{
+	expectedResult := lokalise.Project{
 		ProjectID:      "3002780358964f9bab5a92.87762498",
 		Name:           "TheApp Project",
 		Description:    "iOS + Android strings of TheApp. https://theapp.com",
@@ -273,7 +272,7 @@ func TestClient_Projects_Retrieve(t *testing.T) {
 		path:   "/projects/1",
 		method: http.MethodGet,
 	}
-	expectedResult := model.Project{
+	expectedResult := lokalise.Project{
 		ProjectID:      "3002780358964f9bab5a92.87762498",
 		Name:           "TheApp Project",
 		Description:    "iOS + Android strings of TheApp. https://theapp.com",
@@ -312,7 +311,7 @@ func TestClient_Projects_Update(t *testing.T) {
 		method: http.MethodPut,
 		body:   `{"description":"iOS + Android strings of TheZapp. https://thezapp.com","name":"TheZapp Project"}`,
 	}
-	expectedResult := model.Project{
+	expectedResult := lokalise.Project{
 		ProjectID:      "3002780358964f9bab5a92.87762498",
 		Name:           "TheApp Project",
 		Description:    "iOS + Android strings of TheApp. https://theapp.com",
@@ -348,7 +347,7 @@ func TestClient_Projects_Empty(t *testing.T) {
 		path:   "/projects/3002780358964f9bab5a92.87762498/empty",
 		method: http.MethodPut,
 	}
-	expectedResult := model.ProjectEmptyResponse{
+	expectedResult := lokalise.ProjectEmptyResponse{
 		ProjectID:   "3002780358964f9bab5a92.87762498",
 		KeysDeleted: true,
 	}
@@ -375,7 +374,7 @@ func TestClient_Projects_Delete(t *testing.T) {
 			path:   "/projects/3002780358964f9bab5a92.87762498",
 			method: http.MethodDelete,
 		}
-	expectedResult := model.ProjectDeleteResponse{
+	expectedResult := lokalise.ProjectDeleteResponse{
 		ProjectID: "3002780358964f9bab5a92.87762498",
 		Deleted:   true,
 	}

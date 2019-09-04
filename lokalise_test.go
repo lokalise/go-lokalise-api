@@ -8,8 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"gopkg.in/resty.v1"
-	"github.com/lokalise/go-lokalise-api/model"
+	"github.com/go-resty/resty/v2"
 )
 
 func TestClient_retryLogic(t *testing.T) {
@@ -228,19 +227,7 @@ func TestRequestRetryCondition(t *testing.T) {
 	}
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			retry, err := requestRetryCondition()(tc.response)
-			if tc.err != nil {
-				if err == nil {
-					t.Fatalf("expected error %s but got nil", tc.err)
-				}
-				if tc.err.Error() != err.Error() {
-					t.Fatalf("wrong error: expected '%s': got '%s'", tc.err.Error(), err.Error())
-				}
-				return
-			}
-			if err != nil {
-				t.Fatalf("expected no error but got '%s'", err.Error())
-			}
+			retry := requestRetryCondition()(tc.response, tc.err)
 			if tc.shouldRetry != retry {
 				t.Fatalf("expected retry to be %t but got %t", tc.shouldRetry, retry)
 			}
@@ -283,7 +270,7 @@ func TestClient_customLogger(t *testing.T) {
 
 func TestClient_errorModel(t *testing.T) {
 	serverResponse := errorResponse{
-		Error: model.Error{
+		Error: Error{
 			Code:    http.StatusInternalServerError,
 			Message: "some server error",
 		},
@@ -321,7 +308,7 @@ func TestClient_errorModel(t *testing.T) {
 	}
 	requestErrModel, ok := requestErr.(*errorResponse)
 	if !ok {
-		t.Fatalf("expected request error to be type %T but got %T", &model.Error{}, requestErr)
+		t.Fatalf("expected request error to be type %T but got %T", &Error{}, requestErr)
 	}
 	if requestErrModel.Error.Code != http.StatusInternalServerError {
 		t.Errorf("wrong error code: expected %d: got %d", http.StatusInternalServerError, requestErrModel.Error.Code)

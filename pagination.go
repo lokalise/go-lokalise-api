@@ -5,9 +5,15 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/lokalise/go-lokalise-api/model"
-	"gopkg.in/resty.v1"
+	"github.com/go-resty/resty/v2"
 )
+
+type Paged struct {
+	TotalCount int64
+	PageCount  int64
+	Limit      int64
+	Page       int64
+}
 
 type OptionsApplier interface {
 	Apply(req *resty.Request)
@@ -34,7 +40,7 @@ const (
 	headerPage       = "X-Pagination-Page"
 )
 
-func applyPaged(res *resty.Response, paged *model.Paged) {
+func applyPaged(res *resty.Response, paged *Paged) {
 	headers := res.Header()
 	paged.TotalCount = headerInt64(headers, headerTotalCount)
 	paged.PageCount = headerInt64(headers, headerPageCount)

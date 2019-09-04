@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"gopkg.in/resty.v1"
+	"github.com/go-resty/resty/v2"
 )
 
 const (
@@ -54,7 +54,7 @@ func NewClient(apiToken string, options ...ClientOption) (*Client, error) {
 		SetHostURL(c.baseURL).
 		SetRetryCount(c.retryCount).
 		SetHeader(apiTokenHeader, c.apiToken).
-		SetLogger(c.logger).
+		// SetLogger(c.logger). TODO implement logger interface
 		SetError(errorResponse{}).
 		AddRetryCondition(requestRetryCondition())
 
@@ -83,14 +83,14 @@ func WithRetryCount(count int) ClientOption {
 // is >= 500.
 // failing requests due to network conditions, eg. "no such host", are handled by resty internally
 func requestRetryCondition() resty.RetryConditionFunc {
-	return func(res *resty.Response) (bool, error) {
-		if res == nil {
-			return true, nil
+	return func(res *resty.Response, err error) bool {
+		if res == nil || err != nil {
+			return true
 		}
 		if res.StatusCode() >= http.StatusInternalServerError {
-			return true, nil
+			return true
 		}
-		return false, nil
+		return false
 	}
 }
 
