@@ -89,7 +89,7 @@ func (c *LanguagesService) List(ctx context.Context, projectID string, pageOptio
 
 func (c *LanguagesService) Create(ctx context.Context, projectID string, languages []CustomLanguage) (result CreateLanguageResponse, err error) {
 	url := path.Join(pathProjects, projectID, pathLanguages)
-	resp, err := c.client.post(ctx, url, &result, languages)
+	resp, err := c.client.post(ctx, url, &result, map[string]interface{}{"languages": languages})
 	if err != nil {
 		return result, err
 	}
@@ -107,7 +107,7 @@ func (c *LanguagesService) Retrieve(ctx context.Context, projectID string, ID in
 
 func (c *LanguagesService) Update(ctx context.Context, projectID string, ID int64, language Language) (result UpdateLanguageResponse, err error) {
 	url := path.Join(pathProjects, projectID, pathLanguages, strconv.FormatInt(ID, 10))
-	resp, err := c.client.post(ctx, url, &result, language)
+	resp, err := c.client.put(ctx, url, &result, language)
 	if err != nil {
 		return result, err
 	}
