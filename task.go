@@ -24,28 +24,28 @@ const (
 )
 
 type Task struct {
-	TaskID             int64      `json:"task_id,omitempty"`
-	Title              string     `json:"title,omitempty"`
-	Description        string     `json:"description,omitempty"`
-	Status             TaskStatus `json:"status,omitempty"`
-	Progress           int        `json:"progress,omitempty"`
-	DueDate            string     `json:"due_date,omitempty"`
-	KeysCount          int64      `json:"keys_count,omitempty"`
-	WordsCount         int64      `json:"words_count,omitempty"`
-	CreatedAt          string     `json:"created_at,omitempty"`
-	CreatedBy          int64      `json:"created_by,omitempty"`
-	CreatedByEmail     string     `json:"created_by_email,omitempty"`
-	CanBeParent        bool       `json:"can_be_parent"`
-	TaskType           TaskType   `json:"task_type,omitempty"`
-	ParentTaskID       int64      `json:"parent_task_id,omitempty"`
-	ClosingTags        []string   `json:"closing_tags,omitempty"`
-	LockTranslations   bool       `json:"do_lock_translations"`
-	Languages          []Language `json:"languages,omitempty"`
-	AutoCloseLanguages bool       `json:"auto_close_languages,omitempty"`
-	AutoCloseTask      bool       `json:"auto_close_task,omitempty"`
-	CompletedAt        string     `json:"completed_at,omitempty"`
-	CompletedBy        int64      `json:"completed_by,omitempty"`
-	CompletedByEmail   string     `json:"completed_by_email,omitempty"`
+	TaskID             int64          `json:"task_id,omitempty"`
+	Title              string         `json:"title,omitempty"`
+	Description        string         `json:"description,omitempty"`
+	Status             TaskStatus     `json:"status,omitempty"`
+	Progress           int            `json:"progress,omitempty"`
+	DueDate            string         `json:"due_date,omitempty"`
+	KeysCount          int64          `json:"keys_count,omitempty"`
+	WordsCount         int64          `json:"words_count,omitempty"`
+	CreatedAt          string         `json:"created_at,omitempty"`
+	CreatedBy          int64          `json:"created_by,omitempty"`
+	CreatedByEmail     string         `json:"created_by_email,omitempty"`
+	CanBeParent        bool           `json:"can_be_parent"`
+	TaskType           TaskType       `json:"task_type,omitempty"`
+	ParentTaskID       int64          `json:"parent_task_id,omitempty"`
+	ClosingTags        []string       `json:"closing_tags,omitempty"`
+	LockTranslations   bool           `json:"do_lock_translations"`
+	Languages          []TaskLanguage `json:"languages,omitempty"`
+	AutoCloseLanguages bool           `json:"auto_close_languages,omitempty"`
+	AutoCloseTask      bool           `json:"auto_close_task,omitempty"`
+	CompletedAt        string         `json:"completed_at,omitempty"`
+	CompletedBy        int64          `json:"completed_by,omitempty"`
+	CompletedByEmail   string         `json:"completed_by_email,omitempty"`
 }
 
 type LanguageStatus string
@@ -56,7 +56,7 @@ const (
 	LanguageStatusCreated    LanguageStatus = "created"
 )
 
-type Language struct {
+type TaskLanguage struct {
 	LanguageISO                      string           `json:"language_iso,omitempty"`
 	Users                            []TaskUser       `json:"users,omitempty"`
 	Groups                           []TaskGroup      `json:"groups,omitempty"`
