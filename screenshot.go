@@ -74,6 +74,9 @@ func (c *ScreenshotsService) List(ctx context.Context, pageOptions ScreenshotsOp
 func (c *ScreenshotsService) Create(ctx context.Context, projectID string, options CreateScreenshotOptions) (ScreenshotResponse, error) {
 	var res ScreenshotResponse
 	body, err := json.Marshal(options)
+	if err != nil {
+		return res, err
+	}
 	resp, err := c.client.post(ctx, fmt.Sprintf("%s/%s", projectID, pathScreenshots), &res, string(body))
 	if err != nil {
 		return res, err

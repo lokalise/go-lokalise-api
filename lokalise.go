@@ -31,6 +31,7 @@ type Client struct {
 	Translations TranslationsService
 	Keys         KeysService
 	Tasks        TasksService
+	Snapshots    SnapshotsService
 }
 
 type ClientOption func(*Client) error
@@ -64,6 +65,7 @@ func NewClient(apiToken string, options ...ClientOption) (*Client, error) {
 	c.Translations = TranslationsService{client: &c}
 	c.Keys = KeysService{client: &c}
 	c.Tasks = TasksService{client: &c}
+	c.Snapshots = SnapshotsService{client: &c}
 	return &c, nil
 }
 
