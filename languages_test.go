@@ -67,7 +67,7 @@ func TestClient_Languages_SystemLanguages(t *testing.T) {
 			},
 		}
 
-		resp, err := client.Languages.SystemLanguages(context.Background(), lokalise.LanguagesOptions{})
+		resp, err := client.Languages.ListSystem(context.Background(), lokalise.LanguagesOptions{})
 		assert.NoError(err)
 		expectedRequest.Assert(t, fixture)
 		assert.Equal(expectedResponse, resp)
@@ -116,7 +116,7 @@ func TestClient_Languages_SystemLanguages(t *testing.T) {
 			},
 		}
 
-		resp, err := client.Languages.SystemLanguages(context.Background(), lokalise.LanguagesOptions{
+		resp, err := client.Languages.ListSystem(context.Background(), lokalise.LanguagesOptions{
 			PageOptions: lokalise.PageOptions{
 				Limit: 1,
 				Page:  2,
@@ -139,7 +139,7 @@ func TestClient_Languages_SystemLanguages(t *testing.T) {
 		}
 		expectedError := &lokalise.Error{Code: 404, Message: "Languages not found"}
 
-		_, err := client.Languages.SystemLanguages(context.Background(), lokalise.LanguagesOptions{})
+		_, err := client.Languages.ListSystem(context.Background(), lokalise.LanguagesOptions{})
 		assert.EqualError(err, expectedError.Error())
 		expectedRequest.Assert(t, fixture)
 	})
@@ -206,7 +206,7 @@ func TestClient_Languages_List(t *testing.T) {
 			},
 		}
 
-		resp, err := client.Languages.List(context.Background(), projectID, lokalise.LanguagesOptions{})
+		resp, err := client.Languages.ListProject(context.Background(), projectID, lokalise.LanguagesOptions{})
 		assert.NoError(err)
 		expectedRequest.Assert(t, fixture)
 		assert.Equal(expectedResponse, resp)
@@ -257,7 +257,7 @@ func TestClient_Languages_List(t *testing.T) {
 			}},
 		}
 
-		resp, err := client.Languages.List(context.Background(), projectID, lokalise.LanguagesOptions{
+		resp, err := client.Languages.ListProject(context.Background(), projectID, lokalise.LanguagesOptions{
 			PageOptions: lokalise.PageOptions{
 				Limit: 1,
 				Page:  2,
@@ -281,7 +281,7 @@ func TestClient_Languages_List(t *testing.T) {
 		}
 		expectedError := &lokalise.Error{Code: 404, Message: "Languages not found"}
 
-		_, err := client.Languages.List(context.Background(), projectID, lokalise.LanguagesOptions{})
+		_, err := client.Languages.ListProject(context.Background(), projectID, lokalise.LanguagesOptions{})
 		assert.EqualError(err, expectedError.Error())
 		expectedRequest.Assert(t, fixture)
 	})

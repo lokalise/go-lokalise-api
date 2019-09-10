@@ -65,7 +65,7 @@ func (options LanguagesOptions) Apply(req *resty.Request) {
 	options.PageOptions.Apply(req)
 }
 
-func (c *LanguagesService) SystemLanguages(ctx context.Context, pageOptions LanguagesOptions) (result ListLanguagesResponse, err error) {
+func (c *LanguagesService) ListSystem(ctx context.Context, pageOptions LanguagesOptions) (result ListLanguagesResponse, err error) {
 	url := path.Join("system", pathLanguages)
 	resp, err := c.client.getList(ctx, url, &result, pageOptions)
 	if err != nil {
@@ -76,7 +76,7 @@ func (c *LanguagesService) SystemLanguages(ctx context.Context, pageOptions Lang
 	return result, apiError(resp)
 }
 
-func (c *LanguagesService) List(ctx context.Context, projectID string, pageOptions LanguagesOptions) (result ListLanguagesResponse, err error) {
+func (c *LanguagesService) ListProject(ctx context.Context, projectID string, pageOptions LanguagesOptions) (result ListLanguagesResponse, err error) {
 	url := path.Join(pathProjects, projectID, pathLanguages)
 	resp, err := c.client.getList(ctx, url, &result, pageOptions)
 	if err != nil {
