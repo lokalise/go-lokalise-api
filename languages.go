@@ -17,6 +17,7 @@ type Language struct {
 	LangISO     string   `json:"lang_iso,omitempty"`
 	LangName    string   `json:"lang_name,omitempty"`
 	IsRTL       bool     `json:"is_rtl,omitempty"`
+	IsWritable  bool     `json:"is_writable,omitempty"`
 	PluralForms []string `json:"plural_forms,omitempty"`
 }
 

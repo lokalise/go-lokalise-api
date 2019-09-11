@@ -40,7 +40,7 @@ const (
 	pathProjects = "projects"
 )
 
-type ProjectsOptions struct {
+type ProjectsOptions struct { // todo move TeamID out of the ProjectsOptions and simplify this one to PageOptions
 	PageOptions
 	TeamID int64 `json:"teamID,omitempty"`
 }

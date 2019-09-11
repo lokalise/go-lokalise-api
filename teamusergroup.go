@@ -17,16 +17,16 @@ type TeamUserGroup struct {
 	Members     []int64      `json:"members"`
 }
 
-type Permission struct { // split near languages for more convenient implementation in group creation (customGroup)
-	IsAdmin     bool       `json:"is_admin"`
-	IsReviewer  bool       `json:"is_reviewer"`
+type Permission struct {
+	IsAdmin     bool       `json:"is_admin,omitempty"`
+	IsReviewer  bool       `json:"is_reviewer,omitempty"`
 	AdminRights []string   `json:"admin_rights,omitempty"` // todo make admin rights as constants available in lib
-	Languages   []Language `json:"languages,omitempty"`    // todo check response, doesn't fully match to Language struct
+	Languages   []Language `json:"languages,omitempty"`    // todo check response for the different entities
 }
 
 type CustomGroup struct {
-	Name       string `json:"name"`
-	Permission        // for creation lang are also not a slice of the language structs
+	Name string `json:"name"`
+	Permission
 }
 
 type TeamUserGroupsResponse struct {
