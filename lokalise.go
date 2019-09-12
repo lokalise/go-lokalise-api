@@ -141,6 +141,9 @@ func (c *Client) put(ctx context.Context, path string, res, body interface{}) (*
 func (c *Client) delete(ctx context.Context, path string, res interface{}) (*resty.Response, error) {
 	return c.req(ctx, path, res).Delete(path)
 }
+func (c *Client) deleteWithBody(ctx context.Context, path string, res, body interface{}) (*resty.Response, error) {
+	return c.reqWithBody(ctx, path, res, body).Delete(path)
+}
 
 func (c *Client) req(ctx context.Context, path string, res interface{}) *resty.Request {
 	return c.httpClient.R().

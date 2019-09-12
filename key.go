@@ -24,7 +24,7 @@ type CustomAttributes struct {
 	Attributes map[string]interface{}
 }
 
-type Key struct {
+type Key struct { // todo pointers for Update method
 	KeyID            int64             `json:"key_id,omitempty"`
 	CreatedAt        string            `json:"created_at,omitempty"`
 	KeyName          interface{}       `json:"key_name,omitempty"` // KeyName could be string or PlatformStrings
@@ -86,6 +86,23 @@ type KeysResponse struct {
 	Errors    []ErrorKeys `json:"error,omitempty"`
 }
 
+type KeyResponse struct {
+	ProjectID string `json:"project_id,omitempty"`
+	Key       Key    `json:"key,omitempty"`
+}
+
+type DeleteKeyResponse struct {
+	ProjectID      string `json:"project_id,omitempty"`
+	IsRemoved      bool   `json:"key_removed"`
+	NumberOfLocked int64  `json:"keys_locked"`
+}
+
+type DeleteKeysResponse struct {
+	ProjectID      string `json:"project_id,omitempty"`
+	AreRemoved     bool   `json:"keys_removed"`
+	NumberOfLocked int64  `json:"keys_locked"`
+}
+
 type KeysService struct {
 	client *Client
 }
@@ -101,6 +118,16 @@ type ListKeysOptions struct {
 	filterKeyIDs              []string
 	filterPlatforms           []string
 	filterPlaceholderMismatch bool
+}
+
+type RetrieveKeyOptions struct {
+	DisableReferences bool `json:"disable_references"`
+}
+
+func (options RetrieveKeyOptions) Apply(req *resty.Request) {
+	if options.DisableReferences {
+		req.SetQueryParam("disable_references", "1")
+	}
 }
 
 func (options ListKeysOptions) Apply(req *resty.Request) {
@@ -151,6 +178,55 @@ func (c *KeysService) Create(ctx context.Context, projectID string, keys []Key) 
 	})
 	if err != nil {
 		return KeysResponse{}, err
+	}
+	return res, apiError(resp)
+}
+
+func (c *KeysService) Retrieve(ctx context.Context, projectID string, keyID int64, options RetrieveKeyOptions) (KeyResponse, error) {
+	var res KeyResponse
+	resp, err := c.client.getList(ctx, fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &res, options)
+	if err != nil {
+		return KeyResponse{}, err
+	}
+	return res, apiError(resp)
+}
+
+func (c *KeysService) Update(ctx context.Context, projectID string, keyID int64, key Key) (KeyResponse, error) {
+	var res KeyResponse
+	resp, err := c.client.put(ctx, fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &res, key)
+	if err != nil {
+		return KeyResponse{}, err
+	}
+	return res, apiError(resp)
+}
+
+func (c *KeysService) BulkUpdate(ctx context.Context, projectID string, keys []Key) (KeysResponse, error) {
+	var res KeysResponse
+	resp, err := c.client.put(ctx, fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &res, map[string]interface{}{
+		"keys": keys,
+	})
+	if err != nil {
+		return KeysResponse{}, err
+	}
+	return res, apiError(resp)
+}
+
+func (c *KeysService) Delete(ctx context.Context, projectID string, keyID int64) (DeleteKeyResponse, error) {
+	var res DeleteKeyResponse
+	resp, err := c.client.delete(ctx, fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &res)
+	if err != nil {
+		return DeleteKeyResponse{}, err
+	}
+	return res, apiError(resp)
+}
+
+func (c *KeysService) BulkDelete(ctx context.Context, projectID string, keyIDs []int64) (DeleteKeysResponse, error) {
+	var res DeleteKeysResponse
+	resp, err := c.client.deleteWithBody(ctx, fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &res, map[string]interface{}{
+		"keys": keyIDs,
+	})
+	if err != nil {
+		return DeleteKeysResponse{}, err
 	}
 	return res, apiError(resp)
 }
