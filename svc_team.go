@@ -1,7 +1,7 @@
 package lokalise
 
-import (
-	"context"
+const (
+	pathTeams = "teams"
 )
 
 type TeamsResponse struct {
@@ -10,9 +10,9 @@ type TeamsResponse struct {
 }
 
 type Team struct {
-	TeamID       int64  `json:"team_id,omitempty"`
+	WithCreationTime
+	WithTeamID
 	Name         string `json:"name,omitempty"`
-	CreatedAt    string `json:"created_at,omitempty"`
 	Plan         string `json:"plan,omitempty"`
 	QuotaUsage   Quota  `json:"quota_usage,omitempty"`
 	QuotaAllowed Quota  `json:"quota_allowed,omitempty"`
@@ -26,19 +26,15 @@ type Quota struct {
 }
 
 type TeamsService struct {
-	client *Client
+	BaseService
 }
 
-const (
-	pathTeams = "teams"
-)
+func (c *TeamsService) List() (r TeamsResponse, err error) {
+	resp, err := c.getList(c.Ctx(), pathTeams, &r, c.PageOpts())
 
-func (c *TeamsService) List(ctx context.Context, pageOptions PageOptions) (TeamsResponse, error) {
-	var res TeamsResponse
-	resp, err := c.client.getList(ctx, pathTeams, &res, &pageOptions)
 	if err != nil {
-		return TeamsResponse{}, err
+		return
 	}
-	applyPaged(resp, &res.Paged)
-	return res, apiError(resp)
+	applyPaged(resp, &r.Paged)
+	return r, apiError(resp)
 }

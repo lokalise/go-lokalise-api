@@ -9,22 +9,23 @@ import (
 )
 
 type Paged struct {
-	TotalCount int64
-	PageCount  int64
-	Limit      int64
-	Page       int64
+	TotalCount int64 `json:"-"`
+	PageCount  int64 `json:"-"`
+	Limit      int64 `json:"-"`
+	Page       int64 `json:"-"`
 }
 
 type OptionsApplier interface {
 	Apply(req *resty.Request)
 }
 
+// todo use url.Values
 type PageOptions struct {
 	Limit int64
 	Page  int64
 }
 
-func (options *PageOptions) Apply(req *resty.Request) {
+func (options PageOptions) Apply(req *resty.Request) {
 	if options.Limit != 0 {
 		req.SetQueryParam("limit", fmt.Sprintf("%d", options.Limit))
 	}

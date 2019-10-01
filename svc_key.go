@@ -1,7 +1,6 @@
 package lokalise
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -25,8 +24,8 @@ type CustomAttributes struct {
 }
 
 type Key struct { // todo pointers for Update method
+	WithCreationTime
 	KeyID            int64             `json:"key_id,omitempty"`
-	CreatedAt        string            `json:"created_at,omitempty"`
 	KeyName          interface{}       `json:"key_name,omitempty"` // KeyName could be string or PlatformStrings
 	Filenames        PlatformStrings   `json:"filenames,omitempty"`
 	Description      string            `json:"description,omitempty"`
@@ -81,30 +80,30 @@ type ErrorKeys struct {
 
 type KeysResponse struct {
 	Paged
-	ProjectID string      `json:"project_id,omitempty"`
-	Keys      []Key       `json:"keys,omitempty"`
-	Errors    []ErrorKeys `json:"error,omitempty"`
+	WithProjectID
+	Keys   []Key       `json:"keys,omitempty"`
+	Errors []ErrorKeys `json:"error,omitempty"`
 }
 
 type KeyResponse struct {
-	ProjectID string `json:"project_id,omitempty"`
-	Key       Key    `json:"key,omitempty"`
+	WithProjectID
+	Key Key `json:"key,omitempty"`
 }
 
 type DeleteKeyResponse struct {
-	ProjectID      string `json:"project_id,omitempty"`
-	IsRemoved      bool   `json:"key_removed"`
-	NumberOfLocked int64  `json:"keys_locked"`
+	WithProjectID
+	IsRemoved      bool  `json:"key_removed"`
+	NumberOfLocked int64 `json:"keys_locked"`
 }
 
 type DeleteKeysResponse struct {
-	ProjectID      string `json:"project_id,omitempty"`
-	AreRemoved     bool   `json:"keys_removed"`
-	NumberOfLocked int64  `json:"keys_locked"`
+	WithProjectID
+	AreRemoved     bool  `json:"keys_removed"`
+	NumberOfLocked int64 `json:"keys_locked"`
 }
 
 type KeysService struct {
-	client *Client
+	BaseService
 }
 
 type ListKeysOptions struct {
@@ -161,72 +160,72 @@ func (options ListKeysOptions) Apply(req *resty.Request) {
 	}
 }
 
-func (c *KeysService) List(ctx context.Context, projectID string, options ListKeysOptions) (KeysResponse, error) {
-	var res KeysResponse
-	resp, err := c.client.getList(ctx, fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &res, options)
+func (c *KeysService) List(projectID string, options ListKeysOptions) (r KeysResponse, err error) {
+	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, options)
+
 	if err != nil {
-		return KeysResponse{}, err
+		return
 	}
-	applyPaged(resp, &res.Paged)
-	return res, apiError(resp)
+	applyPaged(resp, &r.Paged)
+	return r, apiError(resp)
 }
 
-func (c *KeysService) Create(ctx context.Context, projectID string, keys []Key) (KeysResponse, error) {
-	var res KeysResponse
-	resp, err := c.client.post(ctx, fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &res, map[string]interface{}{
+func (c *KeysService) Create(projectID string, keys []Key) (r KeysResponse, err error) {
+	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, map[string]interface{}{
 		"keys": keys,
 	})
+
 	if err != nil {
-		return KeysResponse{}, err
+		return
 	}
-	return res, apiError(resp)
+	return r, apiError(resp)
 }
 
-func (c *KeysService) Retrieve(ctx context.Context, projectID string, keyID int64, options RetrieveKeyOptions) (KeyResponse, error) {
-	var res KeyResponse
-	resp, err := c.client.getList(ctx, fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &res, options)
+func (c *KeysService) Retrieve(projectID string, keyID int64, options RetrieveKeyOptions) (r KeyResponse, err error) {
+	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &r, options)
+
 	if err != nil {
-		return KeyResponse{}, err
+		return
 	}
-	return res, apiError(resp)
+	return r, apiError(resp)
 }
 
-func (c *KeysService) Update(ctx context.Context, projectID string, keyID int64, key Key) (KeyResponse, error) {
-	var res KeyResponse
-	resp, err := c.client.put(ctx, fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &res, key)
+func (c *KeysService) Update(projectID string, keyID int64, key Key) (r KeyResponse, err error) {
+	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &r, key)
+
 	if err != nil {
-		return KeyResponse{}, err
+		return
 	}
-	return res, apiError(resp)
+	return r, apiError(resp)
 }
 
-func (c *KeysService) BulkUpdate(ctx context.Context, projectID string, keys []Key) (KeysResponse, error) {
-	var res KeysResponse
-	resp, err := c.client.put(ctx, fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &res, map[string]interface{}{
+func (c *KeysService) BulkUpdate(projectID string, keys []Key) (r KeysResponse, err error) {
+	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, map[string]interface{}{
 		"keys": keys,
 	})
+
 	if err != nil {
-		return KeysResponse{}, err
+		return
 	}
-	return res, apiError(resp)
+	return r, apiError(resp)
 }
 
-func (c *KeysService) Delete(ctx context.Context, projectID string, keyID int64) (DeleteKeyResponse, error) {
-	var res DeleteKeyResponse
-	resp, err := c.client.delete(ctx, fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &res)
+func (c *KeysService) Delete(projectID string, keyID int64) (r DeleteKeyResponse, err error) {
+	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &r)
+
 	if err != nil {
-		return DeleteKeyResponse{}, err
+		return
 	}
-	return res, apiError(resp)
+	return r, apiError(resp)
 }
 
-func (c *KeysService) BulkDelete(ctx context.Context, projectID string, keyIDs []int64) (DeleteKeysResponse, error) {
-	var res DeleteKeysResponse
-	resp, err := c.client.deleteWithBody(ctx, fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &res, map[string]interface{}{
+func (c *KeysService) BulkDelete(projectID string, keyIDs []int64) (r DeleteKeysResponse, err error) {
+	resp, err := c.deleteWithBody(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, map[string]interface{}{
 		"keys": keyIDs,
 	})
+
 	if err != nil {
-		return DeleteKeysResponse{}, err
+		return
 	}
-	return res, apiError(resp)
+	return r, apiError(resp)
 }

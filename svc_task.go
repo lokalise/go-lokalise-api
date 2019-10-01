@@ -1,29 +1,34 @@
 package lokalise
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/go-resty/resty/v2"
 )
 
-type TaskStatus string
-
+//noinspection GoUnusedConst
 const (
+	pathTasks = "tasks"
+
 	StatusCompleted  TaskStatus = "completed"
 	StatusInProgress TaskStatus = "in progress"
 	StatusCreated    TaskStatus = "created"
 	StatusQueued     TaskStatus = "queued"
-)
 
-type TaskType string
-
-const (
 	TaskTypeTranslation TaskType = "translation"
 	TaskTypeReview      TaskType = "review"
+
+	LanguageStatusCompleted  LanguageStatus = "completed"
+	LanguageStatusInProgress LanguageStatus = "in progress"
+	LanguageStatusCreated    LanguageStatus = "created"
 )
 
+type TaskStatus string
+type TaskType string
+type LanguageStatus string
+
 type Task struct {
+	WithCreationTime
 	TaskID             int64          `json:"task_id,omitempty"`
 	Title              string         `json:"title,omitempty"`
 	Description        string         `json:"description,omitempty"`
@@ -32,7 +37,6 @@ type Task struct {
 	DueDate            string         `json:"due_date,omitempty"`
 	KeysCount          int64          `json:"keys_count,omitempty"`
 	WordsCount         int64          `json:"words_count,omitempty"`
-	CreatedAt          string         `json:"created_at,omitempty"`
 	CreatedBy          int64          `json:"created_by,omitempty"`
 	CreatedByEmail     string         `json:"created_by_email,omitempty"`
 	CanBeParent        bool           `json:"can_be_parent"`
@@ -48,15 +52,7 @@ type Task struct {
 	CompletedByEmail   string         `json:"completed_by_email,omitempty"`
 }
 
-type LanguageStatus string
-
-const (
-	LanguageStatusCompleted  LanguageStatus = "completed"
-	LanguageStatusInProgress LanguageStatus = "in progress"
-	LanguageStatusCreated    LanguageStatus = "created"
-)
-
-type TaskLanguage struct {
+type TaskLanguage struct { // todo embed Lang
 	LanguageISO                      string           `json:"language_iso,omitempty"`
 	Users                            []TaskUser       `json:"users,omitempty"`
 	Groups                           []TaskGroup      `json:"groups,omitempty"`
@@ -72,7 +68,7 @@ type TaskLanguage struct {
 }
 
 type TaskUser struct {
-	UserID   int64  `json:"user_id,omitempty"`
+	WithUserID
 	Email    string `json:"email,omitempty"`
 	Fullname string `json:"fullname,omitempty"`
 }
@@ -124,27 +120,23 @@ type UpdateTaskLanguageRequest struct {
 
 type TasksResponse struct {
 	Paged
-	ProjectID string `json:"project_id,omitempty"`
-	Tasks     []Task `json:"tasks,omitempty"`
+	WithProjectID
+	Tasks []Task `json:"tasks,omitempty"`
 }
 
 type TaskResponse struct {
-	ProjectID string `json:"project_id,omitempty"`
-	Task      Task   `json:"task,omitempty"`
+	WithProjectID
+	Task Task `json:"task,omitempty"`
 }
 
 type TaskDeleteResponse struct {
-	ProjectID string `json:"project_id,omitempty"`
-	Deleted   bool   `json:"task_deleted,omitempty"`
+	WithProjectID
+	Deleted bool `json:"task_deleted,omitempty"`
 }
 
 type TasksService struct {
-	client *Client
+	BaseService
 }
-
-const (
-	pathTasks = "tasks"
-)
 
 type TasksOptions struct {
 	PageOptions
@@ -158,48 +150,48 @@ func (options TasksOptions) Apply(req *resty.Request) {
 	}
 }
 
-func (c *TasksService) List(ctx context.Context, projectID string, pageOptions TasksOptions) (TasksResponse, error) {
-	var res TasksResponse
-	resp, err := c.client.getList(ctx, fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTasks), &res, pageOptions)
+func (c *TasksService) List(projectID string, pageOptions TasksOptions) (r TasksResponse, err error) {
+	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTasks), &r, pageOptions)
+
 	if err != nil {
-		return TasksResponse{}, err
+		return
 	}
-	applyPaged(resp, &res.Paged)
-	return res, apiError(resp)
+	applyPaged(resp, &r.Paged)
+	return r, apiError(resp)
 }
 
-func (c *TasksService) Create(ctx context.Context, projectID string, task CreateTaskRequest) (TaskResponse, error) {
-	var res TaskResponse
-	resp, err := c.client.post(ctx, fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTasks), &res, task)
+func (c *TasksService) Create(projectID string, task CreateTaskRequest) (r TaskResponse, err error) {
+	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTasks), &r, task)
+
 	if err != nil {
-		return TaskResponse{}, err
+		return
 	}
-	return res, apiError(resp)
+	return r, apiError(resp)
 }
 
-func (c *TasksService) Retrieve(ctx context.Context, projectID string, taskID int64) (TaskResponse, error) {
-	var res TaskResponse
-	resp, err := c.client.get(ctx, fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &res)
+func (c *TasksService) Retrieve(projectID string, taskID int64) (r TaskResponse, err error) {
+	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &r)
+
 	if err != nil {
-		return TaskResponse{}, err
+		return
 	}
-	return res, apiError(resp)
+	return r, apiError(resp)
 }
 
-func (c *TasksService) Update(ctx context.Context, projectID string, taskID int64, task UpdateTaskRequest) (TaskResponse, error) {
-	var res TaskResponse
-	resp, err := c.client.put(ctx, fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &res, task)
+func (c *TasksService) Update(projectID string, taskID int64, task UpdateTaskRequest) (r TaskResponse, err error) {
+	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &r, task)
+
 	if err != nil {
-		return TaskResponse{}, err
+		return
 	}
-	return res, apiError(resp)
+	return r, apiError(resp)
 }
 
-func (c *TasksService) Delete(ctx context.Context, projectID string, taskID int64) (TaskDeleteResponse, error) {
-	var res TaskDeleteResponse
-	resp, err := c.client.delete(ctx, fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &res)
+func (c *TasksService) Delete(projectID string, taskID int64) (r TaskDeleteResponse, err error) {
+	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &r)
+
 	if err != nil {
-		return TaskDeleteResponse{}, err
+		return
 	}
-	return res, apiError(resp)
+	return r, apiError(resp)
 }
