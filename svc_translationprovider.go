@@ -40,8 +40,8 @@ type TranslationProvidersResponse struct {
 	TranslationProviders []TranslationProvider `json:"translation_providers"`
 }
 
-func (c *TranslationProviderService) List(teamID string) (r TranslationProvidersResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathTeams, teamID, pathTranslationProviders), &r, c.PageOpts())
+func (c *TranslationProviderService) List(teamID int64) (r TranslationProvidersResponse, err error) {
+	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%d/%s", pathTeams, teamID, pathTranslationProviders), &r, c.PageOpts())
 
 	if err != nil {
 		return
@@ -50,8 +50,8 @@ func (c *TranslationProviderService) List(teamID string) (r TranslationProviders
 	return r, apiError(resp)
 }
 
-func (c *TranslationProviderService) Retrieve(teamID string, providerID int64) (r TranslationProvider, err error) {
-	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathTeams, teamID, "provider", providerID), &r)
+func (c *TranslationProviderService) Retrieve(teamID, providerID int64) (r TranslationProvider, err error) {
+	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%d/%s/%d", pathTeams, teamID, "provider", providerID), &r)
 
 	if err != nil {
 		return

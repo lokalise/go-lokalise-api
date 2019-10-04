@@ -118,7 +118,7 @@ type FileDownloadResponse struct {
 	BundleURL string `json:"bundle_url"`
 }
 
-func (c *FileService) List(projectID string, opts TasksOptions) (r FilesResponse, err error) {
+func (c *FileService) List(projectID string, opts FileOptions) (r FilesResponse, err error) {
 	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathFiles), &r, opts)
 
 	if err != nil {
