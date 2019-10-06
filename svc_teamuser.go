@@ -4,6 +4,14 @@ import (
 	"fmt"
 )
 
+type TeamUserService struct {
+	BaseService
+}
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service entity objects
+// _____________________________________________________________________________________________________________________
+
 //noinspection GoUnusedConst
 const (
 	TeamUserRoleOwner  TeamUserRole = "owner"
@@ -16,14 +24,19 @@ type TeamUserRole string
 type TeamUser struct {
 	WithCreationTime
 	WithUserID
-	Email    string       `json:"email,omitempty"`
-	Fullname string       `json:"fullname,omitempty"`
-	Role     TeamUserRole `json:"role,omitempty"`
+
+	Email    string       `json:"email"`
+	Fullname string       `json:"fullname"`
+	Role     TeamUserRole `json:"role"`
 }
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service request/response objects
+// _____________________________________________________________________________________________________________________
 
 type TeamUserResponse struct {
 	WithTeamID
-	TeamUser TeamUser `json:"team_user,omitempty"`
+	TeamUser TeamUser `json:"team_user"`
 }
 
 type TeamUserDeleteResponse struct {
@@ -34,18 +47,14 @@ type TeamUserDeleteResponse struct {
 type TeamUsersResponse struct {
 	Paged
 	WithTeamID
-	TeamUsers []TeamUser `json:"team_users,omitempty"`
+	TeamUsers []TeamUser `json:"team_users"`
 }
 
-type TeamUsersService struct {
-	BaseService
-}
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service methods
+// _____________________________________________________________________________________________________________________
 
-func pathTeamUsers(teamID int64) string {
-	return fmt.Sprintf("%s/%d/users", pathTeams, teamID)
-}
-
-func (c *TeamUsersService) List(teamID int64) (r TeamUsersResponse, err error) {
+func (c *TeamUserService) List(teamID int64) (r TeamUsersResponse, err error) {
 	resp, err := c.getList(c.Ctx(), pathTeamUsers(teamID), &r, c.PageOpts())
 
 	if err != nil {
@@ -55,7 +64,7 @@ func (c *TeamUsersService) List(teamID int64) (r TeamUsersResponse, err error) {
 	return r, apiError(resp)
 }
 
-func (c *TeamUsersService) Retrieve(teamID, userID int64) (res TeamUserResponse, err error) {
+func (c *TeamUserService) Retrieve(teamID, userID int64) (res TeamUserResponse, err error) {
 	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%d", pathTeamUsers(teamID), userID), &res)
 
 	if err != nil {
@@ -64,7 +73,7 @@ func (c *TeamUsersService) Retrieve(teamID, userID int64) (res TeamUserResponse,
 	return res, apiError(resp)
 }
 
-func (c *TeamUsersService) UpdateRole(teamID, userID int64, role TeamUserRole) (r TeamUserResponse, err error) {
+func (c *TeamUserService) UpdateRole(teamID, userID int64, role TeamUserRole) (r TeamUserResponse, err error) {
 	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%d", pathTeamUsers(teamID), userID), &r, map[string]interface{}{
 		"role": role,
 	})
@@ -74,11 +83,15 @@ func (c *TeamUsersService) UpdateRole(teamID, userID int64, role TeamUserRole) (
 	return r, apiError(resp)
 }
 
-func (c *TeamUsersService) Delete(teamID, userID int64) (r TeamUserDeleteResponse, err error) {
+func (c *TeamUserService) Delete(teamID, userID int64) (r TeamUserDeleteResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%d", pathTeamUsers(teamID), userID), &r)
 
 	if err != nil {
 		return
 	}
 	return r, apiError(resp)
+}
+
+func pathTeamUsers(teamID int64) string {
+	return fmt.Sprintf("%s/%d/users", pathTeams, teamID)
 }

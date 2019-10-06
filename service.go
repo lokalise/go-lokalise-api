@@ -18,31 +18,40 @@ func (s *BaseService) Ctx() context.Context {
 	return context.Background()
 }
 
-func (s *BaseService) WithContext(c context.Context) *BaseService {
+func (s *BaseService) SetContext(c context.Context) {
 	s.ctx = c
-	return s
 }
 
 func (s *BaseService) PageOpts() PageOptions {
 	return s.PageOptions
 }
 
-func (s *BaseService) WithPageOptions(Limit, Offset int64) *BaseService {
-	s.Limit = Limit
-	s.Page = Offset
-	return s
+func (s *BaseService) SetPageOptions(opts PageOptions) {
+	if opts.Limit != 0 {
+		s.Limit = opts.Limit
+	}
+	if opts.Page != 0 {
+		s.Page = opts.Page
+	}
 }
 
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 // Additional subtypes
-// -------------------
+// _____________________________________________________________________________________________________________________
 
 type WithCreationTime struct {
-	CreatedAt   string `json:"created_at,omitempty"`
-	CreatedAtTs int64  `json:"created_at_timestamp,omitempty"`
+	CreatedAt   string `json:"created_at"`
+	CreatedAtTs int64  `json:"created_at_timestamp"`
 }
 
+type WithCreationUser struct {
+	CreatedBy      int64  `json:"created_by"`
+	CreatedByEmail string `json:"created_by_email"`
+}
+
+// could be optional for some creation structs, i.e. NewProject
 type WithTeamID struct {
-	TeamID int64 `json:"team_id"`
+	TeamID int64 `json:"team_id,omitempty"`
 }
 
 type WithProjectID struct {

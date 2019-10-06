@@ -6,47 +6,54 @@ import (
 	"strconv"
 )
 
+type ContributorService struct {
+	BaseService
+}
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service entity objects
+// _____________________________________________________________________________________________________________________
+
 type Contributor struct {
 	WithCreationTime
 	WithUserID
+
 	Email    string `json:"email"`
 	Fullname string `json:"fullname"`
 	Permission
 }
 
-func pathContributors(projectID string) string {
-	return fmt.Sprintf("%s/%s/contributors", pathProjects, projectID)
-}
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service request/response objects
+// _____________________________________________________________________________________________________________________
 
-type CustomContributor struct {
-	Fullname string `json:"fullname,omitempty"`
+type NewContributor struct {
 	Email    string `json:"email"`
+	Fullname string `json:"fullname,omitempty"`
 	Permission
 }
 
-type ContributorsResponse struct { // maybe rename to avoid messing
+type ContributorsResponse struct {
 	Paged
-	ProjectID    string        `json:"project_id"`
+	WithProjectID
 	Contributors []Contributor `json:"contributors"`
 }
 
 type ContributorResponse struct {
-	ProjectID   string      `json:"project_id"`
+	WithProjectID
 	Contributor Contributor `json:"contributor"`
 }
 
 type DeleteContributorResponse struct {
-	ProjectID string `json:"project_id"`
-	IsDeleted bool   `json:"contributor_deleted"`
+	WithProjectID
+	IsDeleted bool `json:"contributor_deleted"`
 }
 
-type ContributorsService struct {
-	BaseService
-}
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service methods
+// _____________________________________________________________________________________________________________________
 
-// Method implementations
-
-func (c *ContributorsService) List(projectID string) (r ContributorsResponse, err error) {
+func (c *ContributorService) List(projectID string) (r ContributorsResponse, err error) {
 	resp, err := c.getList(c.Ctx(), pathContributors(projectID), &r, c.PageOpts())
 
 	if err != nil {
@@ -56,7 +63,7 @@ func (c *ContributorsService) List(projectID string) (r ContributorsResponse, er
 	return r, apiError(resp)
 }
 
-func (c *ContributorsService) Create(projectID string, cs []CustomContributor) (r ContributorResponse, err error) {
+func (c *ContributorService) Create(projectID string, cs []NewContributor) (r ContributorResponse, err error) {
 	resp, err := c.post(c.Ctx(), pathContributors(projectID), &r, map[string]interface{}{"contributors": cs})
 
 	if err != nil {
@@ -65,7 +72,7 @@ func (c *ContributorsService) Create(projectID string, cs []CustomContributor) (
 	return r, apiError(resp)
 }
 
-func (c *ContributorsService) Retrieve(projectID string, userID int64) (r ContributorResponse, err error) {
+func (c *ContributorService) Retrieve(projectID string, userID int64) (r ContributorResponse, err error) {
 	url := path.Join(pathContributors(projectID), strconv.FormatInt(userID, 10))
 	resp, err := c.get(c.Ctx(), url, &r)
 
@@ -75,7 +82,7 @@ func (c *ContributorsService) Retrieve(projectID string, userID int64) (r Contri
 	return r, apiError(resp)
 }
 
-func (c *ContributorsService) Update(projectID string, userID int64, p Permission) (r ContributorResponse, err error) {
+func (c *ContributorService) Update(projectID string, userID int64, p Permission) (r ContributorResponse, err error) {
 	url := path.Join(pathContributors(projectID), strconv.FormatInt(userID, 10))
 	resp, err := c.put(c.Ctx(), url, &r, p)
 
@@ -85,7 +92,7 @@ func (c *ContributorsService) Update(projectID string, userID int64, p Permissio
 	return r, apiError(resp)
 }
 
-func (c *ContributorsService) Delete(projectID string, userID int64) (r DeleteContributorResponse, err error) {
+func (c *ContributorService) Delete(projectID string, userID int64) (r DeleteContributorResponse, err error) {
 	url := path.Join(pathContributors(projectID), strconv.FormatInt(userID, 10))
 	resp, err := c.delete(c.Ctx(), url, &r)
 
@@ -93,4 +100,8 @@ func (c *ContributorsService) Delete(projectID string, userID int64) (r DeleteCo
 		return
 	}
 	return r, apiError(resp)
+}
+
+func pathContributors(projectID string) string {
+	return fmt.Sprintf("%s/%s/contributors", pathProjects, projectID)
 }

@@ -2,27 +2,34 @@ package lokalise
 
 import (
 	"fmt"
-	"path"
-	"strconv"
 )
 
+const (
+	pathComments = "comments"
+)
+
+// The Comment service
+type CommentService struct {
+	BaseService
+}
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service entity objects
+// _____________________________________________________________________________________________________________________
+
 type Comment struct {
-	CommentID    int64  `json:"comment_id,omitempty"`
-	KeyID        int64  `json:"key_id,omitempty"`
-	Comment      string `json:"comment,omitempty"`
-	AddedBy      int64  `json:"added_by,omitempty"`
-	AddedByEmail string `json:"added_by_email,omitempty"`
-	AddedAt      string `json:"added_at,omitempty"`
-	AddedAtTs    int64  `json:"added_at_timestamp,omitempty"`
+	CommentID    int64  `json:"comment_id"`
+	KeyID        int64  `json:"key_id"`
+	Comment      string `json:"comment"`
+	AddedBy      int64  `json:"added_by"`
+	AddedByEmail string `json:"added_by_email"`
+	AddedAt      string `json:"added_at"`
+	AddedAtTs    int64  `json:"added_at_timestamp"`
 }
 
-func pathComments(projectID string) string {
-	return fmt.Sprintf("%s/%s/comments", pathProjects, projectID)
-}
-
-func pathCommentsByKey(projectID string, keyID int64) string {
-	return fmt.Sprintf("%s/%s/%s/%d/comments", pathProjects, projectID, pathKeys, keyID)
-}
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service request/response objects
+// _____________________________________________________________________________________________________________________
 
 type NewComment struct {
 	Comment string `json:"comment"`
@@ -44,22 +51,14 @@ type DeleteCommentResponse struct {
 	IsDeleted bool `json:"comment_deleted"`
 }
 
-type CommentService struct {
-	BaseService
-}
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service methods and functions
+// _____________________________________________________________________________________________________________________
 
-func (c *CommentService) ListProject(projectID string, pageOptions PageOptions) (r ListCommentsResponse, err error) {
-	resp, err := c.getList(c.Ctx(), pathComments(projectID), &r, &pageOptions)
-
-	if err != nil {
-		return
-	}
-	applyPaged(resp, &r.Paged)
-	return r, apiError(resp)
-}
-
-func (c *CommentService) ListByKey(projectID string, keyID int64, pageOptions PageOptions) (r ListCommentsResponse, err error) {
-	resp, err := c.getList(c.Ctx(), pathCommentsByKey(projectID, keyID), &r, &pageOptions)
+// Retrieves a list of all comments in the project
+func (c *CommentService) ListProject(projectID string) (r ListCommentsResponse, err error) {
+	url := fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathComments)
+	resp, err := c.getList(c.Ctx(), url, &r, c.PageOpts())
 
 	if err != nil {
 		return
@@ -68,6 +67,18 @@ func (c *CommentService) ListByKey(projectID string, keyID int64, pageOptions Pa
 	return r, apiError(resp)
 }
 
+// Retrieves a list of all comments for a key
+func (c *CommentService) ListByKey(projectID string, keyID int64) (r ListCommentsResponse, err error) {
+	resp, err := c.getList(c.Ctx(), pathCommentsByKey(projectID, keyID), &r, c.PageOpts())
+
+	if err != nil {
+		return
+	}
+	applyPaged(resp, &r.Paged)
+	return r, apiError(resp)
+}
+
+// Adds a set of comments to the key
 func (c *CommentService) Create(projectID string, keyID int64, comments []NewComment) (r ListCommentsResponse, err error) {
 	resp, err := c.post(c.Ctx(), pathCommentsByKey(projectID, keyID), &r, map[string]interface{}{"comments": comments})
 
@@ -78,9 +89,9 @@ func (c *CommentService) Create(projectID string, keyID int64, comments []NewCom
 	return r, apiError(resp)
 }
 
+// Retrieves a Comment
 func (c *CommentService) Retrieve(projectID string, keyID, commentID int64) (r CommentResponse, err error) {
-	url := path.Join(pathCommentsByKey(projectID, keyID), strconv.FormatInt(commentID, 10))
-	resp, err := c.get(c.Ctx(), url, &r)
+	resp, err := c.get(c.Ctx(), pathCommentByKeyAndID(projectID, keyID, commentID), &r)
 
 	if err != nil {
 		return
@@ -88,12 +99,20 @@ func (c *CommentService) Retrieve(projectID string, keyID, commentID int64) (r C
 	return r, apiError(resp)
 }
 
+// Deletes a comment from the project. Authenticated user can only delete own comments
 func (c *CommentService) Delete(projectID string, keyID, commentID int64) (r DeleteCommentResponse, err error) {
-	url := path.Join(pathCommentsByKey(projectID, keyID), strconv.FormatInt(commentID, 10))
-	resp, err := c.delete(c.Ctx(), url, &r)
+	resp, err := c.delete(c.Ctx(), pathCommentByKeyAndID(projectID, keyID, commentID), &r)
 
 	if err != nil {
 		return
 	}
 	return r, apiError(resp)
+}
+
+func pathCommentsByKey(projectID string, keyID int64) string {
+	return fmt.Sprintf("%s/%s/%s/%d/%s", pathProjects, projectID, pathKeys, keyID, pathComments)
+}
+
+func pathCommentByKeyAndID(projectID string, keyID, commentID int64) string {
+	return fmt.Sprintf("%s/%s/%s/%d/%s/%d", pathProjects, projectID, pathKeys, keyID, pathComments, commentID)
 }

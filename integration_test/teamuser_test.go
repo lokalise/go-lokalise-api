@@ -21,7 +21,7 @@ func TestTeamUsersRetrieve(t *testing.T) {
 	t.Logf("user email %s", resp.TeamUser.Email)
 }
 
-func TestTeamUsersUpdateRole(t *testing.T) {
+/*func TestTeamUsersUpdateRole(t *testing.T) {
 	client, err := lokalise.New(os.Getenv("lokalise_token"))
 	if err != nil {
 		t.Fatalf("client instantiation: %v", err)
@@ -34,7 +34,7 @@ func TestTeamUsersUpdateRole(t *testing.T) {
 	t.Logf("team id %d", resp.TeamID)
 	t.Logf("user email %s", resp.TeamUser.Email)
 	t.Logf("role %s", resp.TeamUser.Role)
-}
+}*/
 
 func TestTeamUsersList(t *testing.T) {
 	client, err := lokalise.New(os.Getenv("lokalise_token"), lokalise.WithRetryCount(5))

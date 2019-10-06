@@ -1,6 +1,7 @@
 package integration_test
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 
@@ -13,26 +14,35 @@ func TestProjectsList(t *testing.T) {
 		t.Fatalf("client instantiation: %v", err)
 	}
 
-	resp, err := client.Projects().List(lokalise.ProjectsOptions{
-		TeamID: 170090,
-	})
+	projects := client.Projects()
+	projects.SetDebug(true)
+	// projects.SetListOptions(...)
+
+	resp, err := projects.
+		WithListOptions(lokalise.ProjectListOptions{
+			IncludeStat:     "0", // should set statistics to null
+			IncludeSettings: "0", // should set settings to null
+			Page:            0,   // shouldn't affect to request url
+		}).
+		List()
 
 	if err != nil {
 		t.Fatalf("request err: %v", err)
 	}
-	t.Logf("teams %+v", resp.Projects)
-	t.Logf("paged %+v", resp.Paged)
+
+	respJson, _ := json.MarshalIndent(resp, "", "  ")
+	t.Log("\n", string(respJson))
 }
 
-func TestProjectsRetrieve(t *testing.T) {
-	client, err := lokalise.New(os.Getenv("lokalise_token"))
-	if err != nil {
-		t.Fatalf("client instantiation: %v", err)
-	}
-	resp, err := client.Projects().Retrieve("3002780358964f9bab5a92.87762498")
-	if err != nil {
-		t.Fatalf("request err: %v", err)
-	}
-	t.Logf("project id %s", resp.ProjectID)
-	t.Logf("project name %s", resp.Name)
-}
+// func TestProjectsRetrieve(t *testing.T) {
+// 	client, err := lokalise.New(os.Getenv("lokalise_token"))
+// 	if err != nil {
+// 		t.Fatalf("client instantiation: %v", err)
+// 	}
+// 	resp, err := client.Projects().Retrieve("373182575d64e892ba8ab2.58226357")
+// 	if err != nil {
+// 		t.Fatalf("request err: %v", err)
+// 	}
+// 	t.Logf("project id %s", resp.ProjectID)
+// 	t.Logf("project name %s", resp.Name)
+// }

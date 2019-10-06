@@ -14,15 +14,18 @@ func TestTeamsList(t *testing.T) {
 		t.Fatalf("client instantiation: %v", err)
 	}
 
-	resp, err := client.Teams().List()
+	teams := client.Teams()
+	teams.SetDebug(true)
+	// teams.SetPageOptions(lokalise.PageOptions{Limit: 50})
+
+	resp, err := teams.WithListOptions(lokalise.PageOptions{Limit: 50}).List()
 
 	if err != nil {
 		t.Fatalf("request err: %v", err)
 	}
-	t.Log("team Id:", resp.Teams[0].TeamID)
 	// t.Logf("teams %+v", resp.Teams)
 	// t.Logf("paged %+v", resp.Paged)
 
-	team0, _ := json.MarshalIndent(resp, "", "  ")
-	t.Log(string(team0))
+	respJson, _ := json.MarshalIndent(resp, "", "  ")
+	t.Log("\n", string(respJson))
 }

@@ -19,6 +19,10 @@ type PaymentCard struct {
 	Brand  string `json:"brand"`
 }
 
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service request/response objects
+// _____________________________________________________________________________________________________________________
+
 type CreatePaymentCard struct {
 	Number   string `json:"number"`
 	CVC      string `json:"cvc"`
@@ -41,6 +45,10 @@ type PaymentCardDeleteResponse struct {
 	CardID  int64 `json:"card_id"`
 	Deleted bool  `json:"card_deleted"`
 }
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service methods
+// _____________________________________________________________________________________________________________________
 
 func (c *PaymentCardService) Create(card CreatePaymentCard) (r PaymentCard, err error) {
 	resp, err := c.post(c.Ctx(), pathPaymentCards, &r, card)

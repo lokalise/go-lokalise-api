@@ -8,15 +8,23 @@ const (
 	pathTranslationStatuses = "custom_translation_statuses"
 )
 
-type TranslationStatusesService struct {
+type TranslationStatusService struct {
 	BaseService
 }
 
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service entity objects
+// _____________________________________________________________________________________________________________________
+
 type TranslationStatus struct {
-	StatusID int64  `json:"status_id"`
+	StatusID int64  `json:"status_id"` // todo check with `json:"id"` for svc_translation
 	Title    string `json:"title"`
 	Color    string `json:"color"`
 }
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service request/response objects
+// _____________________________________________________________________________________________________________________
 
 type TranslationStatusesResponse struct {
 	Paged
@@ -38,17 +46,21 @@ type TranslationStatusDeleteResponse struct {
 	Deleted bool `json:"deleted"`
 }
 
-type CreateTranslationStatus struct {
+type NewTranslationStatus struct {
 	Title string `json:"title"`
 	Color string `json:"color"`
 }
 
 type UpdateTranslationStatus struct {
-	Title string `json:"title"`
-	Color string `json:"color"`
+	Title string `json:"title,omitempty"`
+	Color string `json:"color,omitempty"`
 }
 
-func (c *TranslationStatusesService) List(projectID string) (r TranslationStatusesResponse, err error) {
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service methods
+// _____________________________________________________________________________________________________________________
+
+func (c *TranslationStatusService) List(projectID string) (r TranslationStatusesResponse, err error) {
 	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTranslationStatuses), &r, c.PageOpts())
 
 	if err != nil {
@@ -58,7 +70,7 @@ func (c *TranslationStatusesService) List(projectID string) (r TranslationStatus
 	return r, apiError(resp)
 }
 
-func (c *TranslationStatusesService) ListColors(projectID string) (r TranslationStatusColorsResponse, err error) {
+func (c *TranslationStatusService) ListColors(projectID string) (r TranslationStatusColorsResponse, err error) {
 	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathTranslationStatuses, "colors"), &r)
 
 	if err != nil {
@@ -67,7 +79,7 @@ func (c *TranslationStatusesService) ListColors(projectID string) (r Translation
 	return r, apiError(resp)
 }
 
-func (c *TranslationStatusesService) Create(projectID string, options CreateTranslationStatus) (r TranslationStatusResponse, err error) {
+func (c *TranslationStatusService) Create(projectID string, options NewTranslationStatus) (r TranslationStatusResponse, err error) {
 	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTranslationStatuses), &r, options)
 
 	if err != nil {
@@ -76,7 +88,7 @@ func (c *TranslationStatusesService) Create(projectID string, options CreateTran
 	return r, apiError(resp)
 }
 
-func (c *TranslationStatusesService) Retrieve(projectID string, statusID int64) (r TranslationStatusResponse, err error) {
+func (c *TranslationStatusService) Retrieve(projectID string, statusID int64) (r TranslationStatusResponse, err error) {
 	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTranslationStatuses, statusID), &r)
 
 	if err != nil {
@@ -85,7 +97,7 @@ func (c *TranslationStatusesService) Retrieve(projectID string, statusID int64) 
 	return r, apiError(resp)
 }
 
-func (c *TranslationStatusesService) Update(projectID string, statusID int64, opts UpdateTranslationStatus) (r TranslationStatusResponse, err error) {
+func (c *TranslationStatusService) Update(projectID string, statusID int64, opts UpdateTranslationStatus) (r TranslationStatusResponse, err error) {
 	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTranslationStatuses, statusID), &r, opts)
 
 	if err != nil {
@@ -94,7 +106,7 @@ func (c *TranslationStatusesService) Update(projectID string, statusID int64, op
 	return r, apiError(resp)
 }
 
-func (c *TranslationStatusesService) Delete(projectID string, statusID int64) (r TranslationStatusDeleteResponse, err error) {
+func (c *TranslationStatusService) Delete(projectID string, statusID int64) (r TranslationStatusDeleteResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTranslationStatuses, statusID), &r)
 
 	if err != nil {

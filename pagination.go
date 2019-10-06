@@ -1,11 +1,11 @@
 package lokalise
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/google/go-querystring/query"
 )
 
 type Paged struct {
@@ -19,19 +19,14 @@ type OptionsApplier interface {
 	Apply(req *resty.Request)
 }
 
-// todo use url.Values
 type PageOptions struct {
-	Limit int64
-	Page  int64
+	Limit int64 `url:"limit,omitempty"`
+	Page  int64 `url:"page,omitempty"`
 }
 
 func (options PageOptions) Apply(req *resty.Request) {
-	if options.Limit != 0 {
-		req.SetQueryParam("limit", fmt.Sprintf("%d", options.Limit))
-	}
-	if options.Page != 0 {
-		req.SetQueryParam("page", fmt.Sprintf("%d", options.Page))
-	}
+	v, _ := query.Values(options)
+	req.SetQueryString(v.Encode())
 }
 
 const (

@@ -4,32 +4,47 @@ const (
 	pathTeams = "teams"
 )
 
-type TeamsResponse struct {
-	Paged
-	Teams []Team `json:"teams,omitempty"`
+// The Team service
+type TeamService struct {
+	BaseService
 }
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service entity objects
+// _____________________________________________________________________________________________________________________
 
 type Team struct {
 	WithCreationTime
 	WithTeamID
-	Name         string `json:"name,omitempty"`
-	Plan         string `json:"plan,omitempty"`
-	QuotaUsage   Quota  `json:"quota_usage,omitempty"`
-	QuotaAllowed Quota  `json:"quota_allowed,omitempty"`
+
+	Name         string `json:"name"`
+	Plan         string `json:"plan"` // e.g. "Essential", "Trial"
+	QuotaUsage   Quota  `json:"quota_usage"`
+	QuotaAllowed Quota  `json:"quota_allowed"`
 }
 
 type Quota struct {
-	Users    int64 `json:"users,omitempty"`
-	Keys     int64 `json:"keys,omitempty"`
-	Projects int64 `json:"projects,omitempty"`
+	Users    int64 `json:"users"`
+	Keys     int64 `json:"keys"`
+	Projects int64 `json:"projects"`
 	MAU      int64 `json:"mau,omitempty"`
 }
 
-type TeamsService struct {
-	BaseService
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service request/response objects
+// _____________________________________________________________________________________________________________________
+
+type TeamsResponse struct {
+	Paged
+	Teams []Team `json:"teams"`
 }
 
-func (c *TeamsService) List() (r TeamsResponse, err error) {
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service methods
+// _____________________________________________________________________________________________________________________
+
+// Lists all teams available to the user
+func (c *TeamService) List() (r TeamsResponse, err error) {
 	resp, err := c.getList(c.Ctx(), pathTeams, &r, c.PageOpts())
 
 	if err != nil {

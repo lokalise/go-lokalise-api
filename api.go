@@ -8,20 +8,20 @@ import (
 type Api struct {
 	httpClient *restClient
 
-	Projects             func() *ProjectsService
-	Teams                func() *TeamsService
-	TeamUsers            func() *TeamUsersService
-	TeamUserGroups       func() *TeamUserGroupsService
-	Contributors         func() *ContributorsService
+	Projects             func() *ProjectService
+	Teams                func() *TeamService
+	TeamUsers            func() *TeamUserService
+	TeamUserGroups       func() *TeamUserGroupService
+	Contributors         func() *ContributorService
 	Comments             func() *CommentService
-	Keys                 func() *KeysService
-	Tasks                func() *TasksService
-	Screenshots          func() *ScreenshotsService
-	Snapshots            func() *SnapshotsService
-	Languages            func() *LanguagesService
-	Translations         func() *TranslationsService
+	Keys                 func() *KeyService
+	Tasks                func() *TaskService
+	Screenshots          func() *ScreenshotService
+	Snapshots            func() *SnapshotService
+	Languages            func() *LanguageService
+	Translations         func() *TranslationService
 	TranslationProviders func() *TranslationProviderService
-	TranslationStatuses  func() *TranslationStatusesService
+	TranslationStatuses  func() *TranslationStatusService
 	Orders               func() *OrderService
 	PaymentCards         func() *PaymentCardService
 	Webhooks             func() *WebhookService
@@ -42,28 +42,28 @@ func New(apiToken string, options ...ClientOption) (*Api, error) {
 	}
 	bs := BaseService{c.httpClient, PageOptions{}, nil}
 
-	c.Projects = func() *ProjectsService { return &ProjectsService{bs} }
-	c.Teams = func() *TeamsService { return &TeamsService{bs} }
-	c.TeamUsers = func() *TeamUsersService { return &TeamUsersService{bs} }
-	c.TeamUserGroups = func() *TeamUserGroupsService { return &TeamUserGroupsService{bs} }
+	c.Projects = func() *ProjectService { return &ProjectService{BaseService: bs} }
+	c.Teams = func() *TeamService { return &TeamService{bs} }
+	c.TeamUsers = func() *TeamUserService { return &TeamUserService{bs} }
+	c.TeamUserGroups = func() *TeamUserGroupService { return &TeamUserGroupService{bs} }
 
-	c.Contributors = func() *ContributorsService { return &ContributorsService{bs} }
+	c.Contributors = func() *ContributorService { return &ContributorService{bs} }
 	c.Comments = func() *CommentService { return &CommentService{bs} }
-	c.Keys = func() *KeysService { return &KeysService{bs} }
-	c.Tasks = func() *TasksService { return &TasksService{bs} }
+	c.Keys = func() *KeyService { return &KeyService{BaseService: bs} }
+	c.Tasks = func() *TaskService { return &TaskService{BaseService: bs} }
 
-	c.Screenshots = func() *ScreenshotsService { return &ScreenshotsService{bs} }
-	c.Snapshots = func() *SnapshotsService { return &SnapshotsService{bs} }
-	c.Languages = func() *LanguagesService { return &LanguagesService{bs} }
-	c.Translations = func() *TranslationsService { return &TranslationsService{bs} }
+	c.Screenshots = func() *ScreenshotService { return &ScreenshotService{BaseService: bs} }
+	c.Snapshots = func() *SnapshotService { return &SnapshotService{bs} }
+	c.Languages = func() *LanguageService { return &LanguageService{bs} }
+	c.Translations = func() *TranslationService { return &TranslationService{BaseService: bs} }
 
 	c.TranslationProviders = func() *TranslationProviderService { return &TranslationProviderService{bs} }
-	c.TranslationStatuses = func() *TranslationStatusesService { return &TranslationStatusesService{bs} }
+	c.TranslationStatuses = func() *TranslationStatusService { return &TranslationStatusService{bs} }
 	c.Orders = func() *OrderService { return &OrderService{bs} }
 	c.PaymentCards = func() *PaymentCardService { return &PaymentCardService{bs} }
 
 	c.Webhooks = func() *WebhookService { return &WebhookService{bs} }
-	c.Files = func() *FileService { return &FileService{bs} }
+	c.Files = func() *FileService { return &FileService{BaseService: bs} }
 
 	return &c, nil
 }

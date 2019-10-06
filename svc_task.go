@@ -4,7 +4,18 @@ import (
 	"fmt"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/google/go-querystring/query"
 )
+
+type TaskService struct {
+	BaseService
+
+	listOpts TaskListOptions
+}
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service entity objects
+// _____________________________________________________________________________________________________________________
 
 //noinspection GoUnusedConst
 const (
@@ -23,135 +34,128 @@ const (
 	LanguageStatusCreated    LanguageStatus = "created"
 )
 
-type TaskStatus string
-type TaskType string
-type LanguageStatus string
+type (
+	TaskStatus     string
+	TaskType       string
+	LanguageStatus string
+)
 
 type Task struct {
 	WithCreationTime
-	TaskID             int64          `json:"task_id,omitempty"`
-	Title              string         `json:"title,omitempty"`
-	Description        string         `json:"description,omitempty"`
-	Status             TaskStatus     `json:"status,omitempty"`
-	Progress           int            `json:"progress,omitempty"`
-	DueDate            string         `json:"due_date,omitempty"`
-	KeysCount          int64          `json:"keys_count,omitempty"`
-	WordsCount         int64          `json:"words_count,omitempty"`
-	CreatedBy          int64          `json:"created_by,omitempty"`
-	CreatedByEmail     string         `json:"created_by_email,omitempty"`
+	WithCreationUser
+
+	TaskID             int64          `json:"task_id"`
+	Title              string         `json:"title"`
+	Description        string         `json:"description"`
+	Status             TaskStatus     `json:"status"`
+	Progress           int            `json:"progress"`
+	DueDate            string         `json:"due_date"`
+	KeysCount          int64          `json:"keys_count"`
+	WordsCount         int64          `json:"words_count"`
 	CanBeParent        bool           `json:"can_be_parent"`
-	TaskType           TaskType       `json:"task_type,omitempty"`
-	ParentTaskID       int64          `json:"parent_task_id,omitempty"`
-	ClosingTags        []string       `json:"closing_tags,omitempty"`
+	TaskType           TaskType       `json:"task_type"`
+	ParentTaskID       int64          `json:"parent_task_id"`
+	ClosingTags        []string       `json:"closing_tags"`
 	LockTranslations   bool           `json:"do_lock_translations"`
-	Languages          []TaskLanguage `json:"languages,omitempty"`
-	AutoCloseLanguages bool           `json:"auto_close_languages,omitempty"`
-	AutoCloseTask      bool           `json:"auto_close_task,omitempty"`
-	CompletedAt        string         `json:"completed_at,omitempty"`
-	CompletedBy        int64          `json:"completed_by,omitempty"`
-	CompletedByEmail   string         `json:"completed_by_email,omitempty"`
+	Languages          []TaskLanguage `json:"languages"`
+	AutoCloseLanguages bool           `json:"auto_close_languages"`
+	AutoCloseTask      bool           `json:"auto_close_task"`
+	CompletedAt        string         `json:"completed_at"`
+	CompletedAtTs      int64          `json:"completed_at_timestamp"`
+	CompletedBy        int64          `json:"completed_by"`
+	CompletedByEmail   string         `json:"completed_by_email"`
 }
 
-type TaskLanguage struct { // todo embed Lang
-	LanguageISO                      string           `json:"language_iso,omitempty"`
-	Users                            []TaskUser       `json:"users,omitempty"`
-	Groups                           []TaskGroup      `json:"groups,omitempty"`
-	Keys                             []int64          `json:"keys,omitempty"`
-	Status                           LanguageStatus   `json:"status,omitempty"`
-	Progress                         int              `json:"progress,omitempty"`
-	InitialTranslationMemoryLeverage map[string]int64 `json:"initial_tm_leverage,omitempty"`
-	KeysCount                        int64            `json:"keys_count,omitempty"`
-	WordsCount                       int64            `json:"words_count,omitempty"`
-	CompletedAt                      string           `json:"completed_at,omitempty"`
-	CompletedBy                      int64            `json:"completed_by,omitempty"`
-	CompletedByEmail                 string           `json:"completed_by_email,omitempty"`
+type TaskLanguage struct {
+	LanguageISO       string           `json:"language_iso"`
+	Users             []TaskUser       `json:"users"`
+	Groups            []TaskGroup      `json:"groups"`
+	Keys              []int64          `json:"keys"`
+	Status            LanguageStatus   `json:"status"`
+	Progress          int              `json:"progress"`
+	InitialTMLeverage map[string]int64 `json:"initial_tm_leverage"`
+	KeysCount         int64            `json:"keys_count"`
+	WordsCount        int64            `json:"words_count"`
+	CompletedAt       string           `json:"completed_at"`
+	CompletedAtTs     int64            `json:"completed_at_timestamp"`
+	CompletedBy       int64            `json:"completed_by"`
+	CompletedByEmail  string           `json:"completed_by_email"`
 }
 
 type TaskUser struct {
 	WithUserID
-	Email    string `json:"email,omitempty"`
-	Fullname string `json:"fullname,omitempty"`
+	Email    string `json:"email"`
+	Fullname string `json:"fullname"`
 }
 
 type TaskGroup struct {
-	ID   int64  `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
 }
 
-type CreateTaskRequest struct {
-	Title                            string                      `json:"title,omitempty"`
-	Description                      string                      `json:"description,omitempty"`
-	DueDate                          string                      `json:"due_date,omitempty"`
-	Keys                             []int64                     `json:"keys,omitempty"`
-	Languages                        []CreateTaskLanguageRequest `json:"languages,omitempty"`
-	AutoCloseLanguages               bool                        `json:"auto_close_languages,omitempty"`
-	AutoCloseTask                    bool                        `json:"auto_close_task,omitempty"`
-	InitialTranslationMemoryLeverage bool                        `json:"initial_tm_leverage,omitempty"`
-	TaskType                         TaskType                    `json:"task_type,omitempty"`
-	ParentTaskID                     int64                       `json:"parent_task_id,omitempty"`
-	ClosingTags                      []string                    `json:"closing_tags,omitempty"`
-	LockTranslations                 bool                        `json:"do_lock_translations,omitempty"`
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service request/response objects
+// _____________________________________________________________________________________________________________________
+
+type CreateTask struct {
+	Title     string           `json:"title"`
+	Languages []CreateTaskLang `json:"languages"`
+
+	Description        string   `json:"description,omitempty"`
+	DueDate            string   `json:"due_date,omitempty"`
+	Keys               []int64  `json:"keys,omitempty"`
+	AutoCloseLanguages *bool    `json:"auto_close_languages,omitempty"`
+	AutoCloseTask      *bool    `json:"auto_close_task,omitempty"`
+	InitialTMLeverage  bool     `json:"initial_tm_leverage,omitempty"`
+	TaskType           TaskType `json:"task_type,omitempty"`
+	ParentTaskID       int64    `json:"parent_task_id,omitempty"`
+	ClosingTags        []string `json:"closing_tags,omitempty"`
+	LockTranslations   bool     `json:"do_lock_translations,omitempty"`
+
+	CustomTranslationStatusIDs []int64 `json:"custom_translation_status_ids,omitempty"`
 }
 
-type CreateTaskLanguageRequest struct {
-	LanguageISO string  `json:"language_iso,omitempty"`
-	Users       []int64 `json:"users,omitempty"`
-	Groups      []int64 `json:"groups,omitempty"`
+type CreateTaskLang struct {
+	LanguageISO   string  `json:"language_iso,omitempty"`
+	Users         []int64 `json:"users,omitempty"`
+	Groups        []int64 `json:"groups,omitempty"`
+	CloseLanguage bool    `json:"close_language,omitempty"` // only for updating
 }
 
-type UpdateTaskRequest struct {
-	Title              string                      `json:"title,omitempty"`
-	Description        string                      `json:"description,omitempty"`
-	DueDate            string                      `json:"due_date,omitempty"`
-	Languages          []UpdateTaskLanguageRequest `json:"languages,omitempty"`
-	AutoCloseLanguages bool                        `json:"auto_close_languages,omitempty"`
-	AutoCloseTask      bool                        `json:"auto_close_task,omitempty"`
-	CloseTask          bool                        `json:"close_task,omitempty"`
-	ClosingTags        []string                    `json:"closing_tags,omitempty"`
-	LockTranslations   bool                        `json:"do_lock_translations,omitempty"`
-}
-
-type UpdateTaskLanguageRequest struct {
-	LanguageISO   string      `json:"language_iso,omitempty"`
-	Users         []int64     `json:"users,omitempty"`
-	Groups        []TaskGroup `json:"groups,omitempty"`
-	CloseLanguage bool        `json:"close_language,omitempty"`
+type UpdateTask struct {
+	Title              string           `json:"title,omitempty"`
+	Description        string           `json:"description,omitempty"`
+	DueDate            string           `json:"due_date,omitempty"`
+	Languages          []CreateTaskLang `json:"languages,omitempty"`
+	AutoCloseLanguages *bool            `json:"auto_close_languages,omitempty"`
+	AutoCloseTask      *bool            `json:"auto_close_task,omitempty"`
+	CloseTask          bool             `json:"close_task,omitempty"`
+	ClosingTags        []string         `json:"closing_tags,omitempty"`
+	LockTranslations   bool             `json:"do_lock_translations,omitempty"`
 }
 
 type TasksResponse struct {
 	Paged
 	WithProjectID
-	Tasks []Task `json:"tasks,omitempty"`
+	Tasks []Task `json:"tasks"`
 }
 
 type TaskResponse struct {
 	WithProjectID
-	Task Task `json:"task,omitempty"`
+	Task Task `json:"task"`
 }
 
 type TaskDeleteResponse struct {
 	WithProjectID
-	Deleted bool `json:"task_deleted,omitempty"`
+	Deleted bool `json:"task_deleted"`
 }
 
-type TasksService struct {
-	BaseService
-}
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service methods
+// _____________________________________________________________________________________________________________________
 
-type TasksOptions struct {
-	PageOptions
-	Title string
-}
-
-func (options TasksOptions) Apply(req *resty.Request) {
-	options.PageOptions.Apply(req)
-	if options.Title != "" {
-		req.SetQueryParam("filter_title", options.Title)
-	}
-}
-
-func (c *TasksService) List(projectID string, pageOptions TasksOptions) (r TasksResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTasks), &r, pageOptions)
+func (c *TaskService) List(projectID string) (r TasksResponse, err error) {
+	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTasks), &r, c.ListOpts())
 
 	if err != nil {
 		return
@@ -160,7 +164,7 @@ func (c *TasksService) List(projectID string, pageOptions TasksOptions) (r Tasks
 	return r, apiError(resp)
 }
 
-func (c *TasksService) Create(projectID string, task CreateTaskRequest) (r TaskResponse, err error) {
+func (c *TaskService) Create(projectID string, task CreateTask) (r TaskResponse, err error) {
 	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTasks), &r, task)
 
 	if err != nil {
@@ -169,7 +173,7 @@ func (c *TasksService) Create(projectID string, task CreateTaskRequest) (r TaskR
 	return r, apiError(resp)
 }
 
-func (c *TasksService) Retrieve(projectID string, taskID int64) (r TaskResponse, err error) {
+func (c *TaskService) Retrieve(projectID string, taskID int64) (r TaskResponse, err error) {
 	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &r)
 
 	if err != nil {
@@ -178,7 +182,7 @@ func (c *TasksService) Retrieve(projectID string, taskID int64) (r TaskResponse,
 	return r, apiError(resp)
 }
 
-func (c *TasksService) Update(projectID string, taskID int64, task UpdateTaskRequest) (r TaskResponse, err error) {
+func (c *TaskService) Update(projectID string, taskID int64, task UpdateTask) (r TaskResponse, err error) {
 	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &r, task)
 
 	if err != nil {
@@ -187,11 +191,34 @@ func (c *TasksService) Update(projectID string, taskID int64, task UpdateTaskReq
 	return r, apiError(resp)
 }
 
-func (c *TasksService) Delete(projectID string, taskID int64) (r TaskDeleteResponse, err error) {
+func (c *TaskService) Delete(projectID string, taskID int64) (r TaskDeleteResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &r)
 
 	if err != nil {
 		return
 	}
 	return r, apiError(resp)
+}
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Additional methods
+// _____________________________________________________________________________________________________________________
+
+type TaskListOptions struct {
+	Limit int64 `url:"limit,omitempty"`
+	Page  int64 `url:"page,omitempty"`
+
+	Title string `url:"filter_title,omitempty"`
+}
+
+func (options TaskListOptions) Apply(req *resty.Request) {
+	v, _ := query.Values(options)
+	req.SetQueryString(v.Encode())
+}
+
+func (c *TaskService) ListOpts() TaskListOptions        { return c.listOpts }
+func (c *TaskService) SetListOptions(o TaskListOptions) { c.listOpts = o }
+func (c *TaskService) WithListOptions(o TaskListOptions) *TaskService {
+	c.listOpts = o
+	return c
 }

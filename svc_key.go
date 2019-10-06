@@ -1,93 +1,109 @@
 package lokalise
 
 import (
-	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/google/go-querystring/query"
 )
 
 const (
 	pathKeys = "keys"
 )
 
-type PlatformStrings struct {
-	Ios     string `json:"ios,omitempty"`
-	Android string `json:"android,omitempty"`
-	Web     string `json:"web,omitempty"`
-	Other   string `json:"other,omitempty"`
+// The Key service
+type KeyService struct {
+	BaseService
+
+	listOpts     KeyListOptions
+	retrieveOpts KeyRetrieveOptions
 }
 
-type CustomAttributes struct {
-	Attributes map[string]interface{}
-}
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service entity objects
+// _____________________________________________________________________________________________________________________
 
-type Key struct { // todo pointers for Update method
+// The Key object
+type Key struct {
 	WithCreationTime
-	KeyID            int64             `json:"key_id,omitempty"`
-	KeyName          interface{}       `json:"key_name,omitempty"` // KeyName could be string or PlatformStrings
-	Filenames        PlatformStrings   `json:"filenames,omitempty"`
-	Description      string            `json:"description,omitempty"`
-	Platforms        []string          `json:"platforms,omitempty"`
-	Tags             []string          `json:"tags,omitempty"`
-	Comments         []Comment         `json:"comments,omitempty"`
-	Screenshots      []Screenshot      `json:"screenshots,omitempty"`
-	Translations     []Translation     `json:"translations,omitempty"`
-	IsPlural         bool              `json:"is_plural,omitempty"`
-	PluralName       string            `json:"plural_name,omitempty"`
-	IsHidden         bool              `json:"is_hidden,omitempty"`
-	IsArchived       bool              `json:"is_archived,omitempty"`
-	Context          string            `json:"context,omitempty"`
-	CharLimit        int               `json:"char_limit,omitempty"`
-	CustomAttributes *CustomAttributes `json:"custom_attributes,string,omitempty"`
+
+	KeyID   int64       `json:"key_id"`
+	KeyName interface{} `json:"key_name"` // KeyName could be string or PlatformStrings
+
+	Filenames    PlatformStrings `json:"filenames"`
+	Description  string          `json:"description"`
+	Platforms    []string        `json:"platforms"`
+	Tags         []string        `json:"tags"`
+	Comments     []Comment       `json:"comments"`
+	Screenshots  []Screenshot    `json:"screenshots"`
+	Translations []Translation   `json:"translations"`
+
+	IsPlural         bool   `json:"is_plural"`
+	PluralName       string `json:"plural_name,omitempty"`
+	IsHidden         bool   `json:"is_hidden"`
+	IsArchived       bool   `json:"is_archived"`
+	Context          string `json:"context,omitempty"`
+	BaseWords        int    `json:"base_words"`
+	CharLimit        int    `json:"char_limit"`
+	CustomAttributes string `json:"custom_attributes,omitempty"`
 }
 
-func (ca *CustomAttributes) UnmarshalJSON(data []byte) error {
-
-	caJsonString := ""
-	var customAttributes CustomAttributes
-
-	// First unmarshal the data to a string.
-	if err := json.Unmarshal(data, &caJsonString); err != nil {
-		return err
-	}
-
-	// Escape if the string is empty
-	if caJsonString == "" {
-		return nil
-	}
-
-	// Unmarshal the string further into a map[string]interface{} structure
-	if err := json.Unmarshal([]byte(caJsonString), &customAttributes.Attributes); err != nil {
-		return err
-	}
-	ca.Attributes = customAttributes.Attributes
-
-	return nil
+type PlatformStrings struct {
+	Ios     string `json:"ios"`
+	Android string `json:"android"`
+	Web     string `json:"web"`
+	Other   string `json:"other"`
 }
 
-// ErrorKey is key info from error for key create/update API
-type ErrorKey struct {
-	KeyName string `json:"key_name,omitempty"`
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service request/response objects
+// _____________________________________________________________________________________________________________________
+
+type NewKey struct {
+	// KeyName could be string or PlatformStrings
+	KeyName      interface{}      `json:"key_name,omitempty"` // could be empty in case of updating
+	Description  string           `json:"description,omitempty"`
+	Platforms    []string         `json:"platforms,omitempty"` // could be empty in case of updating
+	Filenames    PlatformStrings  `json:"filenames,omitempty"`
+	Tags         []string         `json:"tags,omitempty"`
+	Comments     []NewComment     `json:"comments,omitempty"`
+	Screenshots  []NewScreenshot  `json:"screenshots,omitempty"`
+	Translations []NewTranslation `json:"translations,omitempty"`
+
+	IsPlural         bool   `json:"is_plural,omitempty"`
+	PluralName       string `json:"plural_name,omitempty"`
+	IsHidden         bool   `json:"is_hidden,omitempty"`
+	IsArchived       bool   `json:"is_archived,omitempty"`
+	Context          string `json:"context,omitempty"`
+	BaseWords        int    `json:"base_words,omitempty"`
+	CharLimit        int    `json:"char_limit,omitempty"`
+	CustomAttributes string `json:"custom_attributes,omitempty"`
+}
+
+// Separate struct for bulk updating
+type BulkUpdateKey struct {
+	KeyID int64 `json:"key_id"`
+	NewKey
 }
 
 // ErrorKeys is error for key create/update API
 type ErrorKeys struct {
 	Error
-	Key ErrorKey `json:"key,omitempty"`
+	Key struct {
+		KeyName string `json:"key_name"`
+	} `json:"key"`
 }
 
 type KeysResponse struct {
 	Paged
 	WithProjectID
-	Keys   []Key       `json:"keys,omitempty"`
-	Errors []ErrorKeys `json:"error,omitempty"`
+	Keys   []Key       `json:"keys"`
+	Errors []ErrorKeys `json:"error"`
 }
 
 type KeyResponse struct {
 	WithProjectID
-	Key Key `json:"key,omitempty"`
+	Key Key `json:"key"`
 }
 
 type DeleteKeyResponse struct {
@@ -102,66 +118,12 @@ type DeleteKeysResponse struct {
 	NumberOfLocked int64 `json:"keys_locked"`
 }
 
-type KeysService struct {
-	BaseService
-}
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service methods
+// _____________________________________________________________________________________________________________________
 
-type ListKeysOptions struct {
-	PageOptions
-	IncludeTranslations       bool
-	DisableReferences         bool
-	IncludeComments           bool
-	IncludeScreenshots        bool
-	filterTags                []string
-	filterKeys                []string
-	filterKeyIDs              []string
-	filterPlatforms           []string
-	filterPlaceholderMismatch bool
-}
-
-type RetrieveKeyOptions struct {
-	DisableReferences bool `json:"disable_references"`
-}
-
-func (options RetrieveKeyOptions) Apply(req *resty.Request) {
-	if options.DisableReferences {
-		req.SetQueryParam("disable_references", "1")
-	}
-}
-
-func (options ListKeysOptions) Apply(req *resty.Request) {
-	options.PageOptions.Apply(req)
-	if options.IncludeTranslations {
-		req.SetQueryParam("include_translations", "1")
-	}
-	if options.DisableReferences {
-		req.SetQueryParam("disable_references", "1")
-	}
-	if options.IncludeComments {
-		req.SetQueryParam("include_comments", "1")
-	}
-	if options.IncludeScreenshots {
-		req.SetQueryParam("include_screenshots", "1")
-	}
-	if len(options.filterTags) > 0 {
-		req.SetQueryParam("filter_tags", strings.Join(options.filterTags, ","))
-	}
-	if len(options.filterKeys) > 0 {
-		req.SetQueryParam("filter_keys", strings.Join(options.filterKeys, ","))
-	}
-	if len(options.filterKeyIDs) > 0 {
-		req.SetQueryParam("filter_key_ids", strings.Join(options.filterKeyIDs, ","))
-	}
-	if len(options.filterPlatforms) > 0 {
-		req.SetQueryParam("filter_platforms", strings.Join(options.filterPlatforms, ","))
-	}
-	if options.filterPlaceholderMismatch {
-		req.SetQueryParam("filter_placeholder_mismatch", "1")
-	}
-}
-
-func (c *KeysService) List(projectID string, options ListKeysOptions) (r KeysResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, options)
+func (c *KeyService) List(projectID string) (r KeysResponse, err error) {
+	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, c.ListOpts())
 
 	if err != nil {
 		return
@@ -170,10 +132,12 @@ func (c *KeysService) List(projectID string, options ListKeysOptions) (r KeysRes
 	return r, apiError(resp)
 }
 
-func (c *KeysService) Create(projectID string, keys []Key) (r KeysResponse, err error) {
-	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, map[string]interface{}{
-		"keys": keys,
-	})
+func (c *KeyService) Create(projectID string, keys []NewKey) (r KeysResponse, err error) {
+	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r,
+		map[string]interface{}{
+			"keys": keys,
+		},
+	)
 
 	if err != nil {
 		return
@@ -181,8 +145,8 @@ func (c *KeysService) Create(projectID string, keys []Key) (r KeysResponse, err 
 	return r, apiError(resp)
 }
 
-func (c *KeysService) Retrieve(projectID string, keyID int64, options RetrieveKeyOptions) (r KeyResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &r, options)
+func (c *KeyService) Retrieve(projectID string, keyID int64) (r KeyResponse, err error) {
+	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &r, c.RetrieveOpts())
 
 	if err != nil {
 		return
@@ -190,7 +154,7 @@ func (c *KeysService) Retrieve(projectID string, keyID int64, options RetrieveKe
 	return r, apiError(resp)
 }
 
-func (c *KeysService) Update(projectID string, keyID int64, key Key) (r KeyResponse, err error) {
+func (c *KeyService) Update(projectID string, keyID int64, key NewKey) (r KeyResponse, err error) {
 	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &r, key)
 
 	if err != nil {
@@ -199,10 +163,12 @@ func (c *KeysService) Update(projectID string, keyID int64, key Key) (r KeyRespo
 	return r, apiError(resp)
 }
 
-func (c *KeysService) BulkUpdate(projectID string, keys []Key) (r KeysResponse, err error) {
-	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, map[string]interface{}{
-		"keys": keys,
-	})
+func (c *KeyService) BulkUpdate(projectID string, keys []BulkUpdateKey) (r KeysResponse, err error) {
+	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r,
+		map[string]interface{}{
+			"keys": keys,
+		},
+	)
 
 	if err != nil {
 		return
@@ -210,7 +176,7 @@ func (c *KeysService) BulkUpdate(projectID string, keys []Key) (r KeysResponse, 
 	return r, apiError(resp)
 }
 
-func (c *KeysService) Delete(projectID string, keyID int64) (r DeleteKeyResponse, err error) {
+func (c *KeyService) Delete(projectID string, keyID int64) (r DeleteKeyResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &r)
 
 	if err != nil {
@@ -219,13 +185,70 @@ func (c *KeysService) Delete(projectID string, keyID int64) (r DeleteKeyResponse
 	return r, apiError(resp)
 }
 
-func (c *KeysService) BulkDelete(projectID string, keyIDs []int64) (r DeleteKeysResponse, err error) {
-	resp, err := c.deleteWithBody(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, map[string]interface{}{
-		"keys": keyIDs,
-	})
+func (c *KeyService) BulkDelete(projectID string, keyIDs []int64) (r DeleteKeysResponse, err error) {
+	resp, err := c.deleteWithBody(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r,
+		map[string]interface{}{
+			"keys": keyIDs,
+		},
+	)
 
 	if err != nil {
 		return
 	}
 	return r, apiError(resp)
+}
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Additional methods
+// _____________________________________________________________________________________________________________________
+
+// List options
+type KeyListOptions struct {
+	// page options
+	Page  uint8 `url:"page,omitempty"`
+	Limit uint8 `url:"limit,omitempty"`
+
+	// Possible values are 1 and 0.
+	DisableReferences   uint8 `url:"disable_references,omitempty"`
+	IncludeComments     uint8 `url:"include_comments,omitempty"`
+	IncludeScreenshots  uint8 `url:"include_screenshots,omitempty"`
+	IncludeTranslations uint8 `url:"include_translations,omitempty"`
+
+	FilterTranslationLangIDs string `url:"filter_translation_lang_ids,omitempty"`
+	FilterTags               string `url:"filter_tags,omitempty"`
+	FilterFilenames          string `url:"filter_filenames,omitempty"`
+	FilterKeys               string `url:"filter_keys,omitempty"`
+	FilterKeyIDs             string `url:"filter_key_ids,omitempty"`
+	FilterPlatforms          string `url:"filter_platforms,omitempty"`
+	FilterUntranslated       string `url:"filter_untranslated,omitempty"`
+	FilterQAIssues           string `url:"filter_qa_issues,omitempty"`
+}
+
+func (options KeyListOptions) Apply(req *resty.Request) {
+	v, _ := query.Values(options)
+	req.SetQueryString(v.Encode())
+}
+
+// Retrieve options
+type KeyRetrieveOptions struct {
+	DisableReferences bool `url:"disable_references,omitempty"`
+}
+
+func (options KeyRetrieveOptions) Apply(req *resty.Request) {
+	v, _ := query.Values(options)
+	req.SetQueryString(v.Encode())
+}
+
+func (c *KeyService) ListOpts() KeyListOptions        { return c.listOpts }
+func (c *KeyService) SetListOptions(o KeyListOptions) { c.listOpts = o }
+func (c *KeyService) WithListOptions(o KeyListOptions) *KeyService {
+	c.listOpts = o
+	return c
+}
+
+func (c *KeyService) RetrieveOpts() KeyRetrieveOptions        { return c.retrieveOpts }
+func (c *KeyService) SetRetrieveOptions(o KeyRetrieveOptions) { c.retrieveOpts = o }
+func (c *KeyService) WithRetrieveOptions(o KeyRetrieveOptions) *KeyService {
+	c.retrieveOpts = o
+	return c
 }

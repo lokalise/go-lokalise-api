@@ -2,6 +2,7 @@ package lokalise
 
 import (
 	"fmt"
+	"github.com/google/go-querystring/query"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -10,21 +11,42 @@ const (
 	pathScreenshots = "screenshots"
 )
 
-type Screenshot struct {
-	WithCreationTime
-	ScreenshotID   int64    `json:"screenshot_id,omitempty"`
-	KeyIDs         []int64  `json:"key_ids,omitempty"`
-	URL            string   `json:"url,omitempty"`
-	Title          string   `json:"title,omitempty"`
-	Description    string   `json:"description,omitempty"`
-	ScreenshotTags []string `json:"screenshot_tags,omitempty"`
-	Width          int64    `json:"width,omitempty"`
-	Height         int64    `json:"height,omitempty"`
+type ScreenshotService struct {
+	BaseService
+
+	listOpts ScreenshotListOptions
 }
 
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service entity objects
+// _____________________________________________________________________________________________________________________
+
+type Screenshot struct {
+	WithCreationTime
+
+	ScreenshotID   int64    `json:"screenshot_id"`
+	KeyIDs         []int64  `json:"key_ids"`
+	URL            string   `json:"url"`
+	Title          string   `json:"title"`
+	Description    string   `json:"description"`
+	ScreenshotTags []string `json:"screenshot_tags"`
+	Width          int64    `json:"width"`
+	Height         int64    `json:"height"`
+}
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service request/response objects
+// _____________________________________________________________________________________________________________________
+
 type ScreenshotResponse struct {
+	WithProjectID
+	Screenshot Screenshot `json:"screenshot"`
+}
+
+type ScreenshotsResponse struct {
 	Paged
-	Screenshots []Screenshot `json:"screenshots,omitempty"`
+	WithProjectID
+	Screenshots []Screenshot `json:"screenshots"`
 }
 
 type ScreenshotDeleteResponse struct {
@@ -32,44 +54,26 @@ type ScreenshotDeleteResponse struct {
 	Deleted bool `json:"screenshot_deleted"`
 }
 
-type ScreenshotsService struct {
-	BaseService
+type NewScreenshot struct {
+	// The screenshot, base64 encoded (with leading image type `data:image/jpeg;base64,`).
+	// Supported file formats are JPG and PNG.
+	Body        string   `json:"data"` // maybe []byte?
+	Title       string   `json:"title,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Ocr         *bool    `json:"ocr,omitempty"`
+	KeyIDs      []int64  `json:"key_ids,omitempty"`
+	Tags        []string `json:"tags,omitempty"`
 }
 
-type ScreenshotsOptions struct {
-	PageOptions
-	IncludeTags bool
-	ListOnly    bool
-}
-
-type CreateScreenshotOptions struct {
-	Body        string   `json:"data"`
+type UpdateScreenshot struct {
 	Title       string   `json:"title"`
 	Description string   `json:"description"`
-	Ocr         bool     `json:"ocr"`
-	KeyIds      []int64  `json:"key_ids"`
+	KeyIDs      []int64  `json:"key_ids"`
 	Tags        []string `json:"tags"`
 }
 
-type UpdateScreenshotOptions struct {
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	KeyIds      []int64  `json:"key_ids"`
-	Tags        []string `json:"tags"`
-}
-
-func (options ScreenshotsOptions) Apply(req *resty.Request) {
-	options.PageOptions.Apply(req)
-	if options.IncludeTags {
-		req.SetQueryParam("include_tags", fmt.Sprintf("%v", options.IncludeTags))
-	}
-	if options.ListOnly {
-		req.SetQueryParam("list_only", fmt.Sprintf("%v", options.ListOnly))
-	}
-}
-
-func (c *ScreenshotsService) List(pageOptions ScreenshotsOptions) (r ScreenshotResponse, err error) {
-	resp, err := c.getList(c.Ctx(), pathScreenshots, &r, pageOptions)
+func (c *ScreenshotService) List(projectID string) (r ScreenshotsResponse, err error) {
+	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathScreenshots), &r, c.ListOpts())
 
 	if err != nil {
 		return
@@ -78,8 +82,8 @@ func (c *ScreenshotsService) List(pageOptions ScreenshotsOptions) (r ScreenshotR
 	return r, apiError(resp)
 }
 
-func (c *ScreenshotsService) Create(projectID string, options CreateScreenshotOptions) (r ScreenshotResponse, err error) {
-	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathScreenshots), &r, options)
+func (c *ScreenshotService) Create(projectID string, screenshot NewScreenshot) (r ScreenshotResponse, err error) {
+	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathScreenshots), &r, screenshot)
 
 	if err != nil {
 		return
@@ -87,7 +91,7 @@ func (c *ScreenshotsService) Create(projectID string, options CreateScreenshotOp
 	return r, apiError(resp)
 }
 
-func (c *ScreenshotsService) Retrieve(projectID string, screenshotID int64) (r ScreenshotResponse, err error) {
+func (c *ScreenshotService) Retrieve(projectID string, screenshotID int64) (r ScreenshotResponse, err error) {
 	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathScreenshots, screenshotID), &r)
 
 	if err != nil {
@@ -96,7 +100,7 @@ func (c *ScreenshotsService) Retrieve(projectID string, screenshotID int64) (r S
 	return r, apiError(resp)
 }
 
-func (c *ScreenshotsService) Update(projectID string, screenshotID int64, opts UpdateScreenshotOptions) (r ScreenshotResponse, err error) {
+func (c *ScreenshotService) Update(projectID string, screenshotID int64, opts UpdateScreenshot) (r ScreenshotResponse, err error) {
 	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathScreenshots, screenshotID), &r, opts)
 
 	if err != nil {
@@ -105,11 +109,36 @@ func (c *ScreenshotsService) Update(projectID string, screenshotID int64, opts U
 	return r, apiError(resp)
 }
 
-func (c *ScreenshotsService) Delete(projectID string, screenshotID int64) (r ScreenshotDeleteResponse, err error) {
+func (c *ScreenshotService) Delete(projectID string, screenshotID int64) (r ScreenshotDeleteResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathScreenshots, screenshotID), &r)
 
 	if err != nil {
 		return
 	}
 	return r, apiError(resp)
+}
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Additional methods
+// _____________________________________________________________________________________________________________________
+
+type ScreenshotListOptions struct {
+	// page options
+	Page  uint8 `url:"page,omitempty"`
+	Limit uint8 `url:"limit,omitempty"`
+
+	IncludeTags uint8 `json:"include_tags,omitempty"`
+	ListOnly    uint8 `json:"list_only,omitempty"`
+}
+
+func (options ScreenshotListOptions) Apply(req *resty.Request) {
+	v, _ := query.Values(options)
+	req.SetQueryString(v.Encode())
+}
+
+func (c *ScreenshotService) ListOpts() ScreenshotListOptions        { return c.listOpts }
+func (c *ScreenshotService) SetListOptions(o ScreenshotListOptions) { c.listOpts = o }
+func (c *ScreenshotService) WithListOptions(o ScreenshotListOptions) *ScreenshotService {
+	c.listOpts = o
+	return c
 }

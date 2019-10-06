@@ -1,34 +1,56 @@
 package integration_test
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 
 	"github.com/lokalise/go-lokalise-api"
 )
 
-func TestKeysList(t *testing.T) {
+/*func TestKeyList(t *testing.T) {
 	client, err := lokalise.New(os.Getenv("lokalise_token"))
 	if err != nil {
 		t.Fatalf("client instantiation: %v", err)
 	}
 
-	resp, err := client.Keys().List("3002780358964f9bab5a92.87762498", lokalise.ListKeysOptions{
-		IncludeTranslations: true,
-		PageOptions: lokalise.PageOptions{
-			Limit: 10,
-			Page:  1,
-		},
+	keys := client.Keys()
+	keys.SetDebug(true)
+	keys.SetListOptions(lokalise.KeyListOptions{
+		Limit:               3,
+		IncludeTranslations: 1,
 	})
+
+	resp, err := keys.List("373182575d64e892ba8ab2.58226357")
 
 	if err != nil {
 		t.Fatalf("request err: %v", err)
 	}
-	t.Logf("keys %+v", resp.Keys)
-	t.Logf("paged %+v", resp.Paged)
+
+	respJson, _ := json.MarshalIndent(resp, "", "  ")
+	t.Log("\n", string(respJson))
+}*/
+
+func TestKeyRetrieve(t *testing.T) {
+	client, err := lokalise.New(os.Getenv("lokalise_token"))
+	if err != nil {
+		t.Fatalf("client instantiation: %v", err)
+	}
+
+	keys := client.Keys()
+	// keys.SetDebug(true)
+
+	resp, err := keys.Retrieve("373182575d64e892ba8ab2.58226357", 26835175)
+
+	if err != nil {
+		t.Fatalf("request err: %v", err)
+	}
+
+	respJson, _ := json.MarshalIndent(resp, "", "  ")
+	t.Log("\n", string(respJson))
 }
 
-func TestKeysCreate(t *testing.T) {
+/*func TestKeyCreate(t *testing.T) {
 	client, err := lokalise.New(os.Getenv("lokalise_token"))
 	if err != nil {
 		t.Fatalf("client instantiation: %v", err)
@@ -53,4 +75,4 @@ func TestKeysCreate(t *testing.T) {
 		t.Fatalf("request err: %v", err)
 	}
 	t.Logf("keys %+v", resp.Keys)
-}
+}*/

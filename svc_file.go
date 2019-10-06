@@ -2,6 +2,7 @@ package lokalise
 
 import (
 	"fmt"
+	"github.com/google/go-querystring/query"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -12,7 +13,13 @@ const (
 
 type FileService struct {
 	BaseService
+
+	opts FileListOptions
 }
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service entity objects
+// _____________________________________________________________________________________________________________________
 
 type File struct {
 	Filename string `json:"filename"`
@@ -20,51 +27,46 @@ type File struct {
 }
 
 type FileUpload struct {
-	FileUploadOptions
+	Data     string   `json:"data"`
+	Filename string   `json:"filename"`
+	LangISO  string   `json:"lang_iso"`
+	Tags     []string `json:"tags,omitempty"`
 
-	Data        string   `json:"data"`
-	Filename    string   `json:"filename"`
-	LangISO     string   `json:"lang_iso"`
-	Tags        []string `json:"tags"`
-	CleanupMode bool     `json:"cleanup_mode"`
+	ConvertPlaceholders    *bool `json:"convert_placeholders,omitempty"`
+	DetectICUPlurals       bool  `json:"detect_icu_plurals,omitempty"`
+	TagInsertedKeys        *bool `json:"tag_inserted_keys,omitempty"`
+	TagUpdatedKeys         *bool `json:"tag_updated_keys,omitempty"`
+	TagSkippedKeys         bool  `json:"tag_skipped_keys,omitempty"`
+	ReplaceModified        bool  `json:"replace_modified,omitempty"`
+	SlashNToLinebreak      bool  `json:"slashn_to_linebreak,omitempty"`
+	KeysToValues           bool  `json:"keys_to_values,omitempty"`
+	DistinguishByFile      bool  `json:"distinguish_by_file,omitempty"`
+	ApplyTM                bool  `json:"apply_tm,omitempty"`
+	HiddenFromContributors bool  `json:"hidden_from_contributors,omitempty"`
+	CleanupMode            bool  `json:"cleanup_mode,omitempty"`
 }
 
-type FileUploadOptions struct {
-	ConvertPlaceholders    bool `json:"convert_placeholders"`
-	DetectICUPlurals       bool `json:"detect_icu_plurals"`
-	TagInsertedKeys        bool `json:"tag_inserted_keys"`
-	TagUpdatedKeys         bool `json:"tag_updated_keys"`
-	TagSkippedKeys         bool `json:"tag_skipped_keys"`
-	ReplaceModified        bool `json:"replace_modified"`
-	SlashNToLinebreak      bool `json:"slashn_to_linebreak"`
-	KeysToValues           bool `json:"keys_to_values"`
-	DistinguishByFile      bool `json:"distinguish_by_file"`
-	ApplyTM                bool `json:"apply_tm"`
-	HiddenFromContributors bool `json:"hidden_from_contributors"`
-}
-
-type FileDownloadOptions struct {
-	Format string `json:"format"`
-
+type FileDownload struct {
+	Format                     string            `json:"format"`
 	OriginalFilenames          bool              `json:"original_filenames,omitempty"`
 	BundleStructure            bool              `json:"bundle_structure,omitempty"`
 	DirectoryPrefix            string            `json:"directory_prefix,omitempty"`
 	AllPlatforms               bool              `json:"all_platforms,omitempty"`
-	FilterLangs                []string          `json:"filter_langs,omitempty"`
-	FilterData                 []string          `json:"filter_data,omitempty"`
-	FilterFilenames            []string          `json:"filter_filenames,omitempty"`
+	FilterLangs                string            `json:"filter_langs,omitempty"`
+	FilterData                 string            `json:"filter_data,omitempty"`
+	FilterFilenames            string            `json:"filter_filenames,omitempty"`
 	AddNewlineEOF              bool              `json:"add_newline_eof,omitempty"`
-	CustomTranslationStatusIDs []string          `json:"custom_translation_status_ids,omitempty"`
-	IncludeTags                []string          `json:"include_tags,omitempty"`
-	ExcludeTags                []string          `json:"exclude_tags,omitempty"`
+	CustomTranslationStatusIDs string            `json:"custom_translation_status_ids,omitempty"`
+	IncludeTags                string            `json:"include_tags,omitempty"`
+	ExcludeTags                string            `json:"exclude_tags,omitempty"`
 	ExportSort                 string            `json:"export_sort,omitempty"`
 	ExportEmptyAs              string            `json:"export_empty_as,omitempty"`
 	IncludeComments            bool              `json:"include_comments,omitempty"`
 	IncludeDescription         bool              `json:"include_description,omitempty"`
-	IncludePids                bool              `json:"include_pids,omitempty"`
-	Triggers                   []string          `json:"triggers,omitempty"`
-	FilterRepositories         []string          `json:"filter_repositories,omitempty"`
-	ReplaceBreaks              bool              `json:"replace_breaks,omitempty"`
+	IncludeProjectIDs          string            `json:"include_pids,omitempty"`
+	Triggers                   string            `json:"triggers,omitempty"`
+	FilterRepositories         string            `json:"filter_repositories,omitempty"`
+	ReplaceBreaks              *bool             `json:"replace_breaks,omitempty"`
 	DisableReferences          bool              `json:"disable_references,omitempty"`
 	PluralFormat               string            `json:"plural_format,omitempty"`
 	PlaceholderFormat          string            `json:"placeholder_format,omitempty"`
@@ -85,17 +87,9 @@ type LanguageMapping struct {
 	CustomLangISO   string `json:"custom_language_iso"`
 }
 
-type FileOptions struct {
-	PageOptions
-	Filename string `url:"filter_filename"`
-}
-
-func (options FileOptions) Apply(req *resty.Request) {
-	options.PageOptions.Apply(req)
-	if options.Filename != "" {
-		req.SetQueryParam("filter_filename", options.Filename)
-	}
-}
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service request/response objects
+// _____________________________________________________________________________________________________________________
 
 type FilesResponse struct {
 	Paged
@@ -118,8 +112,12 @@ type FileDownloadResponse struct {
 	BundleURL string `json:"bundle_url"`
 }
 
-func (c *FileService) List(projectID string, opts FileOptions) (r FilesResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathFiles), &r, opts)
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service methods
+// _____________________________________________________________________________________________________________________
+
+func (c *FileService) List(projectID string) (r FilesResponse, err error) {
+	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathFiles), &r, c.ListOpts())
 
 	if err != nil {
 		return
@@ -137,11 +135,34 @@ func (c *FileService) Upload(projectID string, file FileUpload) (r FileUploadRes
 	return r, apiError(resp)
 }
 
-func (c *FileService) Download(projectID string, opts FileDownloadOptions) (r FileDownloadResponse, err error) {
-	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathFiles, "download"), &r, opts)
+func (c *FileService) Download(projectID string, downloadOptions FileDownload) (r FileDownloadResponse, err error) {
+	url := fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathFiles, "download")
+	resp, err := c.post(c.Ctx(), url, &r, downloadOptions)
 
 	if err != nil {
 		return
 	}
 	return r, apiError(resp)
+}
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Additional service structs & methods
+// _____________________________________________________________________________________________________________________
+
+type FileListOptions struct {
+	Limit    int64  `url:"limit,omitempty"`
+	Page     int64  `url:"page,omitempty"`
+	Filename string `url:"filter_filename,omitempty"`
+}
+
+func (options FileListOptions) Apply(req *resty.Request) {
+	v, _ := query.Values(options)
+	req.SetQueryString(v.Encode())
+}
+
+func (c *FileService) ListOpts() FileListOptions        { return c.opts }
+func (c *FileService) SetListOptions(o FileListOptions) { c.opts = o }
+func (c *FileService) WithListOptions(o FileListOptions) *FileService {
+	c.opts = o
+	return c
 }

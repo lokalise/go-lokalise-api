@@ -12,36 +12,44 @@ type OrderService struct {
 	BaseService
 }
 
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service entity objects
+// _____________________________________________________________________________________________________________________
+
 type Order struct {
 	WithProjectID
 	WithCreationTime
+	WithCreationUser
+
 	OrderID             int64            `json:"order_id"`
 	CardID              int64            `json:"card_id"`
 	Status              string           `json:"status"`
-	CreatedBy           int64            `json:"created_by,omitempty"`
-	CreatedByEmail      string           `json:"created_by_email,omitempty"`
 	SourceLangISO       string           `json:"source_language_iso"`
 	TargetLangISOs      []string         `json:"target_language_isos"`
-	Keys                []string         `json:"keys,omitempty"`
+	Keys                []string         `json:"keys"`
 	SourceWords         map[string]int64 `json:"source_words"`
 	ProviderSlug        string           `json:"provider_slug"`
 	TranslationStyle    string           `json:"translation_style,omitempty"`
-	TranslationTierID   int64            `json:"translation_tier"` // this should be TranslationTier.TierID
+	TranslationTierID   int64            `json:"translation_tier"`
 	TranslationTierName string           `json:"translation_tier_name"`
 	Briefing            string           `json:"briefing,omitempty"`
 	Total               float64          `json:"total"`
 }
 
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service request/response objects
+// _____________________________________________________________________________________________________________________
+
 type CreateOrder struct {
-	WithProjectID
+	ProjectID         string   `json:"project_id"`
 	CardID            int64    `json:"card_id"`
-	Briefing          string   `json:"briefing,omitempty"`
+	Briefing          string   `json:"briefing"`
 	SourceLangISO     string   `json:"source_language_iso"`
 	TargetLangISOs    []string `json:"target_language_isos"`
-	Keys              []string `json:"keys,omitempty"`
+	Keys              []string `json:"keys"`
 	ProviderSlug      string   `json:"provider_slug"`
 	TranslationTierID int64    `json:"translation_tier"`
-	DryRun            bool     `json:"dry_run"`
+	DryRun            bool     `json:"dry_run,omitempty"`
 	TranslationStyle  string   `json:"translation_style,omitempty"`
 }
 
@@ -49,6 +57,10 @@ type OrdersResponse struct {
 	Paged
 	Orders []Order `json:"orders"`
 }
+
+// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+// Service methods
+// _____________________________________________________________________________________________________________________
 
 func (c *OrderService) List(teamID int64) (r OrdersResponse, err error) {
 	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%d/%s", pathTeams, teamID, pathOrders), &r, c.PageOpts())
