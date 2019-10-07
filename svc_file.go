@@ -150,8 +150,8 @@ func (c *FileService) Download(projectID string, downloadOptions FileDownload) (
 // _____________________________________________________________________________________________________________________
 
 type FileListOptions struct {
-	Limit    int64  `url:"limit,omitempty"`
-	Page     int64  `url:"page,omitempty"`
+	Limit    uint   `url:"limit,omitempty"`
+	Page     uint   `url:"page,omitempty"`
 	Filename string `url:"filter_filename,omitempty"`
 }
 

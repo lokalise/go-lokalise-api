@@ -20,8 +20,8 @@ type OptionsApplier interface {
 }
 
 type PageOptions struct {
-	Limit int64 `url:"limit,omitempty"`
-	Page  int64 `url:"page,omitempty"`
+	Limit uint `url:"limit,omitempty"`
+	Page  uint `url:"page,omitempty"`
 }
 
 func (options PageOptions) Apply(req *resty.Request) {

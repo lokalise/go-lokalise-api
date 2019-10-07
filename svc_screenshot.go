@@ -124,8 +124,8 @@ func (c *ScreenshotService) Delete(projectID string, screenshotID int64) (r Scre
 
 type ScreenshotListOptions struct {
 	// page options
-	Page  uint8 `url:"page,omitempty"`
-	Limit uint8 `url:"limit,omitempty"`
+	Page  uint `url:"page,omitempty"`
+	Limit uint `url:"limit,omitempty"`
 
 	IncludeTags uint8 `json:"include_tags,omitempty"`
 	ListOnly    uint8 `json:"list_only,omitempty"`

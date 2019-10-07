@@ -105,8 +105,8 @@ func (c *TranslationService) Update(projectID string, translationID int64, opts 
 
 type TranslationListOptions struct {
 	// page options
-	Page  uint8 `url:"page,omitempty"`
-	Limit uint8 `url:"limit,omitempty"`
+	Page  uint `url:"page,omitempty"`
+	Limit uint `url:"limit,omitempty"`
 
 	// Possible values are 1 and 0.
 	DisableReferences uint8 `url:"disable_references,omitempty"`

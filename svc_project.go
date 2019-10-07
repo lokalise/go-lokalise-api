@@ -188,15 +188,15 @@ func (c *ProjectService) Delete(projectID string) (r ProjectDeleteResponse, err 
 // List options
 type ProjectListOptions struct {
 	// page options
-	Page  int64 `url:"page,omitempty"`
-	Limit int64 `url:"limit,omitempty"`
+	Page  uint `url:"page,omitempty"`
+	Limit uint `url:"limit,omitempty"`
 
 	FilterTeamID int64  `url:"filter_team_id,omitempty"`
 	FilterNames  string `url:"filter_names,omitempty"`
 
 	// Possible values are 1 and 0
-	IncludeStat     string `url:"include_statistics,omitempty"`
-	IncludeSettings string `url:"include_settings,omitempty"`
+	IncludeStat     uint8 `url:"include_statistics,omitempty"`
+	IncludeSettings uint8 `url:"include_settings,omitempty"`
 }
 
 func (options ProjectListOptions) Apply(req *resty.Request) {
