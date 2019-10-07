@@ -86,7 +86,7 @@ func (c *ScreenshotService) List(projectID string) (r ScreenshotsResponse, err e
 	return r, apiError(resp)
 }
 
-func (c *ScreenshotService) Create(projectID string, screenshots NewScreenshots) (r ScreenshotResponse, err error) {
+func (c *ScreenshotService) Create(projectID string, screenshots NewScreenshots) (r ScreenshotsResponse, err error) {
 	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathScreenshots), &r, screenshots)
 
 	if err != nil {
