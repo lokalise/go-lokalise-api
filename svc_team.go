@@ -27,7 +27,7 @@ type Quota struct {
 	Users    int64 `json:"users"`
 	Keys     int64 `json:"keys"`
 	Projects int64 `json:"projects"`
-	MAU      int64 `json:"mau,omitempty"`
+	MAU      int64 `json:"mau"`
 }
 
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
