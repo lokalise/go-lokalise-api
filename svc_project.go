@@ -194,9 +194,9 @@ type ProjectListOptions struct {
 	FilterTeamID int64  `url:"filter_team_id,omitempty"`
 	FilterNames  string `url:"filter_names,omitempty"`
 
-	// Possible values are 1 and 0
-	IncludeStat     uint8 `url:"include_statistics,omitempty"`
-	IncludeSettings uint8 `url:"include_settings,omitempty"`
+	// Possible values are 1 and 0, default 1
+	IncludeStat     string `url:"include_statistics,omitempty"`
+	IncludeSettings string `url:"include_settings,omitempty"`
 }
 
 func (options ProjectListOptions) Apply(req *resty.Request) {
