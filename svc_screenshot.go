@@ -65,6 +65,10 @@ type NewScreenshot struct {
 	Tags        []string `json:"tags,omitempty"`
 }
 
+type NewScreenshots struct {
+	Screenshots []NewScreenshot `json:"screenshots"`
+}
+
 type UpdateScreenshot struct {
 	Title       string   `json:"title"`
 	Description string   `json:"description"`
@@ -82,8 +86,8 @@ func (c *ScreenshotService) List(projectID string) (r ScreenshotsResponse, err e
 	return r, apiError(resp)
 }
 
-func (c *ScreenshotService) Create(projectID string, screenshot NewScreenshot) (r ScreenshotResponse, err error) {
-	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathScreenshots), &r, screenshot)
+func (c *ScreenshotService) Create(projectID string, screenshots NewScreenshots) (r ScreenshotResponse, err error) {
+	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathScreenshots), &r, screenshots)
 
 	if err != nil {
 		return
