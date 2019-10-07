@@ -49,10 +49,10 @@ type Key struct {
 }
 
 type PlatformStrings struct {
-	Ios     string `json:"ios"`
-	Android string `json:"android"`
-	Web     string `json:"web"`
-	Other   string `json:"other"`
+	Ios     string `json:"ios,omitempty"`
+	Android string `json:"android,omitempty"`
+	Web     string `json:"web,omitempty"`
+	Other   string `json:"other,omitempty"`
 }
 
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
@@ -64,7 +64,7 @@ type NewKey struct {
 	KeyName      interface{}      `json:"key_name,omitempty"` // could be empty in case of updating
 	Description  string           `json:"description,omitempty"`
 	Platforms    []string         `json:"platforms,omitempty"` // could be empty in case of updating
-	Filenames    PlatformStrings  `json:"filenames,omitempty"`
+	Filenames    *PlatformStrings `json:"filenames,omitempty"`
 	Tags         []string         `json:"tags,omitempty"`
 	Comments     []NewComment     `json:"comments,omitempty"`
 	Screenshots  []NewScreenshot  `json:"screenshots,omitempty"`
@@ -98,7 +98,7 @@ type KeysResponse struct {
 	Paged
 	WithProjectID
 	Keys   []Key       `json:"keys"`
-	Errors []ErrorKeys `json:"error"`
+	Errors []ErrorKeys `json:"error,omitempty"`
 }
 
 type KeyResponse struct {
