@@ -66,6 +66,7 @@ type NewKey struct {
 	Platforms    []string         `json:"platforms,omitempty"` // could be empty in case of updating
 	Filenames    *PlatformStrings `json:"filenames,omitempty"`
 	Tags         []string         `json:"tags,omitempty"`
+	MergeTags    bool             `json:"merge_tags,omitempty"`
 	Comments     []NewComment     `json:"comments,omitempty"`
 	Screenshots  []NewScreenshot  `json:"screenshots,omitempty"`
 	Translations []NewTranslation `json:"translations,omitempty"`
