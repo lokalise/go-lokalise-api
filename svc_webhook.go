@@ -13,7 +13,7 @@ type WebhookService struct {
 }
 
 type Webhook struct {
-	WebhookID    int64       `json:"webhook_id"`
+	WebhookID    string      `json:"webhook_id"`
 	URL          string      `json:"url"`
 	Secret       string      `json:"secret"`
 	Events       []string    `json:"events"`
@@ -72,8 +72,8 @@ func (c *WebhookService) Create(projectID string, wh CreateWebhook) (r WebhookRe
 	return r, apiError(resp)
 }
 
-func (c *WebhookService) Update(projectID string, webhookID int64, opts UpdateWebhook) (r WebhookResponse, err error) {
-	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathWebhooks, webhookID), &r, opts)
+func (c *WebhookService) Update(projectID string, webhookID string, opts UpdateWebhook) (r WebhookResponse, err error) {
+	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathWebhooks, webhookID), &r, opts)
 
 	if err != nil {
 		return
@@ -81,8 +81,8 @@ func (c *WebhookService) Update(projectID string, webhookID int64, opts UpdateWe
 	return r, apiError(resp)
 }
 
-func (c *WebhookService) Retrieve(projectID string, webhookID int64) (r WebhookResponse, err error) {
-	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathWebhooks, webhookID), &r)
+func (c *WebhookService) Retrieve(projectID string, webhookID string) (r WebhookResponse, err error) {
+	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathWebhooks, webhookID), &r)
 
 	if err != nil {
 		return
@@ -90,8 +90,8 @@ func (c *WebhookService) Retrieve(projectID string, webhookID int64) (r WebhookR
 	return r, apiError(resp)
 }
 
-func (c *WebhookService) Delete(projectID string, webhookID int64) (r WebhookDeleteResponse, err error) {
-	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathWebhooks, webhookID), &r)
+func (c *WebhookService) Delete(projectID string, webhookID string) (r WebhookDeleteResponse, err error) {
+	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathWebhooks, webhookID), &r)
 
 	if err != nil {
 		return
