@@ -3,10 +3,12 @@ package lokalise
 
 import (
 	"errors"
+	"time"
 )
 
 type Api struct {
-	httpClient *restClient
+	httpClient  *restClient
+	pageOptions PageOptions
 
 	Projects             func() *ProjectService
 	Teams                func() *TeamService
@@ -40,7 +42,7 @@ func New(apiToken string, options ...ClientOption) (*Api, error) {
 			return nil, err
 		}
 	}
-	bs := BaseService{c.httpClient, PageOptions{}, nil}
+	bs := BaseService{c.httpClient, c.pageOptions, nil}
 
 	c.Projects = func() *ProjectService { return &ProjectService{BaseService: bs} }
 	c.Teams = func() *TeamService { return &TeamService{bs} }
@@ -68,6 +70,17 @@ func New(apiToken string, options ...ClientOption) (*Api, error) {
 	return &c, nil
 }
 
+// WithBaseURL returns a ClientOption setting the base URL of the client.
+// This should only be used for testing different API versions or for using a mocked
+// backend in tests.
+//noinspection GoUnusedExportedFunction
+func WithBaseURL(url string) ClientOption {
+	return func(c *Api) error {
+		c.httpClient.Client.SetHostURL(url)
+		return nil
+	}
+}
+
 // WithRetryCount returns a client ClientOption setting the retry count of outgoing requests.
 // if count is zero retries are disabled.
 func WithRetryCount(count int) ClientOption {
@@ -80,14 +93,33 @@ func WithRetryCount(count int) ClientOption {
 	}
 }
 
-// WithBaseURL returns a ClientOption setting the base URL of the client.
-//
-// This should only be used for testing different API versions or for using a mocked
-// backend in tests.
+// Sets default wait time to sleep before retrying request.
+// Default is 100 milliseconds.
 //noinspection GoUnusedExportedFunction
-func WithBaseURL(url string) ClientOption {
+func WithRetryTimeout(t time.Duration) ClientOption {
 	return func(c *Api) error {
-		c.httpClient.Client.SetHostURL(url)
+		c.httpClient.Client.SetRetryWaitTime(t)
+		return nil
+	}
+}
+
+func WithConnectionTimeout(t time.Duration) ClientOption {
+	return func(c *Api) error {
+		c.httpClient.Client.SetTimeout(t)
+		return nil
+	}
+}
+
+func WithDebug(dbg bool) ClientOption {
+	return func(c *Api) error {
+		c.httpClient.Client.SetDebug(dbg)
+		return nil
+	}
+}
+
+func WithPageLimit(limit uint) ClientOption {
+	return func(c *Api) error {
+		c.pageOptions.Limit = limit
 		return nil
 	}
 }
