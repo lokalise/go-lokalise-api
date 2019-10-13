@@ -44,20 +44,28 @@ func New(apiToken string, options ...ClientOption) (*Api, error) {
 	}
 	bs := BaseService{c.httpClient, c.pageOptions, nil}
 
-	c.Projects = func() *ProjectService { return &ProjectService{BaseService: bs} }
+	// predefined list options if any
+	prjOpts := ProjectListOptions{Page: c.pageOptions.Page, Limit: c.pageOptions.Limit}
+	keyOpts := KeyListOptions{Page: c.pageOptions.Page, Limit: c.pageOptions.Limit}
+	taskOpts := TaskListOptions{Page: c.pageOptions.Page, Limit: c.pageOptions.Limit}
+	scOpts := ScreenshotListOptions{Page: c.pageOptions.Page, Limit: c.pageOptions.Limit}
+	trOpts := TranslationListOptions{Page: c.pageOptions.Page, Limit: c.pageOptions.Limit}
+	fOpts := FileListOptions{Page: c.pageOptions.Page, Limit: c.pageOptions.Limit}
+
+	c.Projects = func() *ProjectService { return &ProjectService{BaseService: bs, opts: prjOpts} }
 	c.Teams = func() *TeamService { return &TeamService{bs} }
 	c.TeamUsers = func() *TeamUserService { return &TeamUserService{bs} }
 	c.TeamUserGroups = func() *TeamUserGroupService { return &TeamUserGroupService{bs} }
 
 	c.Contributors = func() *ContributorService { return &ContributorService{bs} }
 	c.Comments = func() *CommentService { return &CommentService{bs} }
-	c.Keys = func() *KeyService { return &KeyService{BaseService: bs} }
-	c.Tasks = func() *TaskService { return &TaskService{BaseService: bs} }
+	c.Keys = func() *KeyService { return &KeyService{BaseService: bs, listOpts: keyOpts} }
+	c.Tasks = func() *TaskService { return &TaskService{BaseService: bs, listOpts: taskOpts} }
 
-	c.Screenshots = func() *ScreenshotService { return &ScreenshotService{BaseService: bs} }
+	c.Screenshots = func() *ScreenshotService { return &ScreenshotService{BaseService: bs, listOpts: scOpts} }
 	c.Snapshots = func() *SnapshotService { return &SnapshotService{bs} }
 	c.Languages = func() *LanguageService { return &LanguageService{bs} }
-	c.Translations = func() *TranslationService { return &TranslationService{BaseService: bs} }
+	c.Translations = func() *TranslationService { return &TranslationService{BaseService: bs, opts: trOpts} }
 
 	c.TranslationProviders = func() *TranslationProviderService { return &TranslationProviderService{bs} }
 	c.TranslationStatuses = func() *TranslationStatusService { return &TranslationStatusService{bs} }
@@ -65,7 +73,7 @@ func New(apiToken string, options ...ClientOption) (*Api, error) {
 	c.PaymentCards = func() *PaymentCardService { return &PaymentCardService{bs} }
 
 	c.Webhooks = func() *WebhookService { return &WebhookService{bs} }
-	c.Files = func() *FileService { return &FileService{BaseService: bs} }
+	c.Files = func() *FileService { return &FileService{BaseService: bs, opts: fOpts} }
 
 	return &c, nil
 }
