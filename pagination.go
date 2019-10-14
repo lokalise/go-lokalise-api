@@ -8,11 +8,24 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
+type PageCounter interface {
+	NumberOfPages() int64
+	CurrentPage() int64
+}
+
 type Paged struct {
 	TotalCount int64 `json:"-"`
 	PageCount  int64 `json:"-"`
 	Limit      int64 `json:"-"`
 	Page       int64 `json:"-"`
+}
+
+func (p Paged) NumberOfPages() int64 {
+	return p.PageCount
+}
+
+func (p Paged) CurrentPage() int64 {
+	return p.Page
 }
 
 type OptionsApplier interface {
