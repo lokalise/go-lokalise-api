@@ -52,20 +52,20 @@ type FileDownload struct {
 	BundleStructure            string            `json:"bundle_structure,omitempty"`
 	DirectoryPrefix            string            `json:"directory_prefix,omitempty"`
 	AllPlatforms               bool              `json:"all_platforms,omitempty"`
-	FilterLangs                string            `json:"filter_langs,omitempty"`
-	FilterData                 string            `json:"filter_data,omitempty"`
-	FilterFilenames            string            `json:"filter_filenames,omitempty"`
+	FilterLangs                []string          `json:"filter_langs,omitempty"`
+	FilterData                 []string          `json:"filter_data,omitempty"`
+	FilterFilenames            []string          `json:"filter_filenames,omitempty"`
 	AddNewlineEOF              bool              `json:"add_newline_eof,omitempty"`
-	CustomTranslationStatusIDs string            `json:"custom_translation_status_ids,omitempty"`
-	IncludeTags                string            `json:"include_tags,omitempty"`
-	ExcludeTags                string            `json:"exclude_tags,omitempty"`
+	CustomTranslationStatusIDs []string          `json:"custom_translation_status_ids,omitempty"`
+	IncludeTags                []string          `json:"include_tags,omitempty"`
+	ExcludeTags                []string          `json:"exclude_tags,omitempty"`
 	ExportSort                 string            `json:"export_sort,omitempty"`
 	ExportEmptyAs              string            `json:"export_empty_as,omitempty"`
 	IncludeComments            bool              `json:"include_comments,omitempty"`
 	IncludeDescription         bool              `json:"include_description,omitempty"`
-	IncludeProjectIDs          string            `json:"include_pids,omitempty"`
-	Triggers                   string            `json:"triggers,omitempty"`
-	FilterRepositories         string            `json:"filter_repositories,omitempty"`
+	IncludeProjectIDs          []string          `json:"include_pids,omitempty"`
+	Triggers                   []string          `json:"triggers,omitempty"`
+	FilterRepositories         []string          `json:"filter_repositories,omitempty"`
 	ReplaceBreaks              *bool             `json:"replace_breaks,omitempty"`
 	DisableReferences          bool              `json:"disable_references,omitempty"`
 	PluralFormat               string            `json:"plural_format,omitempty"`
