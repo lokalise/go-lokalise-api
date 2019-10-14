@@ -2,8 +2,6 @@ package lokalise
 
 import (
 	"fmt"
-	"path"
-	"strconv"
 )
 
 type ContributorService struct {
@@ -63,7 +61,7 @@ func (c *ContributorService) List(projectID string) (r ContributorsResponse, err
 	return r, apiError(resp)
 }
 
-func (c *ContributorService) Create(projectID string, cs []NewContributor) (r ContributorResponse, err error) {
+func (c *ContributorService) Create(projectID string, cs []NewContributor) (r ContributorsResponse, err error) {
 	resp, err := c.post(c.Ctx(), pathContributors(projectID), &r, map[string]interface{}{"contributors": cs})
 
 	if err != nil {
@@ -73,8 +71,7 @@ func (c *ContributorService) Create(projectID string, cs []NewContributor) (r Co
 }
 
 func (c *ContributorService) Retrieve(projectID string, userID int64) (r ContributorResponse, err error) {
-	url := path.Join(pathContributors(projectID), strconv.FormatInt(userID, 10))
-	resp, err := c.get(c.Ctx(), url, &r)
+	resp, err := c.get(c.Ctx(), pathContributorByID(projectID, userID), &r)
 
 	if err != nil {
 		return
@@ -83,8 +80,7 @@ func (c *ContributorService) Retrieve(projectID string, userID int64) (r Contrib
 }
 
 func (c *ContributorService) Update(projectID string, userID int64, p Permission) (r ContributorResponse, err error) {
-	url := path.Join(pathContributors(projectID), strconv.FormatInt(userID, 10))
-	resp, err := c.put(c.Ctx(), url, &r, p)
+	resp, err := c.put(c.Ctx(), pathContributorByID(projectID, userID), &r, p)
 
 	if err != nil {
 		return
@@ -93,8 +89,7 @@ func (c *ContributorService) Update(projectID string, userID int64, p Permission
 }
 
 func (c *ContributorService) Delete(projectID string, userID int64) (r DeleteContributorResponse, err error) {
-	url := path.Join(pathContributors(projectID), strconv.FormatInt(userID, 10))
-	resp, err := c.delete(c.Ctx(), url, &r)
+	resp, err := c.delete(c.Ctx(), pathContributorByID(projectID, userID), &r)
 
 	if err != nil {
 		return
@@ -104,4 +99,8 @@ func (c *ContributorService) Delete(projectID string, userID int64) (r DeleteCon
 
 func pathContributors(projectID string) string {
 	return fmt.Sprintf("%s/%s/contributors", pathProjects, projectID)
+}
+
+func pathContributorByID(projectID string, userID int64) string {
+	return fmt.Sprintf("%s/%s/contributors/%d", pathProjects, projectID, userID)
 }
