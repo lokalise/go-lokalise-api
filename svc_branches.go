@@ -79,13 +79,3 @@ func (c *BranchService) Delete(projectID string, ID int64) (r DeleteBranchRespon
 	}
 	return r, apiError(resp)
 }
-
-func (c *BranchService) Restore(projectID string, ID int64) (r Project, err error) {
-	path := path.Join(pathProjects, projectID, pathBranches, strconv.FormatInt(ID, 10))
-	resp, err := c.post(c.Ctx(), path, &r, nil)
-
-	if err != nil {
-		return
-	}
-	return r, apiError(resp)
-}
