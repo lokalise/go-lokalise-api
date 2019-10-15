@@ -1,4 +1,4 @@
-# Lokalise API 2.0 Golang client library
+# Lokalise API v2 Golang client library
 
 # Index
 
