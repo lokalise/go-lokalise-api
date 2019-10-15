@@ -48,7 +48,7 @@ type FileUpload struct {
 
 type FileDownload struct {
 	Format                     string            `json:"format"`
-	OriginalFilenames          bool              `json:"original_filenames,omitempty"`
+	OriginalFilenames          *bool             `json:"original_filenames,omitempty"`
 	BundleStructure            string            `json:"bundle_structure,omitempty"`
 	DirectoryPrefix            string            `json:"directory_prefix,omitempty"`
 	AllPlatforms               bool              `json:"all_platforms,omitempty"`
