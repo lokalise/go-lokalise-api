@@ -10,24 +10,25 @@ type Api struct {
 	httpClient  *restClient
 	pageOptions PageOptions
 
-	Projects             func() *ProjectService
-	Teams                func() *TeamService
-	TeamUsers            func() *TeamUserService
-	TeamUserGroups       func() *TeamUserGroupService
-	Contributors         func() *ContributorService
+	Branches             func() *BranchService
 	Comments             func() *CommentService
+	Contributors         func() *ContributorService
+	Files                func() *FileService
 	Keys                 func() *KeyService
-	Tasks                func() *TaskService
-	Screenshots          func() *ScreenshotService
-	Snapshots            func() *SnapshotService
 	Languages            func() *LanguageService
-	Translations         func() *TranslationService
-	TranslationProviders func() *TranslationProviderService
-	TranslationStatuses  func() *TranslationStatusService
 	Orders               func() *OrderService
 	PaymentCards         func() *PaymentCardService
+	Projects             func() *ProjectService
+	Screenshots          func() *ScreenshotService
+	Snapshots            func() *SnapshotService
+	Tasks                func() *TaskService
+	Teams                func() *TeamService
+	TeamUserGroups       func() *TeamUserGroupService
+	TeamUsers            func() *TeamUserService
+	TranslationProviders func() *TranslationProviderService
+	Translations         func() *TranslationService
+	TranslationStatuses  func() *TranslationStatusService
 	Webhooks             func() *WebhookService
-	Files                func() *FileService
 }
 
 type ClientOption func(*Api) error
@@ -53,6 +54,7 @@ func New(apiToken string, options ...ClientOption) (*Api, error) {
 	fOpts := FileListOptions{Page: c.pageOptions.Page, Limit: c.pageOptions.Limit}
 
 	c.Projects = func() *ProjectService { return &ProjectService{BaseService: bs, opts: prjOpts} }
+	c.Branches = func() *BranchService { return &BranchService{bs} }
 	c.Teams = func() *TeamService { return &TeamService{bs} }
 	c.TeamUsers = func() *TeamUserService { return &TeamUserService{bs} }
 	c.TeamUserGroups = func() *TeamUserGroupService { return &TeamUserGroupService{bs} }
