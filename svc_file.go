@@ -38,7 +38,7 @@ type FileUpload struct {
 	TagUpdatedKeys         *bool `json:"tag_updated_keys,omitempty"`
 	TagSkippedKeys         bool  `json:"tag_skipped_keys,omitempty"`
 	ReplaceModified        bool  `json:"replace_modified,omitempty"`
-	SlashNToLinebreak      bool  `json:"slashn_to_linebreak,omitempty"`
+	SlashNToLinebreak      *bool `json:"slashn_to_linebreak,omitempty"`
 	KeysToValues           bool  `json:"keys_to_values,omitempty"`
 	DistinguishByFile      bool  `json:"distinguish_by_file,omitempty"`
 	ApplyTM                bool  `json:"apply_tm,omitempty"`
