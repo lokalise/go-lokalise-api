@@ -51,10 +51,10 @@ type NewTranslation struct {
 }
 
 type UpdateTranslation struct {
-	Translation                string `json:"translation"`
-	IsFuzzy                    *bool  `json:"is_fuzzy,omitempty"`
-	IsReviewed                 bool   `json:"is_reviewed,omitempty"`
-	CustomTranslationStatusIDs string `json:"custom_translation_status_ids,omitempty"`
+	Translation                string   `json:"translation"`
+	IsFuzzy                    *bool    `json:"is_fuzzy,omitempty"`
+	IsReviewed                 bool     `json:"is_reviewed,omitempty"`
+	CustomTranslationStatusIDs []string `json:"custom_translation_status_ids,omitempty"`
 }
 
 type TranslationsResponse struct {

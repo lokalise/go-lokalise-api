@@ -59,7 +59,7 @@ func (c *TranslationProviderService) List(teamID int64) (r TranslationProvidersR
 }
 
 func (c *TranslationProviderService) Retrieve(teamID, providerID int64) (r TranslationProvider, err error) {
-	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%d/%s/%d", pathTeams, teamID, "provider", providerID), &r)
+	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%d/%s/%d", pathTeams, teamID, "translation_providers", providerID), &r)
 
 	if err != nil {
 		return

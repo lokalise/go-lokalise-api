@@ -21,7 +21,7 @@ type Order struct {
 	WithCreationTime
 	WithCreationUser
 
-	OrderID             int64            `json:"order_id"`
+	OrderID             string           `json:"order_id"`
 	CardID              int64            `json:"card_id"`
 	Status              string           `json:"status"`
 	SourceLangISO       string           `json:"source_language_iso"`
@@ -81,7 +81,7 @@ func (c *OrderService) Create(teamID int64, order CreateOrder) (r Order, err err
 	return r, apiError(resp)
 }
 
-func (c *OrderService) Retrieve(teamID, orderID int64) (r Order, err error) {
+func (c *OrderService) Retrieve(teamID int64, orderID string) (r Order, err error) {
 	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%d/%s/%d", pathTeams, teamID, pathOrders, orderID), &r)
 
 	if err != nil {

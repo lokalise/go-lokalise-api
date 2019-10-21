@@ -62,7 +62,7 @@ type FileDownload struct {
 	ExportSort                 string            `json:"export_sort,omitempty"`
 	ExportEmptyAs              string            `json:"export_empty_as,omitempty"`
 	IncludeComments            bool              `json:"include_comments,omitempty"`
-	IncludeDescription         bool              `json:"include_description,omitempty"`
+	IncludeDescription         *bool             `json:"include_description,omitempty"`
 	IncludeProjectIDs          []string          `json:"include_pids,omitempty"`
 	Triggers                   []string          `json:"triggers,omitempty"`
 	FilterRepositories         []string          `json:"filter_repositories,omitempty"`
