@@ -20,7 +20,7 @@ type TeamUserGroup struct {
 
 	GroupID     int64        `json:"group_id"`
 	Name        string       `json:"name"`
-	Permissions []Permission `json:"permissions"`
+	Permissions *Permission `json:"permissions"`
 	Projects    []string     `json:"projects"`
 	Members     []int64      `json:"members"`
 }
