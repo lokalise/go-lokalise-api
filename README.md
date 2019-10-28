@@ -1,4 +1,4 @@
-# Lokalise API v2 Golang client library
+# Lokalise API v2 official Golang client library
 
 # Index
 
@@ -41,7 +41,7 @@ client, err := lokalise.New(token)
 
 ## General options
 
-During initialization there is an ability to set some global API parameters with ClientOption-functions. Now these functions are available:
+You can set global API parameters with the ClientOption functions during the initialization. The following functions are available:
 
 * WithBaseURL
 * WithRetryCount
@@ -62,10 +62,9 @@ Api, err := lokalise.New(
 
 ## Objects and models
 
-Individual objects are represented as instances of according structs. 
-Now in most cases for creating and updating are used different objects.
+Individual objects are represented as instances of according structs. Different objects are used for creating and updating in most cases.
 
-There are some types of objects:
+Here are some object types:
 
 * Create/Update request objects, i.e. NewKey, NewContributor etc
 
@@ -75,9 +74,9 @@ There are some types of objects:
 
 ## Request options and pagination
 
-Some resources, such as Projects, Keys, Files, Tasks, Screenshots, Translations have optional parameters for List method (Keys also have option for Retrieve). These params should be set before calling.
+Some resources, such as Projects, Keys, Files, Tasks, Screenshots, Translations have optional parameters for List method (Keys also have an option for Retrieve). These parameters should be set before calling.
 
-All request options could be set inline as far as separately:
+All request options could be set inline and separately:
 
 ```go
 
@@ -95,7 +94,7 @@ client.Keys().WithListOptions(lokalise.KeyListOptions{Limit: 3}).List("{PROJECT_
 
 ```
 
-For pagination two fields: Limit, Page are used.
+There are two parameters, used for pagination: Limit and Page.
 
 ```go
 t := Api.Teams()
