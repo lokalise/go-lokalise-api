@@ -35,6 +35,10 @@ type ListBranchesResponse struct {
 	Branches []Branch `json:"branches"`
 }
 
+type CreateBranchRequest struct {
+	Name string `json:"name"`
+}
+
 type CreateBranchResponse struct {
 	WithProjectID
 	Branch Branch `json:"branch"`
@@ -50,8 +54,8 @@ type DeleteBranchResponse struct {
 // _____________________________________________________________________________________________________________________
 
 func (c *BranchService) List(projectID string) (r ListBranchesResponse, err error) {
-	path := path.Join(pathProjects, projectID, pathBranches)
-	resp, err := c.getList(c.Ctx(), path, &r, c.PageOpts())
+	endpoint := path.Join(pathProjects, projectID, pathBranches)
+	resp, err := c.getList(c.Ctx(), endpoint, &r, c.PageOpts())
 
 	if err != nil {
 		return
@@ -61,8 +65,8 @@ func (c *BranchService) List(projectID string) (r ListBranchesResponse, err erro
 }
 
 func (c *BranchService) Create(projectID string, name string) (r CreateBranchResponse, err error) {
-	path := path.Join(pathProjects, projectID, pathBranches)
-	resp, err := c.post(c.Ctx(), path, &r, map[string]interface{}{"name": name})
+	endpoint := path.Join(pathProjects, projectID, pathBranches)
+	resp, err := c.post(c.Ctx(), endpoint, &r, CreateBranchRequest{Name: name})
 
 	if err != nil {
 		return
@@ -71,8 +75,8 @@ func (c *BranchService) Create(projectID string, name string) (r CreateBranchRes
 }
 
 func (c *BranchService) Delete(projectID string, ID int64) (r DeleteBranchResponse, err error) {
-	path := path.Join(pathProjects, projectID, pathBranches, strconv.FormatInt(ID, 10))
-	resp, err := c.delete(c.Ctx(), path, &r)
+	endpoint := path.Join(pathProjects, projectID, pathBranches, strconv.FormatInt(ID, 10))
+	resp, err := c.delete(c.Ctx(), endpoint, &r)
 
 	if err != nil {
 		return

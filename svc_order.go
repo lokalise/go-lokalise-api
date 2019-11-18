@@ -82,7 +82,7 @@ func (c *OrderService) Create(teamID int64, order CreateOrder) (r Order, err err
 }
 
 func (c *OrderService) Retrieve(teamID int64, orderID string) (r Order, err error) {
-	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%d/%s/%d", pathTeams, teamID, pathOrders, orderID), &r)
+	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%d/%s/%s", pathTeams, teamID, pathOrders, orderID), &r)
 
 	if err != nil {
 		return
