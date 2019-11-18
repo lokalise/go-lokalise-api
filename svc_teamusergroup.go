@@ -18,11 +18,11 @@ type TeamUserGroup struct {
 	WithCreationTime
 	WithTeamID
 
-	GroupID     int64        `json:"group_id"`
-	Name        string       `json:"name"`
+	GroupID     int64       `json:"group_id"`
+	Name        string      `json:"name"`
 	Permissions *Permission `json:"permissions"`
-	Projects    []string     `json:"projects"`
-	Members     []int64      `json:"members"`
+	Projects    []string    `json:"projects"`
+	Members     []int64     `json:"members"`
 }
 
 type Permission struct {

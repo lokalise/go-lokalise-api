@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	baseURLPath  = "/api2"
-	testApiToken = "apiToken"
+	baseURLPath   = "/api2"
+	testApiToken  = "apiToken"
+	testProjectID = "3002780358964f9bab5a92.87762498"
 )
 
 func setup() (api *Api, mux *http.ServeMux, serverURL string, teardown func()) {

@@ -7,21 +7,19 @@ import (
 	"testing"
 )
 
-const projectID = "3002780358964f9bab5a92.87762498"
-
 func TestBranchService_Create(t *testing.T) {
 	client, mux, _, teardown := setup()
 	defer teardown()
 
 	branchName := "hotfix/really-important"
 
-	mux.HandleFunc(fmt.Sprintf("/projects/%s/branches", projectID), func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(fmt.Sprintf("/projects/%s/branches", testProjectID), func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		testMethod(t, r, "POST")
 		testHeader(t, r, apiTokenHeader, testApiToken)
 		testBody(t, r, fmt.Sprintf("{\"name\":\"%s\"}", branchName))
 		body := `{
-			"project_id": "` + projectID + `",
+			"project_id": "` + testProjectID + `",
 			"branch": {
 				"branch_id": 995991,
 				"name": "` + branchName + `",
@@ -34,7 +32,7 @@ func TestBranchService_Create(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(body))
 	})
 
-	r, err := client.Branches().Create(projectID, "hotfix/really-important")
+	r, err := client.Branches().Create(testProjectID, "hotfix/really-important")
 	if err != nil {
 		t.Errorf("Branches.Create returned error: %v", err)
 	}
@@ -61,12 +59,12 @@ func TestBranchService_List(t *testing.T) {
 	client, mux, _, teardown := setup()
 	defer teardown()
 
-	mux.HandleFunc(fmt.Sprintf("/projects/%s/branches", projectID), func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(fmt.Sprintf("/projects/%s/branches", testProjectID), func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		testMethod(t, r, "GET")
 		testHeader(t, r, apiTokenHeader, testApiToken)
 		body := `{
-			"project_id": "` + projectID + `",
+			"project_id": "` + testProjectID + `",
 			"branches": [
 				{
 					"branch_id": 1234,
@@ -89,7 +87,7 @@ func TestBranchService_List(t *testing.T) {
 		_, _ = fmt.Fprint(w, string(body))
 	})
 
-	r, err := client.Branches().List(projectID)
+	r, err := client.Branches().List(testProjectID)
 	if err != nil {
 		t.Errorf("Branches.List returned error: %v", err)
 	}
@@ -130,24 +128,24 @@ func TestBranchService_Delete(t *testing.T) {
 	client, mux, _, teardown := setup()
 	defer teardown()
 
-	mux.HandleFunc(fmt.Sprintf("/projects/%s/branches/1", projectID), func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(fmt.Sprintf("/projects/%s/branches/1", testProjectID), func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		testMethod(t, r, "DELETE")
 		testHeader(t, r, apiTokenHeader, testApiToken)
 		body := `{
-			"project_id": "` + projectID + `",
+			"project_id": "` + testProjectID + `",
 			"branch_deleted": true
 		}`
 		_, _ = fmt.Fprint(w, string(body))
 	})
 
-	r, err := client.Branches().Delete(projectID, 1)
+	r, err := client.Branches().Delete(testProjectID, 1)
 	if err != nil {
 		t.Errorf("Branches.Delete returned error: %v", err)
 	}
 
 	want := DeleteBranchResponse{
-		WithProjectID: WithProjectID{ProjectID: projectID},
+		WithProjectID: WithProjectID{ProjectID: testProjectID},
 		BranchDeleted: true,
 	}
 
