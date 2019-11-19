@@ -261,8 +261,8 @@ func TestContributorService_Retrieve(t *testing.T) {
 		},
 
 		Permission: Permission{
-			IsAdmin:     false,
-			IsReviewer:  true,
+			IsAdmin:    false,
+			IsReviewer: true,
 			Languages: []Language{
 				{
 					LangID:     640,
@@ -281,5 +281,64 @@ func TestContributorService_Retrieve(t *testing.T) {
 }
 
 func TestContributorService_Update(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
 
+	mux.HandleFunc(
+		fmt.Sprintf("/projects/%s/contributors/%d", testProjectID, 421),
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			testMethod(t, r, "PUT")
+			testHeader(t, r, apiTokenHeader, testApiToken)
+			data := `{
+				"is_admin": true,
+				"is_reviewer":false
+			}`
+
+			req := new(bytes.Buffer)
+			_ = json.Compact(req, []byte(data))
+
+			testBody(t, r, req.String())
+
+			_, _ = fmt.Fprint(w, `{
+				"project_id": "`+testProjectID+`",
+				"contributor": {
+					"user_id": 421,
+					"email": "translator@mycompany.com",
+					"fullname": "Mr. Translator",
+					"is_admin": true,
+					"is_reviewer": false,
+					"languages": [
+						{
+							"lang_iso": "en",
+							"is_writable": false
+						}
+					]
+				}
+			}`)
+		})
+
+	r, err := client.Contributors().Update(testProjectID, 421, Permission{IsAdmin: true})
+	if err != nil {
+		t.Errorf("Contributors.Update returned error: %v", err)
+	}
+
+	want := Contributor{
+		WithUserID: WithUserID{UserID: 421},
+		Email:      "translator@mycompany.com",
+		Fullname:   "Mr. Translator",
+		Permission: Permission{
+			IsAdmin:    true,
+			IsReviewer: false,
+			Languages: []Language{{
+				LangISO:    "en",
+				IsWritable: false,
+			}},
+			AdminRights: nil,
+		},
+	}
+
+	if !reflect.DeepEqual(r.Contributor, want) {
+		t.Errorf("Contributors.Update returned %+v, want %+v", r.Contributor, want)
+	}
 }
