@@ -31,7 +31,7 @@ type Permission struct {
 	Languages  []Language `json:"languages,omitempty"`
 
 	// Possible values are upload, activity, download, settings, statistics, keys, screenshots, contributors, languages
-	AdminRights []string `json:"admin_rights"` // todo make admin rights as constants available in the lib
+	AdminRights []string `json:"admin_rights,omitempty"` // todo make admin rights as constants available in the lib
 }
 
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
