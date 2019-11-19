@@ -136,7 +136,6 @@ func TestContributorService_Delete(t *testing.T) {
 }
 
 func TestContributorService_List(t *testing.T) {
-
 	client, mux, _, teardown := setup()
 	defer teardown()
 
