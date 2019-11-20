@@ -1,5 +1,6 @@
 # Lokalise API v2 official Golang client library
 
+![Build status](https://github.com/lokalise/go-lokalise-api/workflows/Go/badge.svg)
 # Index
 
 * [Getting started](#getting-started)
