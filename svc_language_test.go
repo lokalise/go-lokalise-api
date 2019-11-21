@@ -123,13 +123,7 @@ func TestLanguageService_ListProject(t *testing.T) {
 			_, _ = fmt.Fprint(w, `{
 			"languages": [
 				{
-					"lang_id": 640,
-					"lang_iso": "en",
-					"lang_name": "English",
-					"is_rtl": false,
-					"plural_forms": [
-						"one", "other"
-					]
+					"lang_id": 640
 				}
 			]
 		}`)
@@ -142,14 +136,7 @@ func TestLanguageService_ListProject(t *testing.T) {
 
 	want := []Language{
 		{
-			LangID:   640,
-			LangISO:  "en",
-			LangName: "English",
-			IsRTL:    false,
-			PluralForms: []string{
-				"one",
-				"other",
-			},
+			LangID: 640,
 		},
 	}
 
@@ -172,13 +159,7 @@ func TestLanguageService_ListSystem(t *testing.T) {
 			_, _ = fmt.Fprint(w, `{
 				"languages": [
 					{
-						"lang_id": 640,
-						"lang_iso": "en",
-						"lang_name": "English",
-						"is_rtl": false,
-						"plural_forms": [
-							"one", "other"
-						]
+						"lang_id": 640
 					}
 				]
 			}`)
@@ -191,14 +172,7 @@ func TestLanguageService_ListSystem(t *testing.T) {
 
 	want := []Language{
 		{
-			LangID:   640,
-			LangISO:  "en",
-			LangName: "English",
-			IsRTL:    false,
-			PluralForms: []string{
-				"one",
-				"other",
-			},
+			LangID: 640,
 		},
 	}
 
@@ -221,13 +195,7 @@ func TestLanguageService_Retrieve(t *testing.T) {
 			_, _ = fmt.Fprint(w, `{
 				"project_id": "`+testProjectID+`",
 				"language": {
-					"lang_id": 640,
-					"lang_iso": "en",
-					"lang_name": "English",
-					"is_rtl": false,
-					"plural_forms": [
-						"one", "other"
-					]
+					"lang_id": 640
 				}   
 			}`)
 		})
@@ -238,14 +206,7 @@ func TestLanguageService_Retrieve(t *testing.T) {
 	}
 
 	want := Language{
-		LangID:   640,
-		LangISO:  "en",
-		LangName: "English",
-		IsRTL:    false,
-		PluralForms: []string{
-			"one",
-			"other",
-		},
+		LangID: 640,
 	}
 
 	if !reflect.DeepEqual(r.Language, want) {
@@ -278,13 +239,7 @@ func TestLanguageService_Update(t *testing.T) {
 			_, _ = fmt.Fprint(w, `{
 				"project_id": "`+testProjectID+`",
 				"language": {
-					"lang_id": 640,
-					"lang_iso": "en",
-					"lang_name": "English",
-					"is_rtl": false,
-					"plural_forms": [
-						"one", "zero", "few", "other"
-					]
+					"lang_id": 640
 				}   
 			}`)
 		})
@@ -300,13 +255,7 @@ func TestLanguageService_Update(t *testing.T) {
 	}
 
 	want := Language{
-		LangID:   640,
-		LangISO:  "en",
-		LangName: "English",
-		IsRTL:    false,
-		PluralForms: []string{
-			"one", "zero", "few", "other",
-		},
+		LangID: 640,
 	}
 
 	if !reflect.DeepEqual(r.Language, want) {

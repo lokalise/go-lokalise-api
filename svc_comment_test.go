@@ -87,13 +87,7 @@ func TestCommentService_ListProject(t *testing.T) {
 			"project_id": "`+testProjectID+`",
 			"comments": [
 				{
-					"comment_id": 44444,
-					"key_id": 12345,
-					"comment": "This is a test.",
-					"added_by": 420,
-					"added_by_email": "commenter@mycompany.com",
-					"added_at": "2018-12-31 12:00:00 (Etc/UTC)",
-					"added_at_timestamp": 1546257600
+					"comment_id": 44444
 				}
 			]
 		}`)
@@ -106,13 +100,7 @@ func TestCommentService_ListProject(t *testing.T) {
 
 	want := []Comment{
 		{
-			CommentID:    44444,
-			KeyID:        12345,
-			Comment:      "This is a test.",
-			AddedBy:      420,
-			AddedByEmail: "commenter@mycompany.com",
-			AddedAt:      "2018-12-31 12:00:00 (Etc/UTC)",
-			AddedAtTs:    1546257600,
+			CommentID: 44444,
 		},
 	}
 
@@ -136,13 +124,7 @@ func TestCommentService_ListByKey(t *testing.T) {
 			"project_id": "`+testProjectID+`",
 			"comments": [
 				{
-					"comment_id": 44444,
-					"key_id": 12345,
-					"comment": "This is a test.",
-					"added_by": 420,
-					"added_by_email": "commenter@mycompany.com",
-					"added_at": "2018-12-31 12:00:00 (Etc/UTC)",
-					"added_at_timestamp": 1546257600
+					"comment_id": 44444
 				}
 			]
 		}`)
@@ -155,13 +137,7 @@ func TestCommentService_ListByKey(t *testing.T) {
 
 	want := []Comment{
 		{
-			CommentID:    44444,
-			KeyID:        12345,
-			Comment:      "This is a test.",
-			AddedBy:      420,
-			AddedByEmail: "commenter@mycompany.com",
-			AddedAt:      "2018-12-31 12:00:00 (Etc/UTC)",
-			AddedAtTs:    1546257600,
+			CommentID: 44444,
 		},
 	}
 
@@ -184,13 +160,7 @@ func TestCommentService_Retrieve(t *testing.T) {
 			_, _ = fmt.Fprint(w, `{
 				"project_id": "`+testProjectID+`",
 				"comment":	{
-					"comment_id": 44444,
-					"key_id": 12345,
-					"comment": "This is a test.",
-					"added_by": 420,
-					"added_by_email": "commenter@mycompany.com",
-					"added_at": "2018-12-31 12:00:00 (Etc/UTC)",
-					"added_at_timestamp": 1546257600
+					"comment_id": 44444
 				}
 			}`)
 		})
@@ -201,13 +171,7 @@ func TestCommentService_Retrieve(t *testing.T) {
 	}
 
 	want := Comment{
-		CommentID:    44444,
-		KeyID:        12345,
-		Comment:      "This is a test.",
-		AddedBy:      420,
-		AddedByEmail: "commenter@mycompany.com",
-		AddedAt:      "2018-12-31 12:00:00 (Etc/UTC)",
-		AddedAtTs:    1546257600,
+		CommentID: 44444,
 	}
 
 	if !reflect.DeepEqual(r.Comment, want) {

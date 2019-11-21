@@ -150,24 +150,7 @@ func TestContributorService_List(t *testing.T) {
 			"project_id": "`+testProjectID+`",
 			"contributors": [
 					{
-						"user_id": 420,
-						"email": "johndoe@mycompany.com",
-						"fullname": "John Doe",
-						"created_at": "2018-01-01 12:00:00 (Etc/UTC)",
-						"created_at_timestamp": 1546257600,
-						"is_admin": true,
-						"is_reviewer": true,
-						"languages": [
-							{
-								"lang_id": 640,
-								"lang_iso": "en",
-								"lang_name": "English",
-								"is_writable": true
-							}
-						],
-						"admin_rights": [
-							"keys", "languages"
-						]
+						"user_id": 420
 					}
 				]
 			}`)
@@ -181,26 +164,6 @@ func TestContributorService_List(t *testing.T) {
 	want := []Contributor{
 		{
 			WithUserID: WithUserID{UserID: 420},
-			Email:      "johndoe@mycompany.com",
-			Fullname:   "John Doe",
-			WithCreationTime: WithCreationTime{
-				CreatedAt:   "2018-01-01 12:00:00 (Etc/UTC)",
-				CreatedAtTs: 1546257600,
-			},
-
-			Permission: Permission{
-				IsAdmin:     true,
-				IsReviewer:  true,
-				AdminRights: []string{"keys", "languages"},
-				Languages: []Language{
-					{
-						LangID:     640,
-						LangISO:    "en",
-						LangName:   "English",
-						IsWritable: true,
-					},
-				},
-			},
 		},
 	}
 
@@ -223,24 +186,7 @@ func TestContributorService_Retrieve(t *testing.T) {
 			_, _ = fmt.Fprint(w, `{
 				"project_id": "`+testProjectID+`",
 				"contributor": {
-					"user_id": 421,
-					"email": "translator@mycompany.com",
-					"fullname": "Mr. Translator",
-					"created_at": "2018-01-01 12:00:00 (Etc/UTC)",
-					"created_at_timestamp": 1546257600,
-					"is_admin": false,
-					"is_reviewer": true,
-					"languages": [
-						{
-							"lang_id": 640,
-							"lang_iso": "en",
-							"lang_name": "English",
-							"is_writable": true
-						}
-					],
-					"admin_rights": [
-						"keys", "languages"
-					]
+					"user_id": 421
 				}
 			}`)
 		})
@@ -252,26 +198,6 @@ func TestContributorService_Retrieve(t *testing.T) {
 
 	want := Contributor{
 		WithUserID: WithUserID{UserID: 421},
-		Email:      "translator@mycompany.com",
-		Fullname:   "Mr. Translator",
-		WithCreationTime: WithCreationTime{
-			CreatedAt:   "2018-01-01 12:00:00 (Etc/UTC)",
-			CreatedAtTs: 1546257600,
-		},
-
-		Permission: Permission{
-			IsAdmin:    false,
-			IsReviewer: true,
-			Languages: []Language{
-				{
-					LangID:     640,
-					LangISO:    "en",
-					LangName:   "English",
-					IsWritable: true,
-				},
-			},
-			AdminRights: []string{"keys", "languages"},
-		},
 	}
 
 	if !reflect.DeepEqual(r.Contributor, want) {
@@ -302,17 +228,7 @@ func TestContributorService_Update(t *testing.T) {
 			_, _ = fmt.Fprint(w, `{
 				"project_id": "`+testProjectID+`",
 				"contributor": {
-					"user_id": 421,
-					"email": "translator@mycompany.com",
-					"fullname": "Mr. Translator",
-					"is_admin": true,
-					"is_reviewer": false,
-					"languages": [
-						{
-							"lang_iso": "en",
-							"is_writable": false
-						}
-					]
+					"user_id": 421
 				}
 			}`)
 		})
@@ -324,17 +240,6 @@ func TestContributorService_Update(t *testing.T) {
 
 	want := Contributor{
 		WithUserID: WithUserID{UserID: 421},
-		Email:      "translator@mycompany.com",
-		Fullname:   "Mr. Translator",
-		Permission: Permission{
-			IsAdmin:    true,
-			IsReviewer: false,
-			Languages: []Language{{
-				LangISO:    "en",
-				IsWritable: false,
-			}},
-			AdminRights: nil,
-		},
 	}
 
 	if !reflect.DeepEqual(r.Contributor, want) {

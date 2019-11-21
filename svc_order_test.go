@@ -153,38 +153,7 @@ func TestOrderService_List(t *testing.T) {
 			_, _ = fmt.Fprint(w, `{
 			"orders": [
 					{
-						"order_id": "20181231AAAA",
-						"project_id": "`+testProjectID+`",
-						"card_id": 12345,
-						"status": "in progress",
-						"created_at": "2018-12-31 12:00:00 (Etc/UTC)",
-						"created_at_timestamp": 1546257600,
-						"created_by": 420,
-						"created_by_email": "jonn@company.com",
-						"source_language_iso": "en_US",
-						"target_language_isos": [
-							"ru",
-							"fr",
-							"it"
-						],
-						"keys": [
-							12213,
-							12214,
-							12215,
-							21216
-						],
-						"source_words": {
-							"ru": 256,
-							"fr": 222,
-							"it": 256
-						},
-						"provider_slug": "gengo",
-						"translation_style": "friendly",
-						"translation_tier": 1,
-						"translation_tier_name": "Native speakers",
-						"briefing": "Terms of use of our app.",
-						"total": 177.90,
-						"dry_run": false
+						"order_id": "20181231AAAA"
 					}
 				]
 			}`)
@@ -196,44 +165,8 @@ func TestOrderService_List(t *testing.T) {
 	}
 
 	want := []Order{
-		Order{
-			WithProjectID: WithProjectID{
-				ProjectID: testProjectID,
-			},
-			WithCreationTime: WithCreationTime{
-				CreatedAt:   "2018-12-31 12:00:00 (Etc/UTC)",
-				CreatedAtTs: 1546257600,
-			},
-			WithCreationUser: WithCreationUser{
-				CreatedBy:      420,
-				CreatedByEmail: "jonn@company.com",
-			},
-			OrderID:       "20181231AAAA",
-			CardID:        12345,
-			Status:        "in progress",
-			SourceLangISO: "en_US",
-			TargetLangISOs: []string{
-				"ru",
-				"fr",
-				"it",
-			},
-			Keys: []int64{
-				12213,
-				12214,
-				12215,
-				21216,
-			},
-			SourceWords: map[string]int64{
-				"ru": 256,
-				"fr": 222,
-				"it": 256,
-			},
-			ProviderSlug:        "gengo",
-			TranslationStyle:    "friendly",
-			TranslationTierID:   1,
-			TranslationTierName: "Native speakers",
-			Briefing:            "Terms of use of our app.",
-			Total:               177.90,
+		{
+			OrderID: "20181231AAAA",
 		},
 	}
 
@@ -254,38 +187,7 @@ func TestOrderService_Retrieve(t *testing.T) {
 			testHeader(t, r, apiTokenHeader, testApiToken)
 
 			_, _ = fmt.Fprint(w, `{
-				"order_id": "20181231AAAA",
-				"project_id": "`+testProjectID+`",
-				"card_id": 12345,
-				"status": "in progress",
-				"created_at": "2018-12-31 12:00:00 (Etc/UTC)",
-				"created_at_timestamp": 1546257600,
-				"created_by": 420,
-				"created_by_email": "jonn@company.com",
-				"source_language_iso": "en_US",
-				"target_language_isos": [
-					"ru",
-					"fr",
-					"it"
-				],
-				"keys": [
-					12213,
-					12214,
-					12215,
-					21216
-				],
-				"source_words": {
-					"ru": 256,
-					"fr": 222,
-					"it": 256
-				},
-				"provider_slug": "gengo",
-				"translation_style": "friendly",
-				"translation_tier": 1,
-				"translation_tier_name": "Native speakers",
-				"briefing": "Terms of use of our app.",
-				"total": 177.90,
-				"dry_run": false
+				"order_id": "20181231AAAA"
 			}`)
 		})
 
@@ -295,43 +197,7 @@ func TestOrderService_Retrieve(t *testing.T) {
 	}
 
 	want := Order{
-		WithProjectID: WithProjectID{
-			ProjectID: testProjectID,
-		},
-		WithCreationTime: WithCreationTime{
-			CreatedAt:   "2018-12-31 12:00:00 (Etc/UTC)",
-			CreatedAtTs: 1546257600,
-		},
-		WithCreationUser: WithCreationUser{
-			CreatedBy:      420,
-			CreatedByEmail: "jonn@company.com",
-		},
-		OrderID:       "20181231AAAA",
-		CardID:        12345,
-		Status:        "in progress",
-		SourceLangISO: "en_US",
-		TargetLangISOs: []string{
-			"ru",
-			"fr",
-			"it",
-		},
-		Keys: []int64{
-			12213,
-			12214,
-			12215,
-			21216,
-		},
-		SourceWords: map[string]int64{
-			"ru": 256,
-			"fr": 222,
-			"it": 256,
-		},
-		ProviderSlug:        "gengo",
-		TranslationStyle:    "friendly",
-		TranslationTierID:   1,
-		TranslationTierName: "Native speakers",
-		Briefing:            "Terms of use of our app.",
-		Total:               177.90,
+		OrderID: "20181231AAAA",
 	}
 
 	if !reflect.DeepEqual(r, want) {

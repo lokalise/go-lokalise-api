@@ -1,6 +1,8 @@
 package lokalise
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -17,7 +19,15 @@ func TestBranchService_Create(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		testMethod(t, r, "POST")
 		testHeader(t, r, apiTokenHeader, testApiToken)
-		testBody(t, r, fmt.Sprintf("{\"name\":\"%s\"}", branchName))
+		data := `{
+			"name": "` + branchName + `"
+		}`
+
+		req := new(bytes.Buffer)
+		_ = json.Compact(req, []byte(data))
+
+		testBody(t, r, req.String())
+
 		body := `{
 			"project_id": "` + testProjectID + `",
 			"branch": {
@@ -67,20 +77,7 @@ func TestBranchService_List(t *testing.T) {
 			"project_id": "` + testProjectID + `",
 			"branches": [
 				{
-					"branch_id": 1234,
-					"name": "feature/best-web",
-					"created_at": "2019-10-01 14:16:00 (Etc/UTC)",
-					"created_at_timestamp": 1567001760,
-					"created_by": 1123,
-					"created_by_email": "john@lokalise.com"
-				},
-				{
-					"branch_id": 5678,
-					"name": "hotfix/error1",
-					"created_at": "2019-10-02 14:15:50 (Etc/UTC)",
-					"created_at_timestamp": 1567001750,
-					"created_by": 1123,
-					"created_by_email": "john@lokalise.com"
+					"branch_id": 1234
 				}
 			]
 		}`
@@ -94,28 +91,7 @@ func TestBranchService_List(t *testing.T) {
 
 	want := []Branch{
 		{
-			WithCreationTime: WithCreationTime{
-				CreatedAt:   "2019-10-01 14:16:00 (Etc/UTC)",
-				CreatedAtTs: 1567001760,
-			},
-			WithCreationUser: WithCreationUser{
-				CreatedBy:      1123,
-				CreatedByEmail: "john@lokalise.com",
-			},
 			BranchID: 1234,
-			Name:     "feature/best-web",
-		},
-		{
-			WithCreationTime: WithCreationTime{
-				CreatedAt:   "2019-10-02 14:15:50 (Etc/UTC)",
-				CreatedAtTs: 1567001750,
-			},
-			WithCreationUser: WithCreationUser{
-				CreatedBy:      1123,
-				CreatedByEmail: "john@lokalise.com",
-			},
-			BranchID: 5678,
-			Name:     "hotfix/error1",
 		},
 	}
 
