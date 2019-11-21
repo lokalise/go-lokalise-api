@@ -29,7 +29,7 @@ type Screenshot struct {
 	URL            string   `json:"url"`
 	Title          string   `json:"title"`
 	Description    string   `json:"description"`
-	ScreenshotTags []string `json:"screenshot_tags"`
+	ScreenshotTags []string `json:"tags"`
 	Width          int64    `json:"width"`
 	Height         int64    `json:"height"`
 }
@@ -66,10 +66,10 @@ type NewScreenshot struct {
 }
 
 type UpdateScreenshot struct {
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	KeyIDs      []int64  `json:"key_ids"`
-	Tags        []string `json:"tags"`
+	Title       string   `json:"title,omitempty"`
+	Description string   `json:"description,omitempty"`
+	KeyIDs      []int64  `json:"key_ids,omitempty"`
+	Tags        []string `json:"tags,omitempty"`
 }
 
 func (c *ScreenshotService) List(projectID string) (r ScreenshotsResponse, err error) {
