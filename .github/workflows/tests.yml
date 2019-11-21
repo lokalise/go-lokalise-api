@@ -32,10 +32,10 @@ jobs:
       - name: Run go test
         run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
 
-#      - name: Upload coverage to Codecov
-#        env:
-#          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-#        run: bash <(curl -s https://codecov.io/bash)
+      - name: Upload coverage to Codecov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: bash <(curl -s https://codecov.io/bash)
 
   windows:
     strategy:
