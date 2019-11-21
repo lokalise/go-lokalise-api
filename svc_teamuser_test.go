@@ -161,7 +161,7 @@ func TestTeamUserService_UpdateRole(t *testing.T) {
 	}
 
 	want := TeamUser{
-		WithUserID:       WithUserID{
+		WithUserID: WithUserID{
 			UserID: 420,
 		},
 	}

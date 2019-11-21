@@ -57,7 +57,6 @@ type DeleteBranchResponse struct {
 // Service methods
 // _____________________________________________________________________________________________________________________
 
-
 // List retrieves a list of branches
 //
 // Lokalise API docs: https://lokalise.com/api2docs/curl/#transition-list-all-branches-get
