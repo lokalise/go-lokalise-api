@@ -9,6 +9,10 @@ const (
 	pathBranches = "branches"
 )
 
+// BranchService handles communication with the branch related
+// methods of the Lokalise API.
+//
+// Lokalise API docs: https://lokalise.com/api2docs/curl/#resource-branches
 type BranchService struct {
 	BaseService
 }
@@ -53,6 +57,10 @@ type DeleteBranchResponse struct {
 // Service methods
 // _____________________________________________________________________________________________________________________
 
+
+// List retrieves a list of branches
+//
+// Lokalise API docs: https://lokalise.com/api2docs/curl/#transition-list-all-branches-get
 func (c *BranchService) List(projectID string) (r ListBranchesResponse, err error) {
 	endpoint := path.Join(pathProjects, projectID, pathBranches)
 	resp, err := c.getList(c.Ctx(), endpoint, &r, c.PageOpts())
@@ -64,6 +72,9 @@ func (c *BranchService) List(projectID string) (r ListBranchesResponse, err erro
 	return r, apiError(resp)
 }
 
+// Create creates a branch in the project. Requires admin right.
+//
+// Lokalise API docs: https://lokalise.com/api2docs/curl/#transition-create-a-branch-post
 func (c *BranchService) Create(projectID string, name string) (r CreateBranchResponse, err error) {
 	endpoint := path.Join(pathProjects, projectID, pathBranches)
 	resp, err := c.post(c.Ctx(), endpoint, &r, CreateBranchRequest{Name: name})
@@ -74,6 +85,9 @@ func (c *BranchService) Create(projectID string, name string) (r CreateBranchRes
 	return r, apiError(resp)
 }
 
+// Delete deletes a configured branch in the project. Requires admin right.
+//
+// Lokalise API docs: https://lokalise.com/api2docs/curl/#transition-delete-a-branch-delete
 func (c *BranchService) Delete(projectID string, ID int64) (r DeleteBranchResponse, err error) {
 	endpoint := path.Join(pathProjects, projectID, pathBranches, strconv.FormatInt(ID, 10))
 	resp, err := c.delete(c.Ctx(), endpoint, &r)
