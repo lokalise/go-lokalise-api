@@ -119,7 +119,7 @@ func TestScreenshotService_Delete(t *testing.T) {
 		t.Errorf("Screenshots.Delete returned error: %v", err)
 	}
 
-	want := ScreenshotDeleteResponse{
+	want := DeleteScreenshotResponse{
 		WithProjectID: WithProjectID{
 			ProjectID: testProjectID,
 		},

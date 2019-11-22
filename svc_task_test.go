@@ -209,7 +209,7 @@ func TestTaskService_Delete(t *testing.T) {
 		t.Errorf("Tasks.Delete returned error: %v", err)
 	}
 
-	want := TaskDeleteResponse{
+	want := DeleteTaskResponse{
 		WithProjectID: WithProjectID{
 			ProjectID: testProjectID,
 		},

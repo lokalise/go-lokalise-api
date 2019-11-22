@@ -86,7 +86,7 @@ func TestPaymentCardService_Delete(t *testing.T) {
 		t.Errorf("PaymentCards.Delete returned error: %v", err)
 	}
 
-	want := PaymentCardDeleteResponse{
+	want := DeletePaymentCardResponse{
 		CardID:  22193,
 		Deleted: true,
 	}

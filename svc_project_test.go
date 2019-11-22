@@ -200,7 +200,7 @@ func TestProjectService_Delete(t *testing.T) {
 		t.Errorf("Projects.Delete returned error: %v", err)
 	}
 
-	want := ProjectDeleteResponse{
+	want := DeleteProjectResponse{
 		WithProjectID: WithProjectID{
 			ProjectID: testProjectID,
 		},
@@ -304,7 +304,7 @@ func TestProjectService_Truncate(t *testing.T) {
 		t.Errorf("Languages.Truncate returned error: %v", err)
 	}
 
-	want := ProjectTruncateResponse{
+	want := TruncateProjectResponse{
 		WithProjectID: WithProjectID{
 			ProjectID: testProjectID,
 		},

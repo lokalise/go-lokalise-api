@@ -17,20 +17,11 @@
   
 # Getting Started
 
-## Installation and usage
-
-
-```bash
-# Go Modules
-require github.com/lokalise/go-lokalise-api master
-```
-
-Import into your code and refer it as `lokalise`.
+## Usage
 
 ```go
-import "github.com/lokalise/go-lokalise-api"
-
-var newKey lokalise.NewKey
+import "github.com/google/lokalise/go-lokalise-api/v2"	// with go modules enabled (GO111MODULE=on or outside GOPATH)
+import "github.com/lokalise/go-lokalise-api" // with go modules disabled
 ```
 
 ## Initializing the client

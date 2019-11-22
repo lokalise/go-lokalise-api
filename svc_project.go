@@ -112,12 +112,12 @@ type ProjectsResponse struct {
 	Projects []Project `json:"projects"`
 }
 
-type ProjectTruncateResponse struct {
+type TruncateProjectResponse struct {
 	WithProjectID
 	KeysDeleted bool `json:"keys_deleted"`
 }
 
-type ProjectDeleteResponse struct {
+type DeleteProjectResponse struct {
 	WithProjectID
 	Deleted bool `json:"project_deleted"`
 }
@@ -165,7 +165,7 @@ func (c *ProjectService) Update(projectID string, project UpdateProject) (r Proj
 	return r, apiError(resp)
 }
 
-func (c *ProjectService) Truncate(projectID string) (r ProjectTruncateResponse, err error) {
+func (c *ProjectService) Truncate(projectID string) (r TruncateProjectResponse, err error) {
 	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/empty", pathProjects, projectID), &r, nil)
 
 	if err != nil {
@@ -174,7 +174,7 @@ func (c *ProjectService) Truncate(projectID string) (r ProjectTruncateResponse, 
 	return r, apiError(resp)
 }
 
-func (c *ProjectService) Delete(projectID string) (r ProjectDeleteResponse, err error) {
+func (c *ProjectService) Delete(projectID string) (r DeleteProjectResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s", pathProjects, projectID), &r)
 
 	if err != nil {

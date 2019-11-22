@@ -32,7 +32,7 @@ func TestTeamUserService_Delete(t *testing.T) {
 		t.Errorf("TeamUsers.Delete returned error: %v", err)
 	}
 
-	want := TeamUserDeleteResponse{
+	want := DeleteTeamUserResponse{
 		WithTeamID: WithTeamID{TeamID: 18821},
 		Deleted:    true,
 	}

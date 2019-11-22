@@ -49,7 +49,7 @@ type ScreenshotsResponse struct {
 	Screenshots []Screenshot `json:"screenshots"`
 }
 
-type ScreenshotDeleteResponse struct {
+type DeleteScreenshotResponse struct {
 	WithProjectID
 	Deleted bool `json:"screenshot_deleted"`
 }
@@ -113,7 +113,7 @@ func (c *ScreenshotService) Update(projectID string, screenshotID int64, opts Up
 	return r, apiError(resp)
 }
 
-func (c *ScreenshotService) Delete(projectID string, screenshotID int64) (r ScreenshotDeleteResponse, err error) {
+func (c *ScreenshotService) Delete(projectID string, screenshotID int64) (r DeleteScreenshotResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathScreenshots, screenshotID), &r)
 
 	if err != nil {

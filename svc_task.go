@@ -146,7 +146,7 @@ type TaskResponse struct {
 	Task Task `json:"task"`
 }
 
-type TaskDeleteResponse struct {
+type DeleteTaskResponse struct {
 	WithProjectID
 	Deleted bool `json:"task_deleted"`
 }
@@ -192,7 +192,7 @@ func (c *TaskService) Update(projectID string, taskID int64, task UpdateTask) (r
 	return r, apiError(resp)
 }
 
-func (c *TaskService) Delete(projectID string, taskID int64) (r TaskDeleteResponse, err error) {
+func (c *TaskService) Delete(projectID string, taskID int64) (r DeleteTaskResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &r)
 
 	if err != nil {

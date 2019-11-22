@@ -41,7 +41,7 @@ type PaymentCardResponse struct {
 	Card PaymentCard `json:"payment_card"`
 }
 
-type PaymentCardDeleteResponse struct {
+type DeletePaymentCardResponse struct {
 	CardID  int64 `json:"card_id"`
 	Deleted bool  `json:"card_deleted"`
 }
@@ -78,7 +78,7 @@ func (c *PaymentCardService) Retrieve(cardID int64) (r PaymentCardResponse, err 
 	return r, apiError(resp)
 }
 
-func (c *PaymentCardService) Delete(cardID int64) (r PaymentCardDeleteResponse, err error) {
+func (c *PaymentCardService) Delete(cardID int64) (r DeletePaymentCardResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%d", pathPaymentCards, cardID), &r)
 
 	if err != nil {
