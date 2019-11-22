@@ -96,15 +96,16 @@ type FilesResponse struct {
 	WithProjectID
 	Files []File `json:"files"`
 }
+type FileUploadResult struct {
+	Skipped  int64 `json:"skipped,omitempty"`
+	Inserted int64 `json:"inserted,omitempty"`
+	Updated  int64 `json:"updated,omitempty"`
+}
 
 type FileUploadResponse struct {
 	WithProjectID
-	Filename string `json:"file"`
-	Result   struct {
-		Skipped  int64 `json:"skipped,omitempty"`
-		Inserted int64 `json:"inserted,omitempty"`
-		Updated  int64 `json:"updated,omitempty"`
-	} `json:"result"`
+	Filename string           `json:"file"`
+	Result   FileUploadResult `json:"result"`
 }
 
 type FileDownloadResponse struct {
