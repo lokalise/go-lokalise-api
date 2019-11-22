@@ -1,6 +1,8 @@
 # Lokalise API v2 official Golang client library
 [![GoDoc](https://godoc.org/github.com/lokalise/go-lokalise-api?status.svg)](https://godoc.org/github.com/lokalise/go-lokalise-api)
 ![Build status](https://github.com/lokalise/go-lokalise-api/workflows/tests/badge.svg)
+[![Test Coverage](https://codecov.io/gh/lokalise/go-lokalise-api/branch/feature%2Ftests/graph/badge.svg)](https://codecov.io/gh/lokalise/go-lokalise-api)
+
 # Index
 
 * [Getting started](#getting-started)
