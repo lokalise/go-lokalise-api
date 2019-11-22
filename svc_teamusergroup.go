@@ -37,16 +37,17 @@ type Permission struct {
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 // Service request/response objects
 // _____________________________________________________________________________________________________________________
+type NewGroupLanguages struct {
+	Reference     []int64 `json:"reference"`
+	Contributable []int64 `json:"contributable"`
+}
 
 type NewGroup struct {
-	Name        string   `json:"name"`
-	IsAdmin     bool     `json:"is_admin"`
-	IsReviewer  bool     `json:"is_reviewer"`
-	AdminRights []string `json:"admin_rights,omitempty"`
-	Languages   struct {
-		Reference     []int64 `json:"reference"`
-		Contributable []int64 `json:"contributable"`
-	} `json:"languages,omitempty"`
+	Name        string            `json:"name"`
+	IsAdmin     bool              `json:"is_admin"`
+	IsReviewer  bool              `json:"is_reviewer"`
+	AdminRights []string          `json:"admin_rights,omitempty"`
+	Languages   NewGroupLanguages `json:"languages,omitempty"`
 }
 
 type TeamUserGroupsResponse struct {
