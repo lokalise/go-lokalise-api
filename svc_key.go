@@ -27,8 +27,8 @@ type KeyService struct {
 type Key struct {
 	WithCreationTime
 
-	KeyID   int64       `json:"key_id"`
-	KeyName interface{} `json:"key_name"` // KeyName could be string or PlatformStrings
+	KeyID   int64           `json:"key_id"`
+	KeyName PlatformStrings `json:"key_name"`
 
 	Filenames    PlatformStrings `json:"filenames"`
 	Description  string          `json:"description"`

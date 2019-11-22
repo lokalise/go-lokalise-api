@@ -105,7 +105,7 @@ func TestLanguageService_Delete(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(r, want) {
-		t.Errorf("Languages.Create returned %+v, want %+v", r, want)
+		t.Errorf("Languages.Delete returned %+v, want %+v", r, want)
 	}
 }
 
