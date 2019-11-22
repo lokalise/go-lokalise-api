@@ -20,7 +20,7 @@
 ## Usage
 
 ```go
-import "github.com/google/lokalise/go-lokalise-api/v2"	// with go modules enabled (GO111MODULE=on or outside GOPATH)
+import "github.com/lokalise/go-lokalise-api/v2"	// with go modules enabled (GO111MODULE=on or outside GOPATH)
 import "github.com/lokalise/go-lokalise-api" // with go modules disabled
 ```
 
