@@ -23,7 +23,7 @@ type TranslationProvider struct {
 
 type TranslationTier struct {
 	TierID int64  `json:"tier_id"`
-	Name   string `json:"name"`
+	Title  string `json:"title"`
 }
 
 type TranslationPair struct {
