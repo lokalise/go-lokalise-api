@@ -86,7 +86,7 @@ func TestOrderService_Create(t *testing.T) {
 		Briefing:          "Terms of use of our app.",
 		SourceLangISO:     "en_US",
 		TargetLangISOs:    []string{"ru", "fr", "it"},
-		Keys:              []int64{12213, 12214, 12215, 21216},
+		Keys:              []int{12213, 12214, 12215, 21216},
 		ProviderSlug:      "gengo",
 		TranslationTierID: 1,
 	})

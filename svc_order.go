@@ -46,7 +46,7 @@ type CreateOrder struct {
 	Briefing          string   `json:"briefing"`
 	SourceLangISO     string   `json:"source_language_iso"`
 	TargetLangISOs    []string `json:"target_language_isos"`
-	Keys              []int64  `json:"keys"`
+	Keys              []int    `json:"keys"`
 	ProviderSlug      string   `json:"provider_slug"`
 	TranslationTierID int64    `json:"translation_tier"`
 	DryRun            bool     `json:"dry_run,omitempty"`
