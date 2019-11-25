@@ -1,4 +1,3 @@
-// Package lokalise provides functions to access the Lokalise web API.
 package lokalise
 
 import (
