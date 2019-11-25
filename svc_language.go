@@ -18,9 +18,9 @@ type LanguageService struct {
 // _____________________________________________________________________________________________________________________
 
 type Language struct {
-	LangID      int64    `json:"lang_id"`
+	LangID      int64    `json:"lang_id,omitempty"`
 	LangISO     string   `json:"lang_iso"`
-	LangName    string   `json:"lang_name"`
+	LangName    string   `json:"lang_name,omitempty"`
 	IsRTL       bool     `json:"is_rtl,omitempty"`
 	IsWritable  bool     `json:"is_writable"`
 	PluralForms []string `json:"plural_forms,omitempty"`

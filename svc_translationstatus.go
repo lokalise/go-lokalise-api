@@ -32,7 +32,7 @@ type TranslationStatusesResponse struct {
 	TranslationStatuses []TranslationStatus `json:"custom_translation_statuses"`
 }
 
-type TranslationStatusColorsResponse struct {
+type ListColorsTranslationStatusResponse struct {
 	Colors []string `json:"colors"`
 }
 
@@ -41,7 +41,7 @@ type TranslationStatusResponse struct {
 	TranslationStatus TranslationStatus `json:"custom_translation_status"`
 }
 
-type TranslationStatusDeleteResponse struct {
+type DeleteTranslationStatusResponse struct {
 	WithProjectID
 	Deleted bool `json:"deleted"`
 }
@@ -70,7 +70,7 @@ func (c *TranslationStatusService) List(projectID string) (r TranslationStatuses
 	return r, apiError(resp)
 }
 
-func (c *TranslationStatusService) ListColors(projectID string) (r TranslationStatusColorsResponse, err error) {
+func (c *TranslationStatusService) ListColors(projectID string) (r ListColorsTranslationStatusResponse, err error) {
 	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathTranslationStatuses, "colors"), &r)
 
 	if err != nil {
@@ -106,7 +106,7 @@ func (c *TranslationStatusService) Update(projectID string, statusID int64, opts
 	return r, apiError(resp)
 }
 
-func (c *TranslationStatusService) Delete(projectID string, statusID int64) (r TranslationStatusDeleteResponse, err error) {
+func (c *TranslationStatusService) Delete(projectID string, statusID int64) (r DeleteTranslationStatusResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTranslationStatuses, statusID), &r)
 
 	if err != nil {

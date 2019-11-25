@@ -39,7 +39,7 @@ type TeamUserResponse struct {
 	TeamUser TeamUser `json:"team_user"`
 }
 
-type TeamUserDeleteResponse struct {
+type DeleteTeamUserResponse struct {
 	WithTeamID
 	Deleted bool `json:"team_user_deleted"`
 }
@@ -83,7 +83,7 @@ func (c *TeamUserService) UpdateRole(teamID, userID int64, role TeamUserRole) (r
 	return r, apiError(resp)
 }
 
-func (c *TeamUserService) Delete(teamID, userID int64) (r TeamUserDeleteResponse, err error) {
+func (c *TeamUserService) Delete(teamID, userID int64) (r DeleteTeamUserResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%d", pathTeamUsers(teamID), userID), &r)
 
 	if err != nil {

@@ -48,7 +48,7 @@ type WebhookResponse struct {
 	Webhook Webhook `json:"webhook"`
 }
 
-type WebhookDeleteResponse struct {
+type DeleteWebhookResponse struct {
 	WithProjectID
 	Deleted bool `json:"webhook_deleted"`
 }
@@ -90,7 +90,7 @@ func (c *WebhookService) Retrieve(projectID string, webhookID string) (r Webhook
 	return r, apiError(resp)
 }
 
-func (c *WebhookService) Delete(projectID string, webhookID string) (r WebhookDeleteResponse, err error) {
+func (c *WebhookService) Delete(projectID string, webhookID string) (r DeleteWebhookResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathWebhooks, webhookID), &r)
 
 	if err != nil {

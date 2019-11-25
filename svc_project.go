@@ -49,30 +49,32 @@ type ProjectSettings struct {
 	InlineMachineTranslations bool `json:"inline_machine_translations"`
 }
 
+type QAIssues struct {
+	NotReviewed                   int64 `json:"not_reviewed"`
+	Unverified                    int64 `json:"unverified"`
+	SpellingGrammar               int64 `json:"spelling_grammar"`
+	InconsistentPlaceholders      int64 `json:"inconsistent_placeholders"`
+	InconsistentHtml              int64 `json:"inconsistent_html"`
+	DifferentNumberOfUrls         int64 `json:"different_number_of_urls"`
+	DifferentUrls                 int64 `json:"different_urls"`
+	LeadingWhitespace             int64 `json:"leading_whitespace"`
+	TrailingWhitespace            int64 `json:"trailing_whitespace"`
+	DifferentNumberOfEmailAddress int64 `json:"different_number_of_email_address"`
+	DifferentEmailAddress         int64 `json:"different_email_address"`
+	DifferentBrackets             int64 `json:"different_brackets"`
+	DifferentNumbers              int64 `json:"different_numbers"`
+	DoubleSpace                   int64 `json:"double_space"`
+	SpecialPlaceholder            int64 `json:"special_placeholder"`
+}
+
 type ProjectStatistics struct {
-	ProgressTotal int64 `json:"progress_total"`
-	KeysTotal     int64 `json:"keys_total"`
-	Team          int64 `json:"team"`
-	BaseWords     int64 `json:"base_words"`
-	QAIssuesTotal int64 `json:"qa_issues_total"`
-	QAIssues      struct {
-		NotReviewed                   int64 `json:"not_reviewed"`
-		Unverified                    int64 `json:"unverified"`
-		SpellingGrammar               int64 `json:"spelling_grammar"`
-		InconsistentPlaceholders      int64 `json:"inconsistent_placeholders"`
-		InconsistentHtml              int64 `json:"inconsistent_html"`
-		DifferentNumberOfUrls         int64 `json:"different_number_of_urls"`
-		DifferentUrls                 int64 `json:"different_urls"`
-		LeadingWhitespace             int64 `json:"leading_whitespace"`
-		TrailingWhitespace            int64 `json:"trailing_whitespace"`
-		DifferentNumberOfEmailAddress int64 `json:"different_number_of_email_address"`
-		DifferentEmailAddress         int64 `json:"different_email_address"`
-		DifferentBrackets             int64 `json:"different_brackets"`
-		DifferentNumbers              int64 `json:"different_numbers"`
-		DoubleSpace                   int64 `json:"double_space"`
-		SpecialPlaceholder            int64 `json:"special_placeholder"`
-	} `json:"qa_issues"`
-	Languages []LanguageStatistics `json:"languages"`
+	ProgressTotal int64                `json:"progress_total"`
+	KeysTotal     int64                `json:"keys_total"`
+	Team          int64                `json:"team"`
+	BaseWords     int64                `json:"base_words"`
+	QAIssuesTotal int64                `json:"qa_issues_total"`
+	QAIssues      QAIssues             `json:"qa_issues"`
+	Languages     []LanguageStatistics `json:"languages"`
 }
 
 type LanguageStatistics struct {
@@ -110,12 +112,12 @@ type ProjectsResponse struct {
 	Projects []Project `json:"projects"`
 }
 
-type ProjectTruncateResponse struct {
+type TruncateProjectResponse struct {
 	WithProjectID
 	KeysDeleted bool `json:"keys_deleted"`
 }
 
-type ProjectDeleteResponse struct {
+type DeleteProjectResponse struct {
 	WithProjectID
 	Deleted bool `json:"project_deleted"`
 }
@@ -163,7 +165,7 @@ func (c *ProjectService) Update(projectID string, project UpdateProject) (r Proj
 	return r, apiError(resp)
 }
 
-func (c *ProjectService) Truncate(projectID string) (r ProjectTruncateResponse, err error) {
+func (c *ProjectService) Truncate(projectID string) (r TruncateProjectResponse, err error) {
 	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/empty", pathProjects, projectID), &r, nil)
 
 	if err != nil {
@@ -172,7 +174,7 @@ func (c *ProjectService) Truncate(projectID string) (r ProjectTruncateResponse, 
 	return r, apiError(resp)
 }
 
-func (c *ProjectService) Delete(projectID string) (r ProjectDeleteResponse, err error) {
+func (c *ProjectService) Delete(projectID string) (r DeleteProjectResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s", pathProjects, projectID), &r)
 
 	if err != nil {

@@ -26,7 +26,7 @@ type Order struct {
 	Status              string           `json:"status"`
 	SourceLangISO       string           `json:"source_language_iso"`
 	TargetLangISOs      []string         `json:"target_language_isos"`
-	Keys                []string         `json:"keys"`
+	Keys                []int64          `json:"keys"`
 	SourceWords         map[string]int64 `json:"source_words"`
 	ProviderSlug        string           `json:"provider_slug"`
 	TranslationStyle    string           `json:"translation_style,omitempty"`
@@ -46,7 +46,7 @@ type CreateOrder struct {
 	Briefing          string   `json:"briefing"`
 	SourceLangISO     string   `json:"source_language_iso"`
 	TargetLangISOs    []string `json:"target_language_isos"`
-	Keys              []string `json:"keys"`
+	Keys              []int    `json:"keys"`
 	ProviderSlug      string   `json:"provider_slug"`
 	TranslationTierID int64    `json:"translation_tier"`
 	DryRun            bool     `json:"dry_run,omitempty"`
@@ -82,7 +82,7 @@ func (c *OrderService) Create(teamID int64, order CreateOrder) (r Order, err err
 }
 
 func (c *OrderService) Retrieve(teamID int64, orderID string) (r Order, err error) {
-	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%d/%s/%d", pathTeams, teamID, pathOrders, orderID), &r)
+	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%d/%s/%s", pathTeams, teamID, pathOrders, orderID), &r)
 
 	if err != nil {
 		return

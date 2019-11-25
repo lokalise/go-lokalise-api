@@ -29,7 +29,7 @@ type Screenshot struct {
 	URL            string   `json:"url"`
 	Title          string   `json:"title"`
 	Description    string   `json:"description"`
-	ScreenshotTags []string `json:"screenshot_tags"`
+	ScreenshotTags []string `json:"tags"`
 	Width          int64    `json:"width"`
 	Height         int64    `json:"height"`
 }
@@ -49,7 +49,7 @@ type ScreenshotsResponse struct {
 	Screenshots []Screenshot `json:"screenshots"`
 }
 
-type ScreenshotDeleteResponse struct {
+type DeleteScreenshotResponse struct {
 	WithProjectID
 	Deleted bool `json:"screenshot_deleted"`
 }
@@ -66,10 +66,10 @@ type NewScreenshot struct {
 }
 
 type UpdateScreenshot struct {
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	KeyIDs      []int64  `json:"key_ids"`
-	Tags        []string `json:"tags"`
+	Title       string   `json:"title,omitempty"`
+	Description string   `json:"description,omitempty"`
+	KeyIDs      []int64  `json:"key_ids,omitempty"`
+	Tags        []string `json:"tags,omitempty"`
 }
 
 func (c *ScreenshotService) List(projectID string) (r ScreenshotsResponse, err error) {
@@ -113,7 +113,7 @@ func (c *ScreenshotService) Update(projectID string, screenshotID int64, opts Up
 	return r, apiError(resp)
 }
 
-func (c *ScreenshotService) Delete(projectID string, screenshotID int64) (r ScreenshotDeleteResponse, err error) {
+func (c *ScreenshotService) Delete(projectID string, screenshotID int64) (r DeleteScreenshotResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathScreenshots, screenshotID), &r)
 
 	if err != nil {

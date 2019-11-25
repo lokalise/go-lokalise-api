@@ -44,26 +44,27 @@ type Task struct {
 	WithCreationTime
 	WithCreationUser
 
-	TaskID             int64          `json:"task_id"`
-	Title              string         `json:"title"`
-	Description        string         `json:"description"`
-	Status             TaskStatus     `json:"status"`
-	Progress           int            `json:"progress"`
-	DueDate            string         `json:"due_date"`
-	KeysCount          int64          `json:"keys_count"`
-	WordsCount         int64          `json:"words_count"`
-	CanBeParent        bool           `json:"can_be_parent"`
-	TaskType           TaskType       `json:"task_type"`
-	ParentTaskID       int64          `json:"parent_task_id"`
-	ClosingTags        []string       `json:"closing_tags"`
-	LockTranslations   bool           `json:"do_lock_translations"`
-	Languages          []TaskLanguage `json:"languages"`
-	AutoCloseLanguages bool           `json:"auto_close_languages"`
-	AutoCloseTask      bool           `json:"auto_close_task"`
-	CompletedAt        string         `json:"completed_at"`
-	CompletedAtTs      int64          `json:"completed_at_timestamp"`
-	CompletedBy        int64          `json:"completed_by"`
-	CompletedByEmail   string         `json:"completed_by_email"`
+	TaskID                     int64          `json:"task_id"`
+	Title                      string         `json:"title"`
+	Description                string         `json:"description"`
+	Status                     TaskStatus     `json:"status"`
+	Progress                   int            `json:"progress"`
+	DueDate                    string         `json:"due_date"`
+	KeysCount                  int64          `json:"keys_count"`
+	WordsCount                 int64          `json:"words_count"`
+	CanBeParent                bool           `json:"can_be_parent"`
+	TaskType                   TaskType       `json:"task_type"`
+	ParentTaskID               int64          `json:"parent_task_id"`
+	ClosingTags                []string       `json:"closing_tags"`
+	LockTranslations           bool           `json:"do_lock_translations"`
+	Languages                  []TaskLanguage `json:"languages"`
+	AutoCloseLanguages         bool           `json:"auto_close_languages"`
+	AutoCloseTask              bool           `json:"auto_close_task"`
+	CompletedAt                string         `json:"completed_at"`
+	CompletedAtTs              int64          `json:"completed_at_timestamp"`
+	CompletedBy                int64          `json:"completed_by"`
+	CompletedByEmail           string         `json:"completed_by_email"`
+	CustomTranslationStatusIDs []int64        `json:"custom_translation_status_ids,omitempty"`
 }
 
 type TaskLanguage struct {
@@ -145,7 +146,7 @@ type TaskResponse struct {
 	Task Task `json:"task"`
 }
 
-type TaskDeleteResponse struct {
+type DeleteTaskResponse struct {
 	WithProjectID
 	Deleted bool `json:"task_deleted"`
 }
@@ -191,7 +192,7 @@ func (c *TaskService) Update(projectID string, taskID int64, task UpdateTask) (r
 	return r, apiError(resp)
 }
 
-func (c *TaskService) Delete(projectID string, taskID int64) (r TaskDeleteResponse, err error) {
+func (c *TaskService) Delete(projectID string, taskID int64) (r DeleteTaskResponse, err error) {
 	resp, err := c.delete(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTasks, taskID), &r)
 
 	if err != nil {

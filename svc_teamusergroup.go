@@ -18,11 +18,11 @@ type TeamUserGroup struct {
 	WithCreationTime
 	WithTeamID
 
-	GroupID     int64        `json:"group_id"`
-	Name        string       `json:"name"`
+	GroupID     int64       `json:"group_id"`
+	Name        string      `json:"name"`
 	Permissions *Permission `json:"permissions"`
-	Projects    []string     `json:"projects"`
-	Members     []int64      `json:"members"`
+	Projects    []string    `json:"projects"`
+	Members     []int64     `json:"members"`
 }
 
 type Permission struct {
@@ -31,22 +31,23 @@ type Permission struct {
 	Languages  []Language `json:"languages,omitempty"`
 
 	// Possible values are upload, activity, download, settings, statistics, keys, screenshots, contributors, languages
-	AdminRights []string `json:"admin_rights"` // todo make admin rights as constants available in the lib
+	AdminRights []string `json:"admin_rights,omitempty"` // todo make admin rights as constants available in the lib
 }
 
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 // Service request/response objects
 // _____________________________________________________________________________________________________________________
+type NewGroupLanguages struct {
+	Reference     []int64 `json:"reference"`
+	Contributable []int64 `json:"contributable"`
+}
 
 type NewGroup struct {
-	Name        string   `json:"name"`
-	IsAdmin     bool     `json:"is_admin"`
-	IsReviewer  bool     `json:"is_reviewer"`
-	AdminRights []string `json:"admin_rights,omitempty"`
-	Languages   struct {
-		Reference     []int64 `json:"reference"`
-		Contributable []int64 `json:"contributable"`
-	} `json:"languages,omitempty"`
+	Name        string            `json:"name"`
+	IsAdmin     bool              `json:"is_admin"`
+	IsReviewer  bool              `json:"is_reviewer"`
+	AdminRights []string          `json:"admin_rights,omitempty"`
+	Languages   NewGroupLanguages `json:"languages,omitempty"`
 }
 
 type TeamUserGroupsResponse struct {
