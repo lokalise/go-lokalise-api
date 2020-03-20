@@ -72,7 +72,15 @@ func TestKeyService_BulkUpdate(t *testing.T) {
 						"description": "Index app welcome",
 						"platforms": [
 							"web"
-					   ]
+					   ],
+						"translations": [
+							{
+								"language_iso": "en",
+								"translation": "Welcome",
+								"custom_translation_status_ids": [1, 2, 3],
+								"merge_custom_translation_statuses": true
+							}
+						]
 					}
 				]
 			}`
@@ -100,6 +108,14 @@ func TestKeyService_BulkUpdate(t *testing.T) {
 				Description: "Index app welcome",
 				Platforms: []string{
 					"web",
+				},
+				Translations: []NewTranslation{
+					{
+						LanguageISO:                    "en",
+						Translation:                    "Welcome",
+						CustomTranslationStatusIds:     []int64{1, 2, 3},
+						MergeCustomTranslationStatuses: true,
+					},
 				},
 			},
 		},
@@ -140,7 +156,8 @@ func TestKeyService_Create(t *testing.T) {
 						"translations": [
 							{
 								"language_iso": "en",
-								"translation": "Welcome"
+								"translation": "Welcome",
+								"custom_translation_status_ids": [1, 2, 3]
 							}
 						]
 					}
@@ -214,8 +231,9 @@ func TestKeyService_Create(t *testing.T) {
 			Platforms:   []string{"web"},
 			Translations: []NewTranslation{
 				{
-					LanguageISO: "en",
-					Translation: "Welcome",
+					LanguageISO:                "en",
+					Translation:                "Welcome",
+					CustomTranslationStatusIds: []int64{1, 2, 3},
 				},
 			},
 		},
