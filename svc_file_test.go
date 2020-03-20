@@ -109,7 +109,11 @@ func TestFileService_Upload(t *testing.T) {
 				"tags": [
 					"index", "admin", "v2.0"
 				],
-				"convert_placeholders": true
+				"convert_placeholders": true,
+				"custom_translation_status_ids": [1, 2, 3],
+				"custom_translation_status_inserted_keys": false,
+				"custom_translation_status_updated_keys": true,
+				"custom_translation_status_skipped_keys": true
 			}`
 
 			req := new(bytes.Buffer)
@@ -129,11 +133,15 @@ func TestFileService_Upload(t *testing.T) {
 		})
 
 	r, err := client.Files().Upload(testProjectID, FileUpload{
-		Data:                "D94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGL.....",
-		Filename:            "index.json",
-		LangISO:             "en",
-		Tags:                []string{"index", "admin", "v2.0"},
-		ConvertPlaceholders: Bool(true),
+		Data:                                "D94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGL.....",
+		Filename:                            "index.json",
+		LangISO:                             "en",
+		Tags:                                []string{"index", "admin", "v2.0"},
+		ConvertPlaceholders:                 Bool(true),
+		CustomTranslationStatusIds:          []int64{1, 2, 3},
+		CustomTranslationStatusInsertedKeys: Bool(false),
+		CustomTranslationStatusUpdatedKeys:  Bool(true),
+		CustomTranslationStatusSkippedKeys:  Bool(true),
 	})
 	if err != nil {
 		t.Errorf("Files.Upload returned error: %v", err)

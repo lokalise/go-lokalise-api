@@ -32,18 +32,22 @@ type FileUpload struct {
 	LangISO  string   `json:"lang_iso"`
 	Tags     []string `json:"tags,omitempty"`
 
-	ConvertPlaceholders    *bool `json:"convert_placeholders,omitempty"`
-	DetectICUPlurals       bool  `json:"detect_icu_plurals,omitempty"`
-	TagInsertedKeys        *bool `json:"tag_inserted_keys,omitempty"`
-	TagUpdatedKeys         *bool `json:"tag_updated_keys,omitempty"`
-	TagSkippedKeys         bool  `json:"tag_skipped_keys,omitempty"`
-	ReplaceModified        bool  `json:"replace_modified,omitempty"`
-	SlashNToLinebreak      *bool `json:"slashn_to_linebreak,omitempty"`
-	KeysToValues           bool  `json:"keys_to_values,omitempty"`
-	DistinguishByFile      bool  `json:"distinguish_by_file,omitempty"`
-	ApplyTM                bool  `json:"apply_tm,omitempty"`
-	HiddenFromContributors bool  `json:"hidden_from_contributors,omitempty"`
-	CleanupMode            bool  `json:"cleanup_mode,omitempty"`
+	ConvertPlaceholders                 *bool   `json:"convert_placeholders,omitempty"`
+	DetectICUPlurals                    bool    `json:"detect_icu_plurals,omitempty"`
+	TagInsertedKeys                     *bool   `json:"tag_inserted_keys,omitempty"`
+	TagUpdatedKeys                      *bool   `json:"tag_updated_keys,omitempty"`
+	TagSkippedKeys                      bool    `json:"tag_skipped_keys,omitempty"`
+	ReplaceModified                     bool    `json:"replace_modified,omitempty"`
+	SlashNToLinebreak                   *bool   `json:"slashn_to_linebreak,omitempty"`
+	KeysToValues                        bool    `json:"keys_to_values,omitempty"`
+	DistinguishByFile                   bool    `json:"distinguish_by_file,omitempty"`
+	ApplyTM                             bool    `json:"apply_tm,omitempty"`
+	HiddenFromContributors              bool    `json:"hidden_from_contributors,omitempty"`
+	CleanupMode                         bool    `json:"cleanup_mode,omitempty"`
+	CustomTranslationStatusIds          []int64 `json:"custom_translation_status_ids,omitempty"`
+	CustomTranslationStatusInsertedKeys *bool   `json:"custom_translation_status_inserted_keys,omitempty"`
+	CustomTranslationStatusUpdatedKeys  *bool   `json:"custom_translation_status_updated_keys,omitempty"`
+	CustomTranslationStatusSkippedKeys  *bool   `json:"custom_translation_status_skipped_keys,omitempty"`
 }
 
 type FileDownload struct {
@@ -128,6 +132,16 @@ func (c *FileService) List(projectID string) (r FilesResponse, err error) {
 }
 
 func (c *FileService) Upload(projectID string, file FileUpload) (r FileUploadResponse, err error) {
+	if file.CustomTranslationStatusSkippedKeys == nil {
+		file.CustomTranslationStatusSkippedKeys = Bool(false)
+	}
+	if file.CustomTranslationStatusUpdatedKeys == nil {
+		file.CustomTranslationStatusUpdatedKeys = Bool(true)
+	}
+	if file.CustomTranslationStatusInsertedKeys == nil {
+		file.CustomTranslationStatusInsertedKeys = Bool(true)
+	}
+
 	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathFiles, "upload"), &r, file)
 
 	if err != nil {
