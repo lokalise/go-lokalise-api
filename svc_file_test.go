@@ -205,12 +205,12 @@ func TestFileServiceDefaults_Upload(t *testing.T) {
 		})
 
 	r, err := client.Files().Upload(testProjectID, FileUpload{
-		Data:                                "D94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGL.....",
-		Filename:                            "index.json",
-		LangISO:                             "en",
-		Tags:                                []string{"index", "admin", "v2.0"},
-		ConvertPlaceholders:                 Bool(true),
-		CustomTranslationStatusIds:          []int64{1, 2, 3},
+		Data:                       "D94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGL.....",
+		Filename:                   "index.json",
+		LangISO:                    "en",
+		Tags:                       []string{"index", "admin", "v2.0"},
+		ConvertPlaceholders:        Bool(true),
+		CustomTranslationStatusIds: []int64{1, 2, 3},
 	})
 	if err != nil {
 		t.Errorf("Files.Upload returned error: %v", err)
