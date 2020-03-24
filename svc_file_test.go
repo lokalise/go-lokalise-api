@@ -109,7 +109,11 @@ func TestFileService_Upload(t *testing.T) {
 				"tags": [
 					"index", "admin", "v2.0"
 				],
-				"convert_placeholders": true
+				"convert_placeholders": true,
+				"custom_translation_status_ids": [1, 2, 3],
+				"custom_translation_status_inserted_keys": false,
+				"custom_translation_status_updated_keys": true,
+				"custom_translation_status_skipped_keys": true
 			}`
 
 			req := new(bytes.Buffer)
@@ -129,11 +133,84 @@ func TestFileService_Upload(t *testing.T) {
 		})
 
 	r, err := client.Files().Upload(testProjectID, FileUpload{
-		Data:                "D94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGL.....",
-		Filename:            "index.json",
-		LangISO:             "en",
-		Tags:                []string{"index", "admin", "v2.0"},
-		ConvertPlaceholders: Bool(true),
+		Data:                                "D94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGL.....",
+		Filename:                            "index.json",
+		LangISO:                             "en",
+		Tags:                                []string{"index", "admin", "v2.0"},
+		ConvertPlaceholders:                 Bool(true),
+		CustomTranslationStatusIds:          []int64{1, 2, 3},
+		CustomTranslationStatusInsertedKeys: Bool(false),
+		CustomTranslationStatusUpdatedKeys:  Bool(true),
+		CustomTranslationStatusSkippedKeys:  Bool(true),
+	})
+	if err != nil {
+		t.Errorf("Files.Upload returned error: %v", err)
+	}
+
+	want := FileUploadResponse{
+		WithProjectID: WithProjectID{
+			ProjectID: testProjectID,
+		},
+		Filename: "index.json",
+		Result: FileUploadResult{
+			Skipped:  12,
+			Inserted: 140,
+			Updated:  93,
+		},
+	}
+
+	if !reflect.DeepEqual(r, want) {
+		t.Errorf("Files.Upload returned %+v, want %+v", r, want)
+	}
+}
+
+func TestFileServiceDefaults_Upload(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc(
+		fmt.Sprintf("/projects/%s/files/upload", testProjectID),
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			testMethod(t, r, "POST")
+			testHeader(t, r, apiTokenHeader, testApiToken)
+			data := `{
+				"data": "D94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGL.....",
+				"filename": "index.json",
+				"lang_iso": "en",
+				"tags": [
+					"index", "admin", "v2.0"
+				],
+				"convert_placeholders": true,
+				"custom_translation_status_ids": [1, 2, 3],
+				"custom_translation_status_inserted_keys": true,
+				"custom_translation_status_updated_keys": true,
+				"custom_translation_status_skipped_keys": false
+			}`
+
+			req := new(bytes.Buffer)
+			_ = json.Compact(req, []byte(data))
+
+			testBody(t, r, req.String())
+
+			_, _ = fmt.Fprint(w, `{
+				"project_id": "`+testProjectID+`",
+				"file": "index.json",
+				"result": {
+				  "skipped": 12,
+				  "inserted": 140,
+				  "updated": 93
+				}
+			}`)
+		})
+
+	r, err := client.Files().Upload(testProjectID, FileUpload{
+		Data:                       "D94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGL.....",
+		Filename:                   "index.json",
+		LangISO:                    "en",
+		Tags:                       []string{"index", "admin", "v2.0"},
+		ConvertPlaceholders:        Bool(true),
+		CustomTranslationStatusIds: []int64{1, 2, 3},
 	})
 	if err != nil {
 		t.Errorf("Files.Upload returned error: %v", err)
