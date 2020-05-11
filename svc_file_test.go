@@ -262,3 +262,91 @@ func TestFileServiceDefaults_Upload(t *testing.T) {
 		t.Errorf("Files.Upload returned %+v, want %+v", r, want)
 	}
 }
+
+func TestFileService_UploadResult(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	processID := "2e0559e60e856555fbc15bdf78ab2b0ca3406e8f"
+
+	mux.HandleFunc(
+		fmt.Sprintf("/%s/%s/%s/%s/%s", pathProjects, testProjectID, pathQueuedProcesses, FileImport, processID),
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			testMethod(t, r, "GET")
+			testHeader(t, r, apiTokenHeader, testApiToken)
+
+			_, _ = fmt.Fprint(w, `{
+				"project_id": "`+testProjectID+`",
+				"process": {
+					"process_id": "`+processID+`",
+					"type": "file-import",
+					"status": "finished",
+					"message": "",
+					"created_by": 1234,
+					"created_by_email": "example@example.com",
+					"created_at": "2020-04-20 13:43:43 (Etc/UTC)",
+					"created_at_timestamp": 1587390223,
+					"url": "/api2/projects/`+testProjectID+`/processes/file-import/`+processID+`",
+					"files": [
+						{
+							"status": "finished",
+							"message": "",
+							"name_original": "index.json",
+							"name_custom": "index.json",
+							"word_count_total": 2,
+							"key_count_total": 1,
+							"key_count_inserted": 0,
+							"key_count_updated": 0,
+							"key_count_skipped": 1
+						}
+					]
+				}
+			}`)
+		})
+
+	r, err := client.Files().UploadResult(testProjectID, processID)
+	if err != nil {
+		t.Errorf("Files.UploadResult returned error: %v", err)
+	}
+
+	want := FileUploadResultResponse{
+		WithProjectID: WithProjectID{
+			ProjectID: testProjectID,
+		},
+		Process: FileImportQueuedProcess{
+			QueuedProcess: QueuedProcess{
+				ID:      processID,
+				Type:    FileImport,
+				Status:  Finished,
+				Message: "",
+				Url:     fmt.Sprintf("/api2/projects/%s/processes/file-import/%s", testProjectID, processID),
+				WithCreationUser: WithCreationUser{
+					CreatedBy:      1234,
+					CreatedByEmail: "example@example.com",
+				},
+				WithCreationTime: WithCreationTime{
+					CreatedAt:   "2020-04-20 13:43:43 (Etc/UTC)",
+					CreatedAtTs: 1587390223,
+				},
+			},
+			Files: []QueuedProcessFile{
+				{
+					Status: Finished,
+					Message: "",
+					NameOriginal:"index.json",
+					NameCustom:"index.json",
+					WordCountTotal:2,
+					KeyCountTotal:1,
+					KeyCountInserted:0,
+					KeyCountUpdated:0,
+					KeyCountSkipped:1,
+				},
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(r, want) {
+		t.Errorf("Files.UploadResult returned %+v, want %+v", r, want)
+	}
+}

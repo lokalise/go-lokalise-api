@@ -108,7 +108,7 @@ type FileUploadResponse struct {
 }
 
 type QueuedProcessFile struct {
-	Status           string `json:"status"`
+	Status           QueuedProcessStatus `json:"status"`
 	Message          string `json:"message"`
 	NameOriginal     string `json:"name_original"`
 	NameCustom       string `json:"name_custom"`
