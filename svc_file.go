@@ -109,14 +109,14 @@ type FileUploadResponse struct {
 
 type QueuedProcessFile struct {
 	Status           QueuedProcessStatus `json:"status"`
-	Message          string `json:"message"`
-	NameOriginal     string `json:"name_original"`
-	NameCustom       string `json:"name_custom"`
-	WordCountTotal   int64  `json:"word_count_total"`
-	KeyCountTotal    int64  `json:"key_count_total"`
-	KeyCountInserted int64  `json:"key_count_inserted"`
-	KeyCountUpdated  int64  `json:"key_count_updated"`
-	KeyCountSkipped  int64  `json:"key_count_skipped"`
+	Message          string              `json:"message"`
+	NameOriginal     string              `json:"name_original"`
+	NameCustom       string              `json:"name_custom"`
+	WordCountTotal   int64               `json:"word_count_total"`
+	KeyCountTotal    int64               `json:"key_count_total"`
+	KeyCountInserted int64               `json:"key_count_inserted"`
+	KeyCountUpdated  int64               `json:"key_count_updated"`
+	KeyCountSkipped  int64               `json:"key_count_skipped"`
 }
 
 type FileImportQueuedProcess struct {
