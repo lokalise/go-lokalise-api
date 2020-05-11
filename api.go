@@ -18,7 +18,7 @@ type Api struct {
 	Orders               func() *OrderService
 	PaymentCards         func() *PaymentCardService
 	Projects             func() *ProjectService
-	QueuedProcesses		 func() *QueuedProcessService
+	QueuedProcesses      func() *QueuedProcessService
 	Screenshots          func() *ScreenshotService
 	Snapshots            func() *SnapshotService
 	Tasks                func() *TaskService
