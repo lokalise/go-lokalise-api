@@ -48,7 +48,7 @@ type FileUpload struct {
 	CustomTranslationStatusInsertedKeys *bool   `json:"custom_translation_status_inserted_keys,omitempty"`
 	CustomTranslationStatusUpdatedKeys  *bool   `json:"custom_translation_status_updated_keys,omitempty"`
 	CustomTranslationStatusSkippedKeys  *bool   `json:"custom_translation_status_skipped_keys,omitempty"`
-	Queue                               bool    `json:"queue,omitempty"`
+	Queue                               bool    `json:"queue"`
 }
 
 type FileDownload struct {
@@ -107,28 +107,6 @@ type FileUploadResponse struct {
 	Process QueuedProcess `json:"process"`
 }
 
-type QueuedProcessFile struct {
-	Status           QueuedProcessStatus `json:"status"`
-	Message          string              `json:"message"`
-	NameOriginal     string              `json:"name_original"`
-	NameCustom       string              `json:"name_custom"`
-	WordCountTotal   int64               `json:"word_count_total"`
-	KeyCountTotal    int64               `json:"key_count_total"`
-	KeyCountInserted int64               `json:"key_count_inserted"`
-	KeyCountUpdated  int64               `json:"key_count_updated"`
-	KeyCountSkipped  int64               `json:"key_count_skipped"`
-}
-
-type FileImportQueuedProcess struct {
-	QueuedProcess
-	Files []QueuedProcessFile `json:"files"`
-}
-
-type FileUploadResultResponse struct {
-	WithProjectID
-	Process FileImportQueuedProcess `json:"process"`
-}
-
 type FileDownloadResponse struct {
 	WithProjectID
 	BundleURL string `json:"bundle_url"`
@@ -166,15 +144,6 @@ func (c *FileService) Upload(projectID string, file FileUpload) (r FileUploadRes
 	if err != nil {
 		return
 	}
-	return r, apiError(resp)
-}
-
-func (c *FileService) UploadResult(projectID string, processID string) (r FileUploadResultResponse, err error) {
-	resp, err := c.get(c.Ctx(), pathQueuedProcessByIdAndType(projectID, FileImport, processID), &r)
-	if err != nil {
-		return
-	}
-
 	return r, apiError(resp)
 }
 

@@ -29,8 +29,7 @@ func TestQueuedProcessService_List(t *testing.T) {
 						"created_by": 1234,
 						"created_by_email": "example@example.com",
 						"created_at": "2020-04-20 13:43:43 (Etc/UTC)",
-						"created_at_timestamp": 1587390223,
-						"url": "/api2/projects/`+testProjectID+`/processes/file-import/2e0559e60e856555fbc15bdf78ab2b0ca3406e8f"
+						"created_at_timestamp": 1587390223
 					}
 				]
 			}`)
@@ -47,7 +46,6 @@ func TestQueuedProcessService_List(t *testing.T) {
 			Type:    FileImport,
 			Status:  Finished,
 			Message: "",
-			Url:     "/api2/projects/" + testProjectID + "/processes/file-import/2e0559e60e856555fbc15bdf78ab2b0ca3406e8f",
 			WithCreationUser: WithCreationUser{
 				CreatedBy:      1234,
 				CreatedByEmail: "example@example.com",
@@ -87,8 +85,7 @@ func TestQueuedProcessService_Retrieve(t *testing.T) {
 					"created_by": 1234,
 					"created_by_email": "example@example.com",
 					"created_at": "2020-04-20 13:43:43 (Etc/UTC)",
-					"created_at_timestamp": 1587390223,
-					"url": "/api2/projects/`+testProjectID+`/processes/file-import/`+processId+`"
+					"created_at_timestamp": 1587390223
 				}
 			}`)
 		})
@@ -103,7 +100,6 @@ func TestQueuedProcessService_Retrieve(t *testing.T) {
 		Type:    FileImport,
 		Status:  Finished,
 		Message: "",
-		Url:     fmt.Sprintf("/api2/projects/%s/processes/file-import/%s", testProjectID, processId),
 		WithCreationUser: WithCreationUser{
 			CreatedBy:      1234,
 			CreatedByEmail: "example@example.com",
