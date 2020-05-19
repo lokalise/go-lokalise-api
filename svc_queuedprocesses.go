@@ -1,8 +1,6 @@
 package lokalise
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -18,61 +16,12 @@ type QueuedProcessService struct {
 // Service entity objects
 // _____________________________________________________________________________________________________________________
 
-type QueuedProcessType string
-
-const (
-	FileImport   QueuedProcessType = "file-import"
-	SketchImport QueuedProcessType = "sketch-import"
-)
-
-func (qpt *QueuedProcessType) UnmarshalJSON(b []byte) error {
-	// Define a secondary type to avoid ending up with a recursive call to json.Unmarshal
-	type QPT QueuedProcessType
-	var r = (*QPT)(qpt)
-	err := json.Unmarshal(b, &r)
-	if err != nil {
-		panic(err)
-	}
-	switch *qpt {
-	case FileImport, SketchImport:
-		return nil
-	}
-	return errors.New("invalid QueuedProcess type")
-}
-
-type QueuedProcessStatus string
-
-const (
-	Queued         QueuedProcessStatus = "queued"
-	PreProcessing  QueuedProcessStatus = "pre_processing"
-	Running        QueuedProcessStatus = "running"
-	PostProcessing QueuedProcessStatus = "post_processing"
-	Cancelled      QueuedProcessStatus = "cancelled"
-	Finished       QueuedProcessStatus = "finished"
-	Failed         QueuedProcessStatus = "failed"
-)
-
-func (qps *QueuedProcessStatus) UnmarshalJSON(b []byte) error {
-	// Define a secondary type to avoid ending up with a recursive call to json.Unmarshal
-	type QPS QueuedProcessStatus
-	var r = (*QPS)(qps)
-	err := json.Unmarshal(b, &r)
-	if err != nil {
-		panic(err)
-	}
-	switch *qps {
-	case Queued, PreProcessing, Running, PostProcessing, Cancelled, Finished, Failed:
-		return nil
-	}
-	return errors.New("invalid QueuedProcess status")
-}
-
 type QueuedProcess struct {
-	ID      string              `json:"process_id"`
-	Type    QueuedProcessType   `json:"type"`
-	Status  QueuedProcessStatus `json:"status"`
-	Message string              `json:"message"`
-	Details interface{}         `json:"details"`
+	ID      string      `json:"process_id"`
+	Type    string      `json:"type"`
+	Status  string      `json:"status"`
+	Message string      `json:"message"`
+	Details interface{} `json:"details"`
 	WithCreationUser
 	WithCreationTime
 }

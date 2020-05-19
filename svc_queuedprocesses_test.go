@@ -43,8 +43,8 @@ func TestQueuedProcessService_List(t *testing.T) {
 	want := []QueuedProcess{
 		{
 			ID:      "2e0559e60e856555fbc15bdf78ab2b0ca3406e8f",
-			Type:    FileImport,
-			Status:  Finished,
+			Type:    "file-import",
+			Status:  "finished",
 			Message: "",
 			WithCreationUser: WithCreationUser{
 				CreatedBy:      1234,
@@ -97,8 +97,8 @@ func TestQueuedProcessService_Retrieve(t *testing.T) {
 
 	want := QueuedProcess{
 		ID:      processId,
-		Type:    FileImport,
-		Status:  Finished,
+		Type:    "file-import",
+		Status:  "finished",
 		Message: "",
 		WithCreationUser: WithCreationUser{
 			CreatedBy:      1234,
