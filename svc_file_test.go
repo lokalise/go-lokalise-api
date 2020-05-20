@@ -113,7 +113,8 @@ func TestFileService_Upload(t *testing.T) {
 				"custom_translation_status_ids": [1, 2, 3],
 				"custom_translation_status_inserted_keys": false,
 				"custom_translation_status_updated_keys": true,
-				"custom_translation_status_skipped_keys": true
+				"custom_translation_status_skipped_keys": true,
+				"queue": true
 			}`
 
 			req := new(bytes.Buffer)
@@ -123,11 +124,15 @@ func TestFileService_Upload(t *testing.T) {
 
 			_, _ = fmt.Fprint(w, `{
 				"project_id": "`+testProjectID+`",
-				"file": "index.json",
-				"result": {
-				  "skipped": 12,
-				  "inserted": 140,
-				  "updated": 93
+				"process": {
+					"process_id": "2e0559e60e856555fbc15bdf78ab2b0ca3406e8f",
+					"type": "file-import",
+					"status": "queued",
+					"message": "",
+					"created_by": 1234,
+					"created_by_email": "example@example.com",
+					"created_at": "2020-04-20 13:43:43 (Etc/UTC)",
+					"created_at_timestamp": 1587390223
 				}
 			}`)
 		})
@@ -151,11 +156,19 @@ func TestFileService_Upload(t *testing.T) {
 		WithProjectID: WithProjectID{
 			ProjectID: testProjectID,
 		},
-		Filename: "index.json",
-		Result: FileUploadResult{
-			Skipped:  12,
-			Inserted: 140,
-			Updated:  93,
+		Process: QueuedProcess{
+			ID:      "2e0559e60e856555fbc15bdf78ab2b0ca3406e8f",
+			Type:    "file-import",
+			Status:  "queued",
+			Message: "",
+			WithCreationUser: WithCreationUser{
+				CreatedBy:      1234,
+				CreatedByEmail: "example@example.com",
+			},
+			WithCreationTime: WithCreationTime{
+				CreatedAt:   "2020-04-20 13:43:43 (Etc/UTC)",
+				CreatedAtTs: 1587390223,
+			},
 		},
 	}
 
@@ -185,7 +198,8 @@ func TestFileServiceDefaults_Upload(t *testing.T) {
 				"custom_translation_status_ids": [1, 2, 3],
 				"custom_translation_status_inserted_keys": true,
 				"custom_translation_status_updated_keys": true,
-				"custom_translation_status_skipped_keys": false
+				"custom_translation_status_skipped_keys": false,
+				"queue": true
 			}`
 
 			req := new(bytes.Buffer)
@@ -195,11 +209,15 @@ func TestFileServiceDefaults_Upload(t *testing.T) {
 
 			_, _ = fmt.Fprint(w, `{
 				"project_id": "`+testProjectID+`",
-				"file": "index.json",
-				"result": {
-				  "skipped": 12,
-				  "inserted": 140,
-				  "updated": 93
+				"process": {
+					"process_id": "2e0559e60e856555fbc15bdf78ab2b0ca3406e8f",
+					"type": "file-import",
+					"status": "queued",
+					"message": "",
+					"created_by": 1234,
+					"created_by_email": "example@example.com",
+					"created_at": "2020-04-20 13:43:43 (Etc/UTC)",
+					"created_at_timestamp": 1587390223
 				}
 			}`)
 		})
@@ -220,11 +238,19 @@ func TestFileServiceDefaults_Upload(t *testing.T) {
 		WithProjectID: WithProjectID{
 			ProjectID: testProjectID,
 		},
-		Filename: "index.json",
-		Result: FileUploadResult{
-			Skipped:  12,
-			Inserted: 140,
-			Updated:  93,
+		Process: QueuedProcess{
+			ID:      "2e0559e60e856555fbc15bdf78ab2b0ca3406e8f",
+			Type:    "file-import",
+			Status:  "queued",
+			Message: "",
+			WithCreationUser: WithCreationUser{
+				CreatedBy:      1234,
+				CreatedByEmail: "example@example.com",
+			},
+			WithCreationTime: WithCreationTime{
+				CreatedAt:   "2020-04-20 13:43:43 (Etc/UTC)",
+				CreatedAtTs: 1587390223,
+			},
 		},
 	}
 

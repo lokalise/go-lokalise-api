@@ -48,6 +48,7 @@ type FileUpload struct {
 	CustomTranslationStatusInsertedKeys *bool   `json:"custom_translation_status_inserted_keys,omitempty"`
 	CustomTranslationStatusUpdatedKeys  *bool   `json:"custom_translation_status_updated_keys,omitempty"`
 	CustomTranslationStatusSkippedKeys  *bool   `json:"custom_translation_status_skipped_keys,omitempty"`
+	Queue                               bool    `json:"queue"`
 }
 
 type FileDownload struct {
@@ -100,16 +101,10 @@ type FilesResponse struct {
 	WithProjectID
 	Files []File `json:"files"`
 }
-type FileUploadResult struct {
-	Skipped  int64 `json:"skipped,omitempty"`
-	Inserted int64 `json:"inserted,omitempty"`
-	Updated  int64 `json:"updated,omitempty"`
-}
 
 type FileUploadResponse struct {
 	WithProjectID
-	Filename string           `json:"file"`
-	Result   FileUploadResult `json:"result"`
+	Process QueuedProcess `json:"process"`
 }
 
 type FileDownloadResponse struct {
@@ -141,6 +136,8 @@ func (c *FileService) Upload(projectID string, file FileUpload) (r FileUploadRes
 	if file.CustomTranslationStatusInsertedKeys == nil {
 		file.CustomTranslationStatusInsertedKeys = Bool(true)
 	}
+
+	file.Queue = true
 
 	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathFiles, "upload"), &r, file)
 

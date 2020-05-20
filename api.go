@@ -18,6 +18,7 @@ type Api struct {
 	Orders               func() *OrderService
 	PaymentCards         func() *PaymentCardService
 	Projects             func() *ProjectService
+	QueuedProcesses      func() *QueuedProcessService
 	Screenshots          func() *ScreenshotService
 	Snapshots            func() *SnapshotService
 	Tasks                func() *TaskService
@@ -75,6 +76,7 @@ func New(apiToken string, options ...ClientOption) (*Api, error) {
 
 	c.Webhooks = func() *WebhookService { return &WebhookService{bs} }
 	c.Files = func() *FileService { return &FileService{BaseService: bs, opts: fOpts} }
+	c.QueuedProcesses = func() *QueuedProcessService { return &QueuedProcessService{bs} }
 
 	return &c, nil
 }

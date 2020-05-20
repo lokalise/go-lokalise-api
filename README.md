@@ -20,7 +20,7 @@
 ## Usage
 
 ```go
-import "github.com/lokalise/go-lokalise-api/v2"	// with go modules enabled (GO111MODULE=on or outside GOPATH)
+import "github.com/lokalise/go-lokalise-api/v3"	// with go modules enabled (GO111MODULE=on or outside GOPATH)
 import "github.com/lokalise/go-lokalise-api" // with go modules disabled
 ```
 
@@ -98,6 +98,34 @@ t.SetPageOptions(lokalise.PageOptions{
 })
 
 resp, err := t.List()
+```
+
+## Queued Processes
+Some resource actions, such as Files.upload, are subject to intensive processing before request fulfills. 
+These processes got optimised by becoming asynchronous.
+The initial request only queues the data for processing and retrieves to queued process identifier.
+Additional request to QueuedProcesses resource could be executed to obtain the current processing result.
+
+Example with Files.upload:
+```go
+projectId := "aaaabbbb.cccc"
+uploadOpts := lokalise.FileUpload{
+    Filename: "test.html",
+    LangISO:  "en"
+}
+
+f := Api.Files()
+resp, err = f.Upload(projectId, uploadOpts)
+```
+
+The successful response will contain process ID, which can be used to obtain the final result:
+
+```go
+projectId := "aaaabbbb.cccc"
+processId := "ddddeeeeeffff"
+
+q := Api.QueuedProcesses()
+resp, err := q.Retrieve(projectId, processId)
 ```
 
 # Available resources
