@@ -101,10 +101,10 @@ resp, err := t.List()
 ```
 
 ## Queued Processes
-Some resource actions, such as Files.upload, are subject to intensive processing before request fulfills. These
-processes got optimised by becoming asynchronous. The initial request only queues the data for processing and retrieves 
-to queued process identifier. Additional request to QueuedProcesses resource could be executed to obtain the current processing
-result.
+Some resource actions, such as Files.upload, are subject to intensive processing before request fulfills. 
+These processes got optimised by becoming asynchronous.
+The initial request only queues the data for processing and retrieves to queued process identifier.
+Additional request to QueuedProcesses resource could be executed to obtain the current processing result.
 
 Example with Files.upload:
 ```go
