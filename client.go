@@ -10,7 +10,7 @@ import (
 
 const (
 	apiTokenHeader    = "X-Api-Token"
-	defaultBaseURL    = "https://api.lokalise.co/api2"
+	defaultBaseURL    = "https://api.lokalise.com/api2"
 	defaultRetryCount = 3
 )
 
