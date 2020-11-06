@@ -1,4 +1,4 @@
-# Lokalise API v2 official Golang client library
+# Lokalise API v4 official Golang client library
 [![GoDoc](https://godoc.org/github.com/lokalise/go-lokalise-api?status.svg)](https://godoc.org/github.com/lokalise/go-lokalise-api)
 ![Build status](https://github.com/lokalise/go-lokalise-api/workflows/tests/badge.svg)
 [![Test Coverage](https://codecov.io/gh/lokalise/go-lokalise-api/branch/feature%2Ftests/graph/badge.svg)](https://codecov.io/gh/lokalise/go-lokalise-api)
@@ -20,7 +20,7 @@
 ## Usage
 
 ```go
-import "github.com/lokalise/go-lokalise-api/v3"	// with go modules enabled (GO111MODULE=on or outside GOPATH)
+import "github.com/lokalise/go-lokalise-api/v4"	// with go modules enabled (GO111MODULE=on or outside GOPATH)
 import "github.com/lokalise/go-lokalise-api" // with go modules disabled
 ```
 

@@ -100,21 +100,23 @@ func TestKeyService_BulkUpdate(t *testing.T) {
 			}`)
 		})
 
-	r, err := client.Keys().BulkUpdate(testProjectID, []BulkUpdateKey{
-		{
-			KeyID: 331223,
-			NewKey: NewKey{
-				KeyName:     "index.welcome",
-				Description: "Index app welcome",
-				Platforms: []string{
-					"web",
-				},
-				Translations: []NewTranslation{
-					{
-						LanguageISO:                    "en",
-						Translation:                    "Welcome",
-						CustomTranslationStatusIds:     []int64{1, 2, 3},
-						MergeCustomTranslationStatuses: true,
+	r, err := client.Keys().BulkUpdate(testProjectID, KeyBulkUpdate{
+		Keys: []BulkUpdateKey{
+			{
+				KeyID: 331223,
+				NewKey: NewKey{
+					KeyName:     "index.welcome",
+					Description: "Index app welcome",
+					Platforms: []string{
+						"web",
+					},
+					Translations: []NewTranslation{
+						{
+							LanguageISO:                    "en",
+							Translation:                    "Welcome",
+							CustomTranslationStatusIds:     []int64{1, 2, 3},
+							MergeCustomTranslationStatuses: true,
+						},
 					},
 				},
 			},
@@ -224,16 +226,18 @@ func TestKeyService_Create(t *testing.T) {
 			}`)
 		})
 
-	r, err := client.Keys().Create(testProjectID, []NewKey{
-		{
-			KeyName:     "index.welcome",
-			Description: "Index app welcome",
-			Platforms:   []string{"web"},
-			Translations: []NewTranslation{
-				{
-					LanguageISO:                "en",
-					Translation:                "Welcome",
-					CustomTranslationStatusIds: []int64{1, 2, 3},
+	r, err := client.Keys().Create(testProjectID, KeyCreate{
+		Keys: []NewKey{
+			{
+				KeyName:     "index.welcome",
+				Description: "Index app welcome",
+				Platforms:   []string{"web"},
+				Translations: []NewTranslation{
+					{
+						LanguageISO:                "en",
+						Translation:                "Welcome",
+						CustomTranslationStatusIds: []int64{1, 2, 3},
+					},
 				},
 			},
 		},

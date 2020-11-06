@@ -81,10 +81,20 @@ type NewKey struct {
 	CustomAttributes string `json:"custom_attributes,omitempty"`
 }
 
+type KeyCreate struct {
+	Keys           []NewKey `json:"keys"`
+	UseAutomations bool     `json:"use_automations,omitempty"`
+}
+
 // Separate struct for bulk updating
 type BulkUpdateKey struct {
 	KeyID int64 `json:"key_id"`
 	NewKey
+}
+
+type KeyBulkUpdate struct {
+	Keys           []BulkUpdateKey `json:"keys"`
+	UseAutomations bool            `json:"use_automations,omitempty"`
 }
 
 // ErrorKeys is error for key create/update API
@@ -133,12 +143,8 @@ func (c *KeyService) List(projectID string) (r KeysResponse, err error) {
 	return r, apiError(resp)
 }
 
-func (c *KeyService) Create(projectID string, keys []NewKey) (r KeysResponse, err error) {
-	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r,
-		map[string]interface{}{
-			"keys": keys,
-		},
-	)
+func (c *KeyService) Create(projectID string, keyData KeyCreate) (r KeysResponse, err error) {
+	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, keyData)
 
 	if err != nil {
 		return
@@ -164,12 +170,8 @@ func (c *KeyService) Update(projectID string, keyID int64, key NewKey) (r KeyRes
 	return r, apiError(resp)
 }
 
-func (c *KeyService) BulkUpdate(projectID string, keys []BulkUpdateKey) (r KeysResponse, err error) {
-	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r,
-		map[string]interface{}{
-			"keys": keys,
-		},
-	)
+func (c *KeyService) BulkUpdate(projectID string, keyData KeyBulkUpdate) (r KeysResponse, err error) {
+	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, keyData)
 
 	if err != nil {
 		return
