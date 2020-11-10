@@ -50,6 +50,7 @@ type FileUpload struct {
 	CustomTranslationStatusSkippedKeys  *bool   `json:"custom_translation_status_skipped_keys,omitempty"`
 	Queue                               bool    `json:"queue"`
 	SkipDetectLangIso                   bool    `json:"skip_detect_lang_iso,omitempty"`
+	UseAutomations                      bool    `json:"use_automations,omitempty"`
 }
 
 type FileDownload struct {

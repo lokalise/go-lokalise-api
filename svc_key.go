@@ -58,6 +58,17 @@ type PlatformStrings struct {
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 // Service request/response objects
 // _____________________________________________________________________________________________________________________
+type KeyRequestOptions struct {
+	UseAutomations *bool `json:"use_automations,omitempty"`
+}
+
+type KeyRequestOption func(options *KeyRequestOptions)
+
+func WithAutomations(UseAutomations bool) KeyRequestOption {
+	return func(c *KeyRequestOptions) {
+		c.UseAutomations = &UseAutomations
+	}
+}
 
 type NewKey struct {
 	// KeyName could be string or PlatformStrings
@@ -81,10 +92,20 @@ type NewKey struct {
 	CustomAttributes string `json:"custom_attributes,omitempty"`
 }
 
+type CreateKeysRequest struct {
+	Keys []NewKey `json:"keys"`
+	KeyRequestOptions
+}
+
 // Separate struct for bulk updating
 type BulkUpdateKey struct {
 	KeyID int64 `json:"key_id"`
 	NewKey
+}
+
+type BulkUpdateKeysRequest struct {
+	Keys []BulkUpdateKey `json:"keys"`
+	KeyRequestOptions
 }
 
 // ErrorKeys is error for key create/update API
@@ -133,12 +154,16 @@ func (c *KeyService) List(projectID string) (r KeysResponse, err error) {
 	return r, apiError(resp)
 }
 
-func (c *KeyService) Create(projectID string, keys []NewKey) (r KeysResponse, err error) {
-	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r,
-		map[string]interface{}{
-			"keys": keys,
-		},
-	)
+func (c *KeyService) Create(projectID string, keys []NewKey, options ...KeyRequestOption) (r KeysResponse, err error) {
+	request := CreateKeysRequest{
+		Keys: keys,
+	}
+
+	for _, o := range options {
+		o(&request.KeyRequestOptions)
+	}
+
+	resp, err := c.post(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, request)
 
 	if err != nil {
 		return
@@ -164,12 +189,16 @@ func (c *KeyService) Update(projectID string, keyID int64, key NewKey) (r KeyRes
 	return r, apiError(resp)
 }
 
-func (c *KeyService) BulkUpdate(projectID string, keys []BulkUpdateKey) (r KeysResponse, err error) {
-	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r,
-		map[string]interface{}{
-			"keys": keys,
-		},
-	)
+func (c *KeyService) BulkUpdate(projectID string, keys []BulkUpdateKey, options ...KeyRequestOption) (r KeysResponse, err error) {
+	request := BulkUpdateKeysRequest{
+		Keys: keys,
+	}
+
+	for _, o := range options {
+		o(&request.KeyRequestOptions)
+	}
+
+	resp, err := c.put(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, request)
 
 	if err != nil {
 		return
