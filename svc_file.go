@@ -50,7 +50,7 @@ type FileUpload struct {
 	CustomTranslationStatusSkippedKeys  *bool   `json:"custom_translation_status_skipped_keys,omitempty"`
 	Queue                               bool    `json:"queue"`
 	SkipDetectLangIso                   bool    `json:"skip_detect_lang_iso,omitempty"`
-	UseAutomations                      bool    `json:"use_automations,omitempty"`
+	UseAutomations                      *bool   `json:"use_automations,omitempty"`
 }
 
 type FileDownload struct {
@@ -137,6 +137,9 @@ func (c *FileService) Upload(projectID string, file FileUpload) (r FileUploadRes
 	}
 	if file.CustomTranslationStatusInsertedKeys == nil {
 		file.CustomTranslationStatusInsertedKeys = Bool(true)
+	}
+	if file.UseAutomations == nil {
+		file.UseAutomations = Bool(true)
 	}
 
 	file.Queue = true
