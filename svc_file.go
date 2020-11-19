@@ -138,9 +138,6 @@ func (c *FileService) Upload(projectID string, file FileUpload) (r FileUploadRes
 	if file.CustomTranslationStatusInsertedKeys == nil {
 		file.CustomTranslationStatusInsertedKeys = Bool(true)
 	}
-	if file.UseAutomations == nil {
-		file.UseAutomations = Bool(true)
-	}
 
 	file.Queue = true
 
