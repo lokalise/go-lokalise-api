@@ -24,12 +24,14 @@ type CreateWebhook struct {
 	URL          string      `json:"url"`
 	Events       []string    `json:"events"`
 	EventLangMap []EventLang `json:"event_lang_map,omitempty"`
+	Branch       string      `json:"branch,omitempty"`
 }
 
 type UpdateWebhook struct { // all optional
 	URL          string      `json:"url,omitempty"`
 	Events       []string    `json:"events,omitempty"`
 	EventLangMap []EventLang `json:"event_lang_map,omitempty"`
+	Branch       string      `json:"branch,omitempty"`
 }
 
 type EventLang struct {
