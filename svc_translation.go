@@ -45,19 +45,19 @@ type Translation struct {
 
 // Used for NewKey
 type NewTranslation struct {
-	LanguageISO                    string  `json:"language_iso"`
-	Translation                    string  `json:"translation"`
-	IsFuzzy                        *bool   `json:"is_fuzzy,omitempty"`
-	IsReviewed                     bool    `json:"is_reviewed,omitempty"`
-	CustomTranslationStatusIds     []int64 `json:"custom_translation_status_ids,omitempty"`
-	MergeCustomTranslationStatuses bool    `json:"merge_custom_translation_statuses,omitempty"`
+	LanguageISO                    string      `json:"language_iso"`
+	Translation                    interface{} `json:"translation"`
+	IsFuzzy                        *bool       `json:"is_fuzzy,omitempty"`
+	IsReviewed                     bool        `json:"is_reviewed,omitempty"`
+	CustomTranslationStatusIds     []int64     `json:"custom_translation_status_ids,omitempty"`
+	MergeCustomTranslationStatuses bool        `json:"merge_custom_translation_statuses,omitempty"`
 }
 
 type UpdateTranslation struct {
-	Translation                string   `json:"translation"`
-	IsFuzzy                    *bool    `json:"is_fuzzy,omitempty"`
-	IsReviewed                 bool     `json:"is_reviewed,omitempty"`
-	CustomTranslationStatusIDs []string `json:"custom_translation_status_ids,omitempty"`
+	Translation                interface{} `json:"translation"`
+	IsFuzzy                    *bool       `json:"is_fuzzy,omitempty"`
+	IsReviewed                 bool        `json:"is_reviewed,omitempty"`
+	CustomTranslationStatusIDs []string    `json:"custom_translation_status_ids,omitempty"`
 }
 
 type TranslationsResponse struct {

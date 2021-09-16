@@ -530,6 +530,118 @@ func TestKeyService_Create_AutomationsDisabled(t *testing.T) {
 	}
 }
 
+func TestKeyService_Create_PluralTranslationEncoded(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc(
+		fmt.Sprintf("/projects/%s/keys", testProjectID),
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			testMethod(t, r, "POST")
+			testHeader(t, r, apiTokenHeader, testApiToken)
+			data := `{
+			   "keys": [
+				  {
+					 "key_name": "index.welcome",
+					 "description": "Index app welcome",
+					 "platforms": [
+						"web"
+					 ],
+					 "translations": [
+						{
+						   "language_iso": "en",
+						   "translation": {
+							  "one": "oneText",
+							  "other": "otherText"
+						   }
+						}
+					 ],
+					 "is_plural": true
+				  }
+			   ]
+			}`
+
+			req := new(bytes.Buffer)
+			_ = json.Compact(req, []byte(data))
+
+			testBody(t, r, req.String())
+
+			_, _ = fmt.Fprint(w, `{
+				"project_id": "3002780358964f9bab5a92.87762498",
+				"keys": [
+					{
+						"key_id": 331223,
+						"created_at": "2018-12-31 12:00:00 (Etc/UTC)",
+						"created_at_timestamp": 1546257600,
+						"key_name": {
+							"ios": "index.welcome",
+							"android": "index.welcome",
+							"web": "index.welcome",
+							"other": "index.welcome"
+						},
+						"filenames": {
+							"ios": "",
+							"android": "",
+							"web": "",
+							"other": ""
+						},
+						"description": "Index app welcome",
+						"platforms": [
+							"web"
+						],
+						"tags": [],
+						"comments": [],
+						"screenshots": [],
+						"translations": [
+							{
+								"translation_id": 444921,
+								"key_id": 331223,
+								"language_iso": "en",
+								"translation": "Welcome",
+								"modified_by": 420,
+								"modified_by_email": "user@mycompany.com",
+								"modified_at": "2018-12-31 12:00:00 (Etc/UTC)",
+								"modified_at_timestamp": 1546257600,
+								"is_reviewed": false,
+								"reviewed_by": 0,
+								"words": 0
+							}
+						]
+					}
+				],
+				"errors": [
+					{
+						"message": "This key name is already taken",
+						"code": 400,
+						"key": {
+							"key_name": "index.hello"
+						}
+					}
+				]
+			}`)
+		})
+
+	_, _ = client.Keys().Create(testProjectID, []NewKey{
+		{
+			KeyName:     "index.welcome",
+			Description: "Index app welcome",
+			Platforms:   []string{"web"},
+			IsPlural:    true,
+			Translations: []NewTranslation{
+				{
+					LanguageISO: "en",
+					Translation: map[string]string{
+						"one":   "oneText",
+						"other": "otherText",
+					},
+				},
+			},
+		},
+	})
+
+}
+
 func TestKeyService_Delete(t *testing.T) {
 	client, mux, _, teardown := setup()
 	defer teardown()
