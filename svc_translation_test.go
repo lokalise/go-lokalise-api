@@ -72,7 +72,8 @@ func TestTranslationService_Retrieve(t *testing.T) {
 					"is_reviewed": false,
 					"reviewed_by": 0,
 					"words": 2,
-					"custom_translation_statuses": []
+					"custom_translation_statuses": [],
+					"task_id": 123	
 				}
 			}`)
 		})
@@ -96,6 +97,66 @@ func TestTranslationService_Retrieve(t *testing.T) {
 		ReviewedBy:                0,
 		Words:                     2,
 		CustomTranslationStatuses: []TranslationStatus{},
+		TaskID:                    123,
+	}
+
+	if !reflect.DeepEqual(r.Translation, want) {
+		t.Errorf("Keys.Retrieve returned %+v, want %+v", r.Translation, want)
+	}
+}
+
+func TestTranslationService_Retrieve_NullTaskID(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc(
+		fmt.Sprintf("/projects/%s/translations/%d", testProjectID, 640),
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			testMethod(t, r, "GET")
+			testHeader(t, r, apiTokenHeader, testApiToken)
+
+			_, _ = fmt.Fprint(w, `{
+				"project_id": "`+testProjectID+`",
+				"translation": {
+					"translation_id": 344412,
+					"key_id": 553662,
+					"language_iso": "en_US",
+					"modified_at": "2018-12-31 12:00:00 (Etc/UTC)",
+					"modified_at_timestamp": 1546257600,
+					"modified_by": 420,
+					"modified_by_email": "user@mycompany.com",
+					"translation": "Hello, world!",
+					"is_fuzzy": true,
+					"is_reviewed": false,
+					"reviewed_by": 0,
+					"words": 2,
+					"custom_translation_statuses": [],
+					"task_id": null	
+				}
+			}`)
+		})
+
+	r, err := client.Translations().Retrieve(testProjectID, 640)
+	if err != nil {
+		t.Errorf("Keys.Retrieve returned error: %v", err)
+	}
+
+	want := Translation{
+		TranslationID:             344412,
+		KeyID:                     553662,
+		LanguageISO:               "en_US",
+		ModifiedAt:                "2018-12-31 12:00:00 (Etc/UTC)",
+		ModifiedAtTs:              1546257600,
+		ModifiedBy:                420,
+		ModifiedByEmail:           "user@mycompany.com",
+		Translation:               "Hello, world!",
+		IsFuzzy:                   true,
+		IsReviewed:                false,
+		ReviewedBy:                0,
+		Words:                     2,
+		CustomTranslationStatuses: []TranslationStatus{},
+		TaskID:                    0,
 	}
 
 	if !reflect.DeepEqual(r.Translation, want) {
