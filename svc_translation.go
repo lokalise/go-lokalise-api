@@ -34,6 +34,7 @@ type Translation struct {
 	IsReviewed      bool   `json:"is_reviewed"`
 	ReviewedBy      int64  `json:"reviewed_by"`
 	Words           int64  `json:"words"`
+	TaskID          int64  `json:"task_id"`
 
 	CustomTranslationStatuses []TranslationStatus `json:"custom_translation_statuses"`
 }
