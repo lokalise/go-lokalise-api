@@ -91,14 +91,13 @@ func (t *NewTranslation) UnmarshalJSON(data []byte) error {
 	case map[string]interface{}:
 		marshal, err := json.Marshal(aux.Translation)
 		if err != nil {
-			fmt.Printf("NewTranslation translation marshalling error %v", err)
 			return err
 		}
 		t.Translation = string(marshal)
 	case string:
 		t.Translation = fmt.Sprintf("%+v", aux.Translation)
 	default:
-		fmt.Printf("NewTranslation tranlation type is of unknown type")
+		return fmt.Errorf("NewTranslation tranlation type is of unknown type")
 	}
 
 	t.LanguageISO = aux.LanguageISO
@@ -153,14 +152,13 @@ func (t *UpdateTranslation) UnmarshalJSON(data []byte) error {
 	case map[string]interface{}:
 		marshal, err := json.Marshal(aux.Translation)
 		if err != nil {
-			fmt.Printf("NewTranslation translation marshalling error %v", err)
 			return err
 		}
 		t.Translation = string(marshal)
 	case string:
 		t.Translation = fmt.Sprintf("%+v", aux.Translation)
 	default:
-		fmt.Printf("NewTranslation tranlation type is of unknown type")
+		return fmt.Errorf("NewTranslation tranlation type is of unknown type")
 	}
 
 	t.IsFuzzy = aux.IsFuzzy
