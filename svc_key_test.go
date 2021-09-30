@@ -631,10 +631,7 @@ func TestKeyService_Create_PluralTranslationEncoded(t *testing.T) {
 			Translations: []NewTranslation{
 				{
 					LanguageISO: "en",
-					Translation: map[string]string{
-						"one":   "oneText",
-						"other": "otherText",
-					},
+					Translation: "{\"one\":\"oneText\",\"other\":\"otherText\"}",
 				},
 			},
 		},

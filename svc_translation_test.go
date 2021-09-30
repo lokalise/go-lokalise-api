@@ -210,3 +210,156 @@ func TestTranslationService_Update(t *testing.T) {
 		t.Errorf("Translations.Update returned %+v, want %+v", r.Translation, want)
 	}
 }
+
+func TestNewTranslation_MarshalJSON(t *testing.T) {
+	translations := []NewTranslation{
+		{
+			LanguageISO: "en",
+			Translation: "simple text",
+		},
+		{
+			LanguageISO: "en",
+			Translation: "{\"one\":\"oneText\",\"other\":\"otherText\"}",
+		},
+	}
+
+	want := JsonCompact(`
+	[
+		{
+		   "language_iso": "en",
+		   "translation": "simple text"
+		},
+		{
+		   "language_iso": "en",
+		   "translation": {
+			  "one": "oneText",
+			  "other": "otherText"
+		   }
+		}
+ 	]`)
+
+	marshal, err := json.Marshal(translations)
+	if err != nil {
+		t.Errorf("NewTranslation marshalling returned error %s", err)
+	}
+
+	if string(marshal) != want {
+		t.Errorf("NewTranslation marshalling mismatch: %+v, want %+v", string(marshal), want)
+	}
+}
+
+func TestUpdateTranslation_MarshalJSON(t *testing.T) {
+	translations := []UpdateTranslation{
+		{
+			Translation: "simple text",
+		},
+		{
+			Translation: "{\"one\":\"oneText\",\"other\":\"otherText\"}",
+		},
+	}
+
+	want := JsonCompact(`
+	[
+		{
+		   "translation": "simple text"
+		},
+		{
+		   "translation": {
+			  "one": "oneText",
+			  "other": "otherText"
+		   }
+		}
+ 	]`)
+
+	marshal, err := json.Marshal(translations)
+	if err != nil {
+		t.Errorf("UpdateTranslation marshalling returned error %s", err)
+	}
+
+	if string(marshal) != want {
+		t.Errorf("UpdateTranslation marshalling mismatch: %+v, want %+v", string(marshal), want)
+	}
+}
+
+func TestNewTranslation_UnmarshalJSON(t *testing.T) {
+	raw := `
+	[
+		{
+		   "language_iso": "en",
+		   "translation": "simple text"
+		},
+		{
+		   "language_iso": "en",
+		   "translation": {
+			  "one": "oneText",
+			  "other": "otherText"
+		   }
+		}
+ 	]`
+
+	want := []NewTranslation{
+		{
+			LanguageISO: "en",
+			Translation: "simple text",
+		},
+		{
+			LanguageISO: "en",
+			Translation: "{\"one\":\"oneText\",\"other\":\"otherText\"}",
+		},
+	}
+
+	var result []NewTranslation
+
+	err := json.Unmarshal([]byte(raw), &result)
+	if err != nil {
+		t.Errorf("NewTranslation unmarshalling returned error %s", err)
+	}
+
+	if !reflect.DeepEqual(want, result) {
+		t.Errorf("NewTranslation unmarshalling mismatch: %+v, want %+v", result, want)
+	}
+}
+
+func TestUpdateTranslation_UnmarshalJSON(t *testing.T) {
+	raw := `
+	[
+		{
+		   "translation": "simple text"
+		},
+		{
+		   "translation": {
+			  "one": "oneText",
+			  "other": "otherText"
+		   }
+		}
+ 	]`
+
+	want := []UpdateTranslation{
+		{
+			Translation: "simple text",
+		},
+		{
+			Translation: "{\"one\":\"oneText\",\"other\":\"otherText\"}",
+		},
+	}
+
+	var result []UpdateTranslation
+
+	err := json.Unmarshal([]byte(raw), &result)
+	if err != nil {
+		t.Errorf("UpdateTranslation unmarshalling returned error %s", err)
+	}
+
+	if !reflect.DeepEqual(want, result) {
+		t.Errorf("UpdateTranslation unmarshalling mismatch: %+v, want %+v", result, want)
+	}
+}
+
+func JsonCompact(text string) string {
+	compactedBuffer := new(bytes.Buffer)
+	err := json.Compact(compactedBuffer, []byte(text))
+	if err != nil {
+		panic(fmt.Sprintf("Invalid test data definition %+v", err))
+	}
+	return compactedBuffer.String()
+}
