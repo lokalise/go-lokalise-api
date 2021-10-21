@@ -1,8 +1,8 @@
 package lokalise
 
 import (
+	"encoding/json"
 	"fmt"
-
 	"github.com/go-resty/resty/v2"
 	"github.com/google/go-querystring/query"
 )
@@ -53,11 +53,119 @@ type NewTranslation struct {
 	MergeCustomTranslationStatuses bool    `json:"merge_custom_translation_statuses,omitempty"`
 }
 
+func (t NewTranslation) MarshalJSON() ([]byte, error) {
+	type Alias NewTranslation
+
+	var translation interface{} = t.Translation
+
+	if json.Valid([]byte(t.Translation)) {
+		_ = json.Unmarshal([]byte(t.Translation), &translation)
+	}
+
+	return json.Marshal(&struct {
+		LanguageISO string      `json:"language_iso"`
+		Translation interface{} `json:"translation"`
+		Alias
+	}{
+		LanguageISO: t.LanguageISO,
+		Translation: translation,
+		Alias:       (Alias)(t),
+	})
+}
+
+func (t *NewTranslation) UnmarshalJSON(data []byte) error {
+	type Alias NewTranslation
+	aux := &struct {
+		LanguageISO string      `json:"language_iso"`
+		Translation interface{} `json:"translation"`
+		*Alias
+	}{
+		Alias: (*Alias)(t),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	switch aux.Translation.(type) {
+	case map[string]interface{}:
+		marshal, err := json.Marshal(aux.Translation)
+		if err != nil {
+			return err
+		}
+		t.Translation = string(marshal)
+	case string:
+		t.Translation = fmt.Sprintf("%+v", aux.Translation)
+	default:
+		return fmt.Errorf("NewTranslation tranlation type is of unknown type")
+	}
+
+	t.LanguageISO = aux.LanguageISO
+	t.IsFuzzy = aux.IsFuzzy
+	t.IsReviewed = aux.IsReviewed
+	t.CustomTranslationStatusIds = aux.CustomTranslationStatusIds
+	t.MergeCustomTranslationStatuses = aux.MergeCustomTranslationStatuses
+
+	return nil
+}
+
 type UpdateTranslation struct {
 	Translation                string   `json:"translation"`
 	IsFuzzy                    *bool    `json:"is_fuzzy,omitempty"`
 	IsReviewed                 bool     `json:"is_reviewed,omitempty"`
 	CustomTranslationStatusIDs []string `json:"custom_translation_status_ids,omitempty"`
+}
+
+func (t UpdateTranslation) MarshalJSON() ([]byte, error) {
+	type Alias UpdateTranslation
+
+	var translation interface{} = t.Translation
+
+	if json.Valid([]byte(t.Translation)) {
+		_ = json.Unmarshal([]byte(t.Translation), &translation)
+	}
+
+	return json.Marshal(&struct {
+		Translation interface{} `json:"translation"`
+		Alias
+	}{
+		Translation: translation,
+		Alias:       (Alias)(t),
+	})
+}
+
+func (t *UpdateTranslation) UnmarshalJSON(data []byte) error {
+	type Alias UpdateTranslation
+	aux := &struct {
+		LanguageISO string      `json:"language_iso"`
+		Translation interface{} `json:"translation"`
+		*Alias
+	}{
+		Alias: (*Alias)(t),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	switch aux.Translation.(type) {
+	case map[string]interface{}:
+		marshal, err := json.Marshal(aux.Translation)
+		if err != nil {
+			return err
+		}
+		t.Translation = string(marshal)
+	case string:
+		t.Translation = fmt.Sprintf("%+v", aux.Translation)
+	default:
+		return fmt.Errorf("NewTranslation tranlation type is of unknown type")
+	}
+
+	t.IsFuzzy = aux.IsFuzzy
+	t.IsReviewed = aux.IsReviewed
+	t.CustomTranslationStatusIDs = aux.CustomTranslationStatusIDs
+
+	return nil
 }
 
 type TranslationsResponse struct {
