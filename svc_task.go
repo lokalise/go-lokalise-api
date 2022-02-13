@@ -206,10 +206,10 @@ func (c *TaskService) Delete(projectID string, taskID int64) (r DeleteTaskRespon
 // _____________________________________________________________________________________________________________________
 
 type TaskListOptions struct {
-	Limit uint `url:"limit,omitempty"`
-	Page  uint `url:"page,omitempty"`
-
-	Title string `url:"filter_title,omitempty"`
+	Limit          uint   `url:"limit,omitempty"`
+	Page           uint   `url:"page,omitempty"`
+	FilterStatuses string `url:"filter_statuses,omitempty"`
+	Title          string `url:"filter_title,omitempty"`
 }
 
 func (options TaskListOptions) Apply(req *resty.Request) {
