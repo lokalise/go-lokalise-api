@@ -46,6 +46,9 @@ type Key struct {
 	BaseWords        int    `json:"base_words"`
 	CharLimit        int    `json:"char_limit"`
 	CustomAttributes string `json:"custom_attributes,omitempty"`
+
+	ModifiedAtTs             int64 `json:"modified_at_timestamp"`
+	TranslationsModifiedAtTs int64 `json:"translations_modified_at_timestamp"`
 }
 
 type PlatformStrings struct {

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestKeyService_BulkDelete(t *testing.T) {
@@ -678,6 +679,7 @@ func TestKeyService_Delete(t *testing.T) {
 func TestKeyService_List(t *testing.T) {
 	client, mux, _, teardown := setup()
 	defer teardown()
+	now := time.Now().Unix()
 
 	mux.HandleFunc(
 		fmt.Sprintf("/projects/%s/keys", testProjectID),
@@ -686,13 +688,15 @@ func TestKeyService_List(t *testing.T) {
 			testMethod(t, r, "GET")
 			testHeader(t, r, apiTokenHeader, testApiToken)
 
-			_, _ = fmt.Fprint(w, `{
+			_, _ = fmt.Fprintf(w, `{
 				"keys": [
 					{
-						"key_id": 640
+						"key_id": 640,
+						"modified_at_timestamp": %v,
+						"translations_modified_at_timestamp": %v
 					}
 				]
-			}`)
+			}`, now, now)
 		})
 
 	r, err := client.Keys().List(testProjectID)
@@ -702,7 +706,9 @@ func TestKeyService_List(t *testing.T) {
 
 	want := []Key{
 		{
-			KeyID: 640,
+			KeyID:                    640,
+			ModifiedAtTs:             now,
+			TranslationsModifiedAtTs: now,
 		},
 	}
 
