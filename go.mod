@@ -1,4 +1,4 @@
-module github.com/thelotter-enterprise/go-lokalise-api
+module github.com/lokalise/go-lokalise-api/v3
 
 require (
 	github.com/go-resty/resty/v2 v2.1.0
