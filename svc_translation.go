@@ -3,6 +3,7 @@ package lokalise
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/go-resty/resty/v2"
 	"github.com/google/go-querystring/query"
 )
@@ -59,7 +60,11 @@ func (t NewTranslation) MarshalJSON() ([]byte, error) {
 	var translation interface{} = t.Translation
 
 	if json.Valid([]byte(t.Translation)) {
-		_ = json.Unmarshal([]byte(t.Translation), &translation)
+		var unmarshalled map[string]interface{}
+
+		if err := json.Unmarshal([]byte(t.Translation), &unmarshalled); err == nil {
+			translation = unmarshalled
+		}
 	}
 
 	return json.Marshal(&struct {
@@ -122,7 +127,11 @@ func (t UpdateTranslation) MarshalJSON() ([]byte, error) {
 	var translation interface{} = t.Translation
 
 	if json.Valid([]byte(t.Translation)) {
-		_ = json.Unmarshal([]byte(t.Translation), &translation)
+		var unmarshalled map[string]interface{}
+
+		if err := json.Unmarshal([]byte(t.Translation), &unmarshalled); err == nil {
+			translation = unmarshalled
+		}
 	}
 
 	return json.Marshal(&struct {
