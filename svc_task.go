@@ -17,7 +17,7 @@ type TaskService struct {
 // Service entity objects
 // _____________________________________________________________________________________________________________________
 
-//noinspection GoUnusedConst
+// noinspection GoUnusedConst
 const (
 	pathTasks = "tasks"
 
@@ -60,6 +60,7 @@ type Task struct {
 	Languages                  []TaskLanguage `json:"languages"`
 	AutoCloseLanguages         bool           `json:"auto_close_languages"`
 	AutoCloseTask              bool           `json:"auto_close_task"`
+	AutoCloseItems             bool           `json:"auto_close_items"`
 	CompletedAt                string         `json:"completed_at"`
 	CompletedAtTs              int64          `json:"completed_at_timestamp"`
 	CompletedBy                int64          `json:"completed_by"`
@@ -107,6 +108,7 @@ type CreateTask struct {
 	Keys               []int64  `json:"keys,omitempty"`
 	AutoCloseLanguages *bool    `json:"auto_close_languages,omitempty"`
 	AutoCloseTask      *bool    `json:"auto_close_task,omitempty"`
+	AutoCloseItems     *bool    `json:"auto_close_items,omitempty"`
 	InitialTMLeverage  bool     `json:"initial_tm_leverage,omitempty"`
 	TaskType           TaskType `json:"task_type,omitempty"`
 	ParentTaskID       int64    `json:"parent_task_id,omitempty"`
@@ -130,6 +132,7 @@ type UpdateTask struct {
 	Languages          []CreateTaskLang `json:"languages,omitempty"`
 	AutoCloseLanguages *bool            `json:"auto_close_languages,omitempty"`
 	AutoCloseTask      *bool            `json:"auto_close_task,omitempty"`
+	AutoCloseItems     *bool            `json:"auto_close_items,omitempty"`
 	CloseTask          bool             `json:"close_task,omitempty"`
 	ClosingTags        []string         `json:"closing_tags,omitempty"`
 	LockTranslations   bool             `json:"do_lock_translations,omitempty"`
