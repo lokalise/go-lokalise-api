@@ -11,7 +11,7 @@ Initializing the client
 	token := os.Getenv("lokalise_token")
 	client, err := lokalise.New(token)
 
-General options
+# General options
 
 You can set global API parameters with the ClientOption functions during the initialization. The following functions are available:
 
@@ -35,7 +35,7 @@ Usage:
 		...
 	)
 
-Objects and models
+# Objects and models
 
 Individual objects are represented as instances of according structs. Different objects are used for creating and updating in most cases.
 
@@ -47,7 +47,7 @@ Here are some object types:
 
 * List options that are used for sending certain options and pagination, i.e. KeyListOptions.
 
-Request options and pagination
+# Request options and pagination
 
 Some resources, such as Projects, Keys, Files, Tasks, Screenshots, Translations have optional parameters for List method (Keys also have an option for Retrieve). These parameters should be set before calling.
 
@@ -74,6 +74,5 @@ There are two parameters, used for pagination: Limit and Page.
 	})
 
 	resp, err := t.List()
-
 */
 package lokalise

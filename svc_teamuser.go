@@ -12,7 +12,7 @@ type TeamUserService struct {
 // Service entity objects
 // _____________________________________________________________________________________________________________________
 
-//noinspection GoUnusedConst
+// noinspection GoUnusedConst
 const (
 	TeamUserRoleOwner  TeamUserRole = "owner"
 	TeamUserRoleAdmin  TeamUserRole = "admin"
