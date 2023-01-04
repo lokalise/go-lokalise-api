@@ -84,7 +84,7 @@ func New(apiToken string, options ...ClientOption) (*Api, error) {
 // WithBaseURL returns a ClientOption setting the base URL of the client.
 // This should only be used for testing different API versions or for using a mocked
 // backend in tests.
-//noinspection GoUnusedExportedFunction
+// noinspection GoUnusedExportedFunction
 func WithBaseURL(url string) ClientOption {
 	return func(c *Api) error {
 		c.httpClient.Client.SetHostURL(url)
@@ -106,7 +106,7 @@ func WithRetryCount(count int) ClientOption {
 
 // Sets default wait time to sleep before retrying request.
 // Default is 100 milliseconds.
-//noinspection GoUnusedExportedFunction
+// noinspection GoUnusedExportedFunction
 func WithRetryTimeout(t time.Duration) ClientOption {
 	return func(c *Api) error {
 		c.httpClient.Client.SetRetryWaitTime(t)

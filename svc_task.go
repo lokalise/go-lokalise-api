@@ -17,7 +17,7 @@ type TaskService struct {
 // Service entity objects
 // _____________________________________________________________________________________________________________________
 
-//noinspection GoUnusedConst
+// noinspection GoUnusedConst
 const (
 	pathTasks = "tasks"
 
