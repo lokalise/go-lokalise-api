@@ -836,6 +836,6 @@ func TestKeyService_Update_Empty_Tags(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(r.Key, want) {
-		t.Errorf("Keys.Update returned %+v, want %+v", r.Key, want)
+		t.Errorf("Keys.Update returned \n %+v\n want\n %+v", r.Key, want)
 	}
 }

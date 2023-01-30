@@ -1,6 +1,7 @@
 package lokalise
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/go-resty/resty/v2"
@@ -229,6 +230,22 @@ func (c *KeyService) BulkDelete(projectID string, keyIDs []int64) (r DeleteKeysR
 		return
 	}
 	return r, apiError(resp)
+}
+
+func (k NewKey) MarshalJSON() ([]byte, error) {
+	type Alias NewKey
+	if k.Tags == nil {
+		c := struct {
+			*Alias
+			Tags []string `json:"tags,omitempty"`
+		}{
+			Tags:  []string(nil),
+			Alias: (*Alias)(&k),
+		}
+		return json.Marshal(c)
+	} else {
+		return json.Marshal((Alias)(k))
+	}
 }
 
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
