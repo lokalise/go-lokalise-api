@@ -232,6 +232,20 @@ func (c *KeyService) BulkDelete(projectID string, keyIDs []int64) (r DeleteKeysR
 	return r, apiError(resp)
 }
 
+// MarshalJSON Preserve fields for BulkUpdateKey when custom marshaling of anonymous fields are used
+func (k BulkUpdateKey) MarshalJSON() ([]byte, error) {
+	jsonNewKey, err := json.Marshal(k.NewKey)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonNewKey[0] = ','
+	jsonKeyId := []byte(fmt.Sprintf(`{"key_id":%d`, k.KeyID))
+
+	return append(jsonKeyId, jsonNewKey...), nil
+}
+
+// MarshalJSON Remove null tags array, preserve empty array in json
 func (k NewKey) MarshalJSON() ([]byte, error) {
 	type Alias NewKey
 	if k.Tags != nil {
