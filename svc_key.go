@@ -234,18 +234,19 @@ func (c *KeyService) BulkDelete(projectID string, keyIDs []int64) (r DeleteKeysR
 
 func (k NewKey) MarshalJSON() ([]byte, error) {
 	type Alias NewKey
-	if k.Tags == nil {
-		c := struct {
-			*Alias
-			Tags []string `json:"tags,omitempty"`
-		}{
-			Tags:  []string(nil),
-			Alias: (*Alias)(&k),
-		}
-		return json.Marshal(c)
-	} else {
+	if k.Tags != nil {
 		return json.Marshal((Alias)(k))
 	}
+
+	c := struct {
+		*Alias
+		Tags []string `json:"tags,omitempty"`
+	}{
+		Tags:  []string(nil),
+		Alias: (*Alias)(&k),
+	}
+
+	return json.Marshal(c)
 }
 
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
