@@ -101,7 +101,7 @@ type CreateKeysRequest struct {
 	KeyRequestOptions
 }
 
-// Separate struct for bulk updating
+// BulkUpdateKey Separate struct for bulk updating
 type BulkUpdateKey struct {
 	KeyID int64 `json:"key_id"`
 	NewKey
