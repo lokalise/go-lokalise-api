@@ -19,18 +19,18 @@ type SegmentationService struct {
 }
 
 type Segment struct {
-	SegmentNumber             int           `json:"segment_number"`
-	LanguageIso               string        `json:"language_iso"`
-	ModifiedAt                string        `json:"modified_at"`
-	ModifiedAtTimestamp       int64         `json:"modified_at_timestamp"`
-	ModifiedBy                int           `json:"modified_by"`
-	ModifiedByEmail           string        `json:"modified_by_email"`
-	Value                     string        `json:"value"`
-	IsFuzzy                   bool          `json:"is_fuzzy"`
-	IsReviewed                bool          `json:"is_reviewed"`
-	ReviewedBy                int           `json:"reviewed_by"`
-	Words                     int           `json:"words"`
-	CustomTranslationStatuses []interface{} `json:"custom_translation_statuses"`
+	SegmentNumber             int64               `json:"segment_number"`
+	LanguageIso               string              `json:"language_iso"`
+	ModifiedAt                string              `json:"modified_at"`
+	ModifiedAtTimestamp       int64               `json:"modified_at_timestamp"`
+	ModifiedBy                int64               `json:"modified_by"`
+	ModifiedByEmail           string              `json:"modified_by_email"`
+	Value                     string              `json:"value"`
+	IsFuzzy                   bool                `json:"is_fuzzy"`
+	IsReviewed                bool                `json:"is_reviewed"`
+	ReviewedBy                int64               `json:"reviewed_by"`
+	Words                     int64               `json:"words"`
+	CustomTranslationStatuses []TranslationStatus `json:"custom_translation_statuses"`
 }
 
 type SegmentsResponse struct {
@@ -47,9 +47,9 @@ type SegmentResponse struct {
 }
 
 type SegmentUpdateRequest struct {
-	Value                      string  `json:"value"`
-	IsFuzzy                    bool    `json:"is_fuzzy,omitempty"`
-	IsReviewed                 bool    `json:"is_reviewed,omitempty"`
+	Value                      string  `json:"value"` // could be string or json for plural keys.
+	IsFuzzy                    *bool   `json:"is_fuzzy,omitempty"`
+	IsReviewed                 *bool   `json:"is_reviewed,omitempty"`
 	CustomTranslationStatusIds []int64 `json:"custom_translation_status_ids,omitempty"`
 }
 
@@ -71,7 +71,7 @@ func (s *SegmentationService) Retrieve(
 	projectID string,
 	keyID int64,
 	languageIso string,
-	segmentNumber int,
+	segmentNumber int64,
 ) (r SegmentResponse, err error) {
 	resp, err := s.getList(
 		s.Ctx(),
@@ -90,7 +90,7 @@ func (s *SegmentationService) Update(
 	projectID string,
 	keyID int64,
 	languageIso string,
-	segmentNumber int,
+	segmentNumber int64,
 	updateRequest SegmentUpdateRequest,
 ) (r SegmentResponse, err error) {
 	resp, err := s.put(s.Ctx(), segmentPath(projectID, keyID, languageIso, segmentNumber), &r, updateRequest)
@@ -101,7 +101,7 @@ func (s *SegmentationService) Update(
 	return r, apiError(resp)
 }
 
-func segmentPath(projectID string, keyID int64, languageIso string, segmentNumber int) string {
+func segmentPath(projectID string, keyID int64, languageIso string, segmentNumber int64) string {
 	return fmt.Sprintf(
 		"%s/%s/%s/%d/%s/%s/%d",
 		pathProjects,

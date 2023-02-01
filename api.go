@@ -20,6 +20,7 @@ type Api struct {
 	Projects             func() *ProjectService
 	QueuedProcesses      func() *QueuedProcessService
 	Screenshots          func() *ScreenshotService
+	Segments             func() *SegmentationService
 	Snapshots            func() *SnapshotService
 	Tasks                func() *TaskService
 	Teams                func() *TeamService
@@ -65,6 +66,7 @@ func New(apiToken string, options ...ClientOption) (*Api, error) {
 	c.Tasks = func() *TaskService { return &TaskService{BaseService: bs, listOpts: taskOpts} }
 
 	c.Screenshots = func() *ScreenshotService { return &ScreenshotService{BaseService: bs, listOpts: scOpts} }
+	c.Segments = func() *SegmentationService { return &SegmentationService{BaseService: bs} }
 	c.Snapshots = func() *SnapshotService { return &SnapshotService{bs} }
 	c.Languages = func() *LanguageService { return &LanguageService{bs} }
 	c.Translations = func() *TranslationService { return &TranslationService{BaseService: bs, opts: trOpts} }
