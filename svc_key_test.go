@@ -790,3 +790,52 @@ func TestKeyService_Update(t *testing.T) {
 		t.Errorf("Keys.Update returned %+v, want %+v", r.Key, want)
 	}
 }
+
+func TestKeyService_Update_Empty_Tags(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc(
+		fmt.Sprintf("/projects/%s/keys/%d", testProjectID, 640),
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			testMethod(t, r, "PUT")
+			testHeader(t, r, apiTokenHeader, testApiToken)
+			data := `{
+				"description": "Index app welcome",
+				"platforms": [
+					"web","other"
+				],
+                "tags": []
+			}`
+
+			req := new(bytes.Buffer)
+			_ = json.Compact(req, []byte(data))
+
+			testBody(t, r, req.String())
+
+			_, _ = fmt.Fprint(w, `{
+				"project_id": "`+testProjectID+`",
+				"key": {
+					"key_id": 640
+				}   
+			}`)
+		})
+
+	r, err := client.Keys().Update(testProjectID, 640, NewKey{
+		Platforms:   []string{"web", "other"},
+		Description: "Index app welcome",
+		Tags:        []string{},
+	})
+	if err != nil {
+		t.Errorf("Keys.Update returned error: %v", err)
+	}
+
+	want := Key{
+		KeyID: 640,
+	}
+
+	if !reflect.DeepEqual(r.Key, want) {
+		t.Errorf("Keys.Update returned \n %+v\n want\n %+v", r.Key, want)
+	}
+}
