@@ -42,7 +42,7 @@ func TestTranslationService_List(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(r.Translations, want) {
-		t.Errorf("Translations.List returned %+v, want %+v", r.Translations, want)
+		t.Errorf(assertionTemplate, "Translations.List", r.Translations, want)
 	}
 }
 
@@ -68,7 +68,7 @@ func TestTranslationService_Retrieve(t *testing.T) {
 					"modified_by": 420,
 					"modified_by_email": "user@mycompany.com",
 					"translation": "Hello, world!",
-					"is_fuzzy": true,
+					"is_unverified": true,
 					"is_reviewed": false,
 					"reviewed_by": 0,
 					"words": 2,
@@ -92,7 +92,7 @@ func TestTranslationService_Retrieve(t *testing.T) {
 		ModifiedBy:                420,
 		ModifiedByEmail:           "user@mycompany.com",
 		Translation:               "Hello, world!",
-		IsFuzzy:                   true,
+		IsUnverified:              true,
 		IsReviewed:                false,
 		ReviewedBy:                0,
 		Words:                     2,
@@ -101,7 +101,7 @@ func TestTranslationService_Retrieve(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(r.Translation, want) {
-		t.Errorf("Keys.Retrieve returned %+v, want %+v", r.Translation, want)
+		t.Errorf(assertionTemplate, "Translations.Retrieve", r.Translation, want)
 	}
 }
 
@@ -127,7 +127,7 @@ func TestTranslationService_Retrieve_NullTaskID(t *testing.T) {
 					"modified_by": 420,
 					"modified_by_email": "user@mycompany.com",
 					"translation": "Hello, world!",
-					"is_fuzzy": true,
+					"is_unverified": true,
 					"is_reviewed": false,
 					"reviewed_by": 0,
 					"words": 2,
@@ -151,7 +151,7 @@ func TestTranslationService_Retrieve_NullTaskID(t *testing.T) {
 		ModifiedBy:                420,
 		ModifiedByEmail:           "user@mycompany.com",
 		Translation:               "Hello, world!",
-		IsFuzzy:                   true,
+		IsUnverified:              true,
 		IsReviewed:                false,
 		ReviewedBy:                0,
 		Words:                     2,
@@ -160,7 +160,7 @@ func TestTranslationService_Retrieve_NullTaskID(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(r.Translation, want) {
-		t.Errorf("Keys.Retrieve returned %+v, want %+v", r.Translation, want)
+		t.Errorf(assertionTemplate, "Translations.Retrieve", r.Translation, want)
 	}
 }
 
@@ -176,7 +176,7 @@ func TestTranslationService_Update(t *testing.T) {
 			testHeader(t, r, apiTokenHeader, testApiToken)
 			data := `{
 				"translation": "Quick brown fox jumps over the lazy dog.",
-				"is_fuzzy": false,
+				"is_unverified": false,
 				"is_reviewed": true
 			}`
 
@@ -194,9 +194,9 @@ func TestTranslationService_Update(t *testing.T) {
 		})
 
 	r, err := client.Translations().Update(testProjectID, 640, UpdateTranslation{
-		Translation: "Quick brown fox jumps over the lazy dog.",
-		IsFuzzy:     Bool(false),
-		IsReviewed:  true,
+		Translation:  "Quick brown fox jumps over the lazy dog.",
+		IsUnverified: Bool(false),
+		IsReviewed:   true,
 	})
 	if err != nil {
 		t.Errorf("Translations.Update returned error: %v", err)
@@ -207,7 +207,7 @@ func TestTranslationService_Update(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(r.Translation, want) {
-		t.Errorf("Translations.Update returned %+v, want %+v", r.Translation, want)
+		t.Errorf(assertionTemplate, "Translations.Update", r.Translation, want)
 	}
 }
 
