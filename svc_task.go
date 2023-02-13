@@ -7,6 +7,7 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
+// TaskService support List, Create, Retrieve, Update, Delete operations
 type TaskService struct {
 	BaseService
 
@@ -22,7 +23,7 @@ const (
 	pathTasks = "tasks"
 
 	StatusCompleted  TaskStatus = "completed"
-	StatusInProgress TaskStatus = "in progress"
+	StatusInProgress TaskStatus = "in_progress"
 	StatusCreated    TaskStatus = "created"
 	StatusQueued     TaskStatus = "queued"
 
@@ -50,6 +51,7 @@ type Task struct {
 	Status                     TaskStatus     `json:"status"`
 	Progress                   int            `json:"progress"`
 	DueDate                    string         `json:"due_date"`
+	DueDateTimestamp           int64          `json:"due_date_timestamp"`
 	KeysCount                  int64          `json:"keys_count"`
 	WordsCount                 int64          `json:"words_count"`
 	CanBeParent                bool           `json:"can_be_parent"`
@@ -58,6 +60,7 @@ type Task struct {
 	ClosingTags                []string       `json:"closing_tags"`
 	LockTranslations           bool           `json:"do_lock_translations"`
 	Languages                  []TaskLanguage `json:"languages"`
+	SourceLanguageISO          string         `json:"source_language_iso"`
 	AutoCloseLanguages         bool           `json:"auto_close_languages"`
 	AutoCloseTask              bool           `json:"auto_close_task"`
 	AutoCloseItems             bool           `json:"auto_close_items"`
@@ -106,10 +109,10 @@ type CreateTask struct {
 	Description        string   `json:"description,omitempty"`
 	DueDate            string   `json:"due_date,omitempty"`
 	Keys               []int64  `json:"keys,omitempty"`
+	SourceLanguageISO  string   `json:"source_language_iso,omitempty"`
 	AutoCloseLanguages *bool    `json:"auto_close_languages,omitempty"`
 	AutoCloseTask      *bool    `json:"auto_close_task,omitempty"`
 	AutoCloseItems     *bool    `json:"auto_close_items,omitempty"`
-	InitialTMLeverage  bool     `json:"initial_tm_leverage,omitempty"`
 	TaskType           TaskType `json:"task_type,omitempty"`
 	ParentTaskID       int64    `json:"parent_task_id,omitempty"`
 	ClosingTags        []string `json:"closing_tags,omitempty"`
@@ -212,7 +215,8 @@ type TaskListOptions struct {
 	Limit uint `url:"limit,omitempty"`
 	Page  uint `url:"page,omitempty"`
 
-	Title string `url:"filter_title,omitempty"`
+	FilterTitle    string       `url:"filter_title,omitempty"`
+	FilterStatuses []TaskStatus `url:"filter_statuses,omitempty"`
 }
 
 func (options TaskListOptions) Apply(req *resty.Request) {
