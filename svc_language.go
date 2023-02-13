@@ -75,7 +75,7 @@ type DeleteLanguageResponse struct {
 
 func (c *LanguageService) ListSystem() (r ListLanguagesResponse, err error) {
 	url := path.Join("system", pathLanguages)
-	resp, err := c.getList(c.Ctx(), url, &r, c.PageOpts())
+	resp, err := c.getWithOptions(c.Ctx(), url, &r, c.PageOpts())
 
 	if err != nil {
 		return
@@ -86,7 +86,7 @@ func (c *LanguageService) ListSystem() (r ListLanguagesResponse, err error) {
 
 func (c *LanguageService) ListProject(projectID string) (r ListLanguagesResponse, err error) {
 	url := path.Join(pathProjects, projectID, pathLanguages)
-	resp, err := c.getList(c.Ctx(), url, &r, c.PageOpts())
+	resp, err := c.getWithOptions(c.Ctx(), url, &r, c.PageOpts())
 
 	if err != nil {
 		return

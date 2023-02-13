@@ -149,7 +149,7 @@ type DeleteKeysResponse struct {
 // _____________________________________________________________________________________________________________________
 
 func (c *KeyService) List(projectID string) (r KeysResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, c.ListOpts())
+	resp, err := c.getWithOptions(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathKeys), &r, c.ListOpts())
 
 	if err != nil {
 		return
@@ -176,7 +176,7 @@ func (c *KeyService) Create(projectID string, keys []NewKey, options ...KeyReque
 }
 
 func (c *KeyService) Retrieve(projectID string, keyID int64) (r KeyResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &r, c.RetrieveOpts())
+	resp, err := c.getWithOptions(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathKeys, keyID), &r, c.RetrieveOpts())
 
 	if err != nil {
 		return

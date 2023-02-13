@@ -51,7 +51,7 @@ type DeleteSnapshotResponse struct {
 
 func (c *SnapshotService) List(projectID string) (r ListSnapshotsResponse, err error) {
 	path := path.Join(pathProjects, projectID, pathSnapshots)
-	resp, err := c.getList(c.Ctx(), path, &r, c.PageOpts())
+	resp, err := c.getWithOptions(c.Ctx(), path, &r, c.PageOpts())
 
 	if err != nil {
 		return
