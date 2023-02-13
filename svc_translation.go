@@ -11,10 +11,12 @@ const (
 	pathTranslations = "translations"
 )
 
+// TranslationService supports List, Retrieve and Update commands
 type TranslationService struct {
 	BaseService
 
-	opts TranslationListOptions
+	opts         TranslationListOptions
+	retrieveOpts TranslationRetrieveOptions
 }
 
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
@@ -30,11 +32,12 @@ type Translation struct {
 	ModifiedAtTs    int64  `json:"modified_at_timestamp"`
 	ModifiedBy      int64  `json:"modified_by"`
 	ModifiedByEmail string `json:"modified_by_email"`
-	IsFuzzy         bool   `json:"is_fuzzy"`
+	IsUnverified    bool   `json:"is_unverified"`
 	IsReviewed      bool   `json:"is_reviewed"`
 	ReviewedBy      int64  `json:"reviewed_by"`
 	Words           int64  `json:"words"`
 	TaskID          int64  `json:"task_id"`
+	SegmentNumber   int64  `json:"segment_number"`
 
 	CustomTranslationStatuses []TranslationStatus `json:"custom_translation_statuses"`
 }
@@ -43,7 +46,7 @@ type Translation struct {
 // Service request/response objects
 // _____________________________________________________________________________________________________________________
 
-// Used for NewKey
+// NewTranslation Used for NewKey
 type NewTranslation struct {
 	LanguageISO                    string  `json:"language_iso"`
 	Translation                    string  `json:"translation"`
@@ -111,7 +114,7 @@ func (t *NewTranslation) UnmarshalJSON(data []byte) error {
 
 type UpdateTranslation struct {
 	Translation                string   `json:"translation"`
-	IsFuzzy                    *bool    `json:"is_fuzzy,omitempty"`
+	IsUnverified               *bool    `json:"is_unverified,omitempty"`
 	IsReviewed                 bool     `json:"is_reviewed,omitempty"`
 	CustomTranslationStatusIDs []string `json:"custom_translation_status_ids,omitempty"`
 }
@@ -161,7 +164,7 @@ func (t *UpdateTranslation) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf("NewTranslation tranlation type is of unknown type")
 	}
 
-	t.IsFuzzy = aux.IsFuzzy
+	t.IsUnverified = aux.IsUnverified
 	t.IsReviewed = aux.IsReviewed
 	t.CustomTranslationStatusIDs = aux.CustomTranslationStatusIDs
 
@@ -193,7 +196,7 @@ func (c *TranslationService) List(projectID string) (r TranslationsResponse, err
 }
 
 func (c *TranslationService) Retrieve(projectID string, translationID int64) (r TranslationResponse, err error) {
-	resp, err := c.get(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTranslations, translationID), &r)
+	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTranslations, translationID), &r, c.RetrieveOpts())
 
 	if err != nil {
 		return
@@ -222,10 +225,12 @@ type TranslationListOptions struct {
 	// Possible values are 1 and 0.
 	DisableReferences uint8 `url:"disable_references,omitempty"`
 
-	FilterLangID     string `url:"filter_lang_id,omitempty"`
-	FilterIsReviewed uint8  `url:"filter_is_reviewed,omitempty"`
-	FilterFuzzy      uint8  `url:"filter_fuzzy,omitempty"`
-	FilterQAIssues   string `url:"filter_qa_issues,omitempty"`
+	FilterLangID       int64  `url:"filter_lang_id,omitempty"`
+	FilterIsReviewed   uint8  `url:"filter_is_reviewed,omitempty"`
+	FilterUnverified   uint8  `url:"filter_unverified,omitempty"`
+	FilterUntranslated uint8  `url:"filter_untranslated,omitempty"`
+	FilterQAIssues     string `url:"filter_qa_issues,omitempty"`
+	FilterActiveTaskID int64  `url:"filter_active_task_id,omitempty"`
 }
 
 func (options TranslationListOptions) Apply(req *resty.Request) {
@@ -237,5 +242,21 @@ func (c *TranslationService) ListOpts() TranslationListOptions        { return c
 func (c *TranslationService) SetListOptions(o TranslationListOptions) { c.opts = o }
 func (c *TranslationService) WithListOptions(o TranslationListOptions) *TranslationService {
 	c.opts = o
+	return c
+}
+
+type TranslationRetrieveOptions struct {
+	DisableReferences uint8 `url:"disable_references,omitempty"`
+}
+
+func (options TranslationRetrieveOptions) Apply(req *resty.Request) {
+	v, _ := query.Values(options)
+	req.SetQueryString(v.Encode())
+}
+
+func (c *TranslationService) RetrieveOpts() TranslationRetrieveOptions        { return c.retrieveOpts }
+func (c *TranslationService) SetRetrieveOptions(o TranslationRetrieveOptions) { c.retrieveOpts = o }
+func (c *TranslationService) WithRetrieveOptions(o TranslationRetrieveOptions) *TranslationService {
+	c.retrieveOpts = o
 	return c
 }
