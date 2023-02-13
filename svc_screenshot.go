@@ -73,7 +73,7 @@ type UpdateScreenshot struct {
 }
 
 func (c *ScreenshotService) List(projectID string) (r ScreenshotsResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathScreenshots), &r, c.ListOpts())
+	resp, err := c.getWithOptions(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathScreenshots), &r, c.ListOpts())
 
 	if err != nil {
 		return

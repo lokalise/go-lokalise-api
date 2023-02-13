@@ -49,7 +49,7 @@ type TranslationProvidersResponse struct {
 // _____________________________________________________________________________________________________________________
 
 func (c *TranslationProviderService) List(teamID int64) (r TranslationProvidersResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%d/%s", pathTeams, teamID, pathTranslationProviders), &r, c.PageOpts())
+	resp, err := c.getWithOptions(c.Ctx(), fmt.Sprintf("%s/%d/%s", pathTeams, teamID, pathTranslationProviders), &r, c.PageOpts())
 
 	if err != nil {
 		return

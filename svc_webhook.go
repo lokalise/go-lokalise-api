@@ -56,7 +56,7 @@ type DeleteWebhookResponse struct {
 }
 
 func (c *WebhookService) List(projectID string) (r WebhooksResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathWebhooks), &r, c.PageOpts())
+	resp, err := c.getWithOptions(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathWebhooks), &r, c.PageOpts())
 
 	if err != nil {
 		return

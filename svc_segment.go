@@ -54,7 +54,7 @@ type SegmentUpdateRequest struct {
 }
 
 func (s *SegmentationService) List(projectID string, keyID int64, languageIso string) (r SegmentsResponse, err error) {
-	resp, err := s.getList(
+	resp, err := s.getWithOptions(
 		s.Ctx(),
 		fmt.Sprintf("%s/%s/%s/%d/%s/%s", pathProjects, projectID, pathKeys, keyID, pathSegments, languageIso),
 		&r,
@@ -73,7 +73,7 @@ func (s *SegmentationService) Retrieve(
 	languageIso string,
 	segmentNumber int64,
 ) (r SegmentResponse, err error) {
-	resp, err := s.getList(
+	resp, err := s.getWithOptions(
 		s.Ctx(),
 		segmentPath(projectID, keyID, languageIso, segmentNumber),
 		&r,

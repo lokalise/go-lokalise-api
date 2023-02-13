@@ -58,7 +58,7 @@ type DeleteCommentResponse struct {
 // Retrieves a list of all comments in the project
 func (c *CommentService) ListProject(projectID string) (r ListCommentsResponse, err error) {
 	url := fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathComments)
-	resp, err := c.getList(c.Ctx(), url, &r, c.PageOpts())
+	resp, err := c.getWithOptions(c.Ctx(), url, &r, c.PageOpts())
 
 	if err != nil {
 		return
@@ -69,7 +69,7 @@ func (c *CommentService) ListProject(projectID string) (r ListCommentsResponse, 
 
 // Retrieves a list of all comments for a key
 func (c *CommentService) ListByKey(projectID string, keyID int64) (r ListCommentsResponse, err error) {
-	resp, err := c.getList(c.Ctx(), pathCommentsByKey(projectID, keyID), &r, c.PageOpts())
+	resp, err := c.getWithOptions(c.Ctx(), pathCommentsByKey(projectID, keyID), &r, c.PageOpts())
 
 	if err != nil {
 		return

@@ -59,7 +59,7 @@ func (c *restClient) get(ctx context.Context, path string, res interface{}) (*re
 	return c.req(ctx, path, res).Get(path)
 }
 
-func (c *restClient) getList(ctx context.Context, path string, res interface{}, options OptionsApplier) (*resty.Response, error) {
+func (c *restClient) getWithOptions(ctx context.Context, path string, res interface{}, options OptionsApplier) (*resty.Response, error) {
 	req := c.req(ctx, path, res)
 	options.Apply(req)
 	return req.Get(path)

@@ -45,7 +45,7 @@ type TeamsResponse struct {
 
 // Lists all teams available to the user
 func (c *TeamService) List() (r TeamsResponse, err error) {
-	resp, err := c.getList(c.Ctx(), pathTeams, &r, c.PageOpts())
+	resp, err := c.getWithOptions(c.Ctx(), pathTeams, &r, c.PageOpts())
 
 	if err != nil {
 		return

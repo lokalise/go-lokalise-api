@@ -71,7 +71,7 @@ type DeleteGroupResponse struct {
 // _____________________________________________________________________________________________________________________
 
 func (c *TeamUserGroupService) List(teamID int64) (r TeamUserGroupsResponse, err error) {
-	resp, err := c.getList(c.Ctx(), pathTeamUserGroups(teamID), &r, c.PageOpts())
+	resp, err := c.getWithOptions(c.Ctx(), pathTeamUserGroups(teamID), &r, c.PageOpts())
 
 	if err != nil {
 		return
