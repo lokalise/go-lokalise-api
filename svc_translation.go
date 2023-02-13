@@ -186,7 +186,7 @@ type TranslationResponse struct {
 // _____________________________________________________________________________________________________________________
 
 func (c *TranslationService) List(projectID string) (r TranslationsResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTranslations), &r, c.ListOpts())
+	resp, err := c.getWithOptions(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTranslations), &r, c.ListOpts())
 
 	if err != nil {
 		return
@@ -196,7 +196,7 @@ func (c *TranslationService) List(projectID string) (r TranslationsResponse, err
 }
 
 func (c *TranslationService) Retrieve(projectID string, translationID int64) (r TranslationResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTranslations, translationID), &r, c.RetrieveOpts())
+	resp, err := c.getWithOptions(c.Ctx(), fmt.Sprintf("%s/%s/%s/%d", pathProjects, projectID, pathTranslations, translationID), &r, c.RetrieveOpts())
 
 	if err != nil {
 		return

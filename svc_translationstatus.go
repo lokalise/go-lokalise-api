@@ -61,7 +61,7 @@ type UpdateTranslationStatus struct {
 // _____________________________________________________________________________________________________________________
 
 func (c *TranslationStatusService) List(projectID string) (r TranslationStatusesResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTranslationStatuses), &r, c.PageOpts())
+	resp, err := c.getWithOptions(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTranslationStatuses), &r, c.PageOpts())
 
 	if err != nil {
 		return

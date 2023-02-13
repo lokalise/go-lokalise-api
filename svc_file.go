@@ -119,7 +119,7 @@ type FileDownloadResponse struct {
 // _____________________________________________________________________________________________________________________
 
 func (c *FileService) List(projectID string) (r FilesResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathFiles), &r, c.ListOpts())
+	resp, err := c.getWithOptions(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathFiles), &r, c.ListOpts())
 
 	if err != nil {
 		return

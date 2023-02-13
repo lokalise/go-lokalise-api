@@ -60,7 +60,7 @@ func (c *PaymentCardService) Create(card CreatePaymentCard) (r PaymentCard, err 
 }
 
 func (c *PaymentCardService) List() (r PaymentCardsResponse, err error) {
-	resp, err := c.getList(c.Ctx(), pathPaymentCards, &r, c.PageOpts())
+	resp, err := c.getWithOptions(c.Ctx(), pathPaymentCards, &r, c.PageOpts())
 
 	if err != nil {
 		return

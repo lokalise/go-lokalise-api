@@ -62,7 +62,7 @@ type DeleteBranchResponse struct {
 // Lokalise API docs: https://lokalise.com/api2docs/curl/#transition-list-all-branches-get
 func (c *BranchService) List(projectID string) (r ListBranchesResponse, err error) {
 	endpoint := path.Join(pathProjects, projectID, pathBranches)
-	resp, err := c.getList(c.Ctx(), endpoint, &r, c.PageOpts())
+	resp, err := c.getWithOptions(c.Ctx(), endpoint, &r, c.PageOpts())
 
 	if err != nil {
 		return

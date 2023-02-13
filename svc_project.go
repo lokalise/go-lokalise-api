@@ -128,7 +128,7 @@ type DeleteProjectResponse struct {
 
 // Retrieves a list of projects available to the user
 func (c *ProjectService) List() (r ProjectsResponse, err error) {
-	resp, err := c.getList(c.Ctx(), pathProjects, &r, c.ListOpts())
+	resp, err := c.getWithOptions(c.Ctx(), pathProjects, &r, c.ListOpts())
 
 	if err != nil {
 		return

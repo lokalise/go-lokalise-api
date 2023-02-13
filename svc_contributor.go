@@ -52,7 +52,7 @@ type DeleteContributorResponse struct {
 // _____________________________________________________________________________________________________________________
 
 func (c *ContributorService) List(projectID string) (r ContributorsResponse, err error) {
-	resp, err := c.getList(c.Ctx(), pathContributors(projectID), &r, c.PageOpts())
+	resp, err := c.getWithOptions(c.Ctx(), pathContributors(projectID), &r, c.PageOpts())
 
 	if err != nil {
 		return

@@ -159,7 +159,7 @@ type DeleteTaskResponse struct {
 // _____________________________________________________________________________________________________________________
 
 func (c *TaskService) List(projectID string) (r TasksResponse, err error) {
-	resp, err := c.getList(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTasks), &r, c.ListOpts())
+	resp, err := c.getWithOptions(c.Ctx(), fmt.Sprintf("%s/%s/%s", pathProjects, projectID, pathTasks), &r, c.ListOpts())
 
 	if err != nil {
 		return
