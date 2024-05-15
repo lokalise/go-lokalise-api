@@ -839,3 +839,72 @@ func TestKeyService_Update_Empty_Tags(t *testing.T) {
 		t.Errorf("Keys.Update returned \n %+v\n want\n %+v", r.Key, want)
 	}
 }
+
+func TestKeyService_Retrieve_Paged_offset(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc(
+		fmt.Sprintf("/projects/%s/keys", testProjectID),
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("X-Pagination-Total-Count", "1000")
+			w.Header().Set("X-Pagination-Page-Count", "10")
+			w.Header().Set("X-Pagination-Limit", "100")
+			w.Header().Set("X-Pagination-Page", "1")
+			testMethod(t, r, "GET")
+			testHeader(t, r, apiTokenHeader, testApiToken)
+
+			_, _ = fmt.Fprint(w, `{}`)
+		})
+
+	r, err := client.Keys().List(testProjectID)
+	if err != nil {
+		t.Errorf("Keys.List.Paged returned error: %v", err)
+	}
+
+	want := Paged{
+		TotalCount: 1000,
+		PageCount:  10,
+		Limit:      100,
+		Page:       1,
+	}
+
+	if !reflect.DeepEqual(r.Paged, want) {
+		t.Errorf("Keys.List.Paged returned %+v, want %+v", r.Paged, want)
+	}
+}
+
+func TestKeyService_Retrieve_Paged_cursor(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc(
+		fmt.Sprintf("/projects/%s/keys", testProjectID),
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("X-Pagination-Next-Cursor", "eyIxIjo5NzM1NjI0NX0=")
+			w.Header().Set("X-Pagination-Limit", "100")
+			testMethod(t, r, "GET")
+			testHeader(t, r, apiTokenHeader, testApiToken)
+
+			_, _ = fmt.Fprint(w, `{}`)
+		})
+
+	r, err := client.Keys().List(testProjectID)
+	if err != nil {
+		t.Errorf("Keys.List.Paged returned error: %v", err)
+	}
+
+	want := Paged{
+		TotalCount: -1,
+		PageCount:  -1,
+		Limit:      100,
+		Page:       -1,
+		Cursor:     "eyIxIjo5NzM1NjI0NX0=",
+	}
+
+	if !reflect.DeepEqual(r.Paged, want) {
+		t.Errorf("Keys.List.Paged returned %+v, want %+v", r.Paged, want)
+	}
+}
