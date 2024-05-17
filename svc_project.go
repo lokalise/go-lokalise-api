@@ -47,6 +47,7 @@ type ProjectSettings struct {
 	OfflineTranslation        bool `json:"offline_translation"`
 	KeyEditing                bool `json:"key_editing"`
 	InlineMachineTranslations bool `json:"inline_machine_translations"`
+	Branching                 bool `json:"branching"`
 }
 
 type QAIssues struct {
