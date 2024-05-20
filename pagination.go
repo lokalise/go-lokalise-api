@@ -18,6 +18,11 @@ type PageCounter interface {
 	CurrentPage() int64
 }
 
+type CursorPager interface {
+	HasNextCursor() bool
+	NextCursor() string
+}
+
 type Paged struct {
 	TotalCount int64  `json:"-"`
 	PageCount  int64  `json:"-"`
