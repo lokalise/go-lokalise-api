@@ -397,6 +397,10 @@ func TestTranslationService_List_Paged_offset(t *testing.T) {
 	if !reflect.DeepEqual(r.Paged, want) {
 		t.Errorf(assertionTemplate, "Translations.List.Paged", r.Paged, want)
 	}
+
+	if r.Paged.CurrentPage() != 1 {
+		t.Errorf(assertionTemplate, "Translations.List.Paged.CurrentPage()", r.Paged.CurrentPage(), 1)
+	}
 }
 
 func TestTranslationService_List_Paged_cursor(t *testing.T) {
@@ -430,5 +434,46 @@ func TestTranslationService_List_Paged_cursor(t *testing.T) {
 
 	if !reflect.DeepEqual(r.Paged, want) {
 		t.Errorf(assertionTemplate, "Translations.List.Paged", r.Paged, want)
+	}
+
+	if !r.Paged.HasNextCursor() {
+		t.Errorf("Translations.List.Paged.HasNextCursor() returned false, want true")
+	}
+}
+
+func TestTranslationService_List_Paged_cursor_empty(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc(
+		fmt.Sprintf("/projects/%s/translations", testProjectID),
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("X-Pagination-Limit", "100")
+			testMethod(t, r, "GET")
+			testHeader(t, r, apiTokenHeader, testApiToken)
+
+			_, _ = fmt.Fprint(w, `{}`)
+		})
+
+	r, err := client.Translations().List(testProjectID)
+	if err != nil {
+		t.Errorf("Translations.List returned error: %v", err)
+	}
+
+	want := Paged{
+		TotalCount: -1,
+		PageCount:  -1,
+		Limit:      100,
+		Page:       -1,
+		Cursor:     "",
+	}
+
+	if !reflect.DeepEqual(r.Paged, want) {
+		t.Errorf(assertionTemplate, "Translations.List.Paged", r.Paged, want)
+	}
+
+	if r.Paged.HasNextCursor() {
+		t.Errorf("Translations.List.Paged.HasNextCursor() returned true, want false")
 	}
 }

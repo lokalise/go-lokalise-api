@@ -873,6 +873,10 @@ func TestKeyService_Retrieve_Paged_offset(t *testing.T) {
 	if !reflect.DeepEqual(r.Paged, want) {
 		t.Errorf("Keys.List.Paged returned %+v, want %+v", r.Paged, want)
 	}
+
+	if r.Paged.CurrentPage() != 1 {
+		t.Errorf("Keys.List.Paged.CurrentPage() returned %+v, want %+v", r.Paged.CurrentPage(), 1)
+	}
 }
 
 func TestKeyService_Retrieve_Paged_cursor(t *testing.T) {
@@ -906,5 +910,46 @@ func TestKeyService_Retrieve_Paged_cursor(t *testing.T) {
 
 	if !reflect.DeepEqual(r.Paged, want) {
 		t.Errorf("Keys.List.Paged returned %+v, want %+v", r.Paged, want)
+	}
+
+	if !r.Paged.HasNextCursor() {
+		t.Errorf("Keys.List.Paged.HasNextCursor() returned false, want true")
+	}
+}
+
+func TestKeyService_Retrieve_Paged_cursor_empty(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc(
+		fmt.Sprintf("/projects/%s/keys", testProjectID),
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("X-Pagination-Limit", "100")
+			testMethod(t, r, "GET")
+			testHeader(t, r, apiTokenHeader, testApiToken)
+
+			_, _ = fmt.Fprint(w, `{}`)
+		})
+
+	r, err := client.Keys().List(testProjectID)
+	if err != nil {
+		t.Errorf("Keys.List.Paged returned error: %v", err)
+	}
+
+	want := Paged{
+		TotalCount: -1,
+		PageCount:  -1,
+		Limit:      100,
+		Page:       -1,
+		Cursor:     "",
+	}
+
+	if !reflect.DeepEqual(r.Paged, want) {
+		t.Errorf("Keys.List.Paged returned %+v, want %+v", r.Paged, want)
+	}
+
+	if r.Paged.HasNextCursor() {
+		t.Errorf("Keys.List.Paged.HasNextCursor() returned true, want false")
 	}
 }
