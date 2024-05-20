@@ -48,10 +48,10 @@ func New(apiToken string, options ...ClientOption) (*Api, error) {
 
 	// predefined list options if any
 	prjOpts := ProjectListOptions{Page: c.pageOptions.Page, Limit: c.pageOptions.Limit}
-	keyOpts := KeyListOptions{Page: c.pageOptions.Page, Limit: c.pageOptions.Limit}
+	keyOpts := KeyListOptions{Pagination: c.pageOptions.Pagination, Page: c.pageOptions.Page, Limit: c.pageOptions.Limit, Cursor: c.pageOptions.Cursor}
 	taskOpts := TaskListOptions{Page: c.pageOptions.Page, Limit: c.pageOptions.Limit}
 	scOpts := ScreenshotListOptions{Page: c.pageOptions.Page, Limit: c.pageOptions.Limit}
-	trOpts := TranslationListOptions{Page: c.pageOptions.Page, Limit: c.pageOptions.Limit}
+	trOpts := TranslationListOptions{Pagination: c.pageOptions.Pagination, Page: c.pageOptions.Page, Limit: c.pageOptions.Limit, Cursor: c.pageOptions.Cursor}
 	fOpts := FileListOptions{Page: c.pageOptions.Page, Limit: c.pageOptions.Limit}
 
 	c.Projects = func() *ProjectService { return &ProjectService{BaseService: bs, opts: prjOpts} }
