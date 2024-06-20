@@ -270,8 +270,10 @@ func (k NewKey) MarshalJSON() ([]byte, error) {
 // List options
 type KeyListOptions struct {
 	// page options
-	Page  uint `url:"page,omitempty"`
-	Limit uint `url:"limit,omitempty"`
+	Pagination string `url:"pagination,omitempty"`
+	Page       uint   `url:"page,omitempty"`
+	Limit      uint   `url:"limit,omitempty"`
+	Cursor     string `url:"cursor,omitempty"`
 
 	// Possible values are 1 and 0.
 	DisableReferences   uint8 `url:"disable_references,omitempty"`

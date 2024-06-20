@@ -21,7 +21,7 @@
 ## Usage
 
 ```go
-import "github.com/lokalise/go-lokalise-api/v3"	// with go modules enabled (GO111MODULE=on or outside GOPATH)
+import "github.com/lokalise/go-lokalise-api/v4"	// with go modules enabled (GO111MODULE=on or outside GOPATH)
 import "github.com/lokalise/go-lokalise-api" // with go modules disabled
 ```
 
@@ -99,6 +99,44 @@ t.SetPageOptions(lokalise.PageOptions{
 })
 
 resp, err := t.List()
+```
+
+### Cursor pagination
+
+The [List Keys](https://developers.lokalise.com/reference/list-all-keys) and [List Translations](https://developers.lokalise.com/reference/list-all-translations) endpoints support cursor pagination, which is recommended for its faster performance compared to traditional "offset" pagination. By default, "offset" pagination is used, so you must explicitly set `pagination` to `"cursor"` to use cursor pagination.
+
+```go
+// This approach is also applicable for `client.Translations()`
+keys := Api.Keys()
+keys.SetPageOptions(lokalise.PageOptions{
+  Pagination: "cursor",
+  Cursor: "eyIxIjo1MjcyNjU2MTd9"
+})
+
+resp, err := keys.List()
+```
+
+After retrieving data from the Lokalise API, you can check for the availability of the next cursor and proceed accordingly:
+
+```go
+cursor := ""
+
+for {
+	keys := client.Keys()
+	keys.SetListOptions(KeyListOptions{
+		Pagination: "cursor",
+		Cursor:     cursor,
+	})
+	resp, _ := keys.List(projectId)
+	
+	// Do something with the response
+	
+	if !resp.Paged.HasNextCursor() {
+		// no more keys
+		break
+	}
+	cursor = resp.Paged.Cursor
+}
 ```
 
 ## Queued Processes

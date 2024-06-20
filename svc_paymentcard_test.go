@@ -132,6 +132,7 @@ func TestPaymentCardService_List(t *testing.T) {
 			PageCount:  -1,
 			Page:       -1,
 			Limit:      -1,
+			Cursor:     "",
 		},
 		WithUserID: WithUserID{
 			UserID: 420,

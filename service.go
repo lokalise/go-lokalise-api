@@ -33,6 +33,12 @@ func (s *BaseService) SetPageOptions(opts PageOptions) {
 	if opts.Page != 0 {
 		s.Page = opts.Page
 	}
+	if opts.Pagination != "" {
+		s.Pagination = opts.Pagination
+	}
+	if opts.Cursor != "" {
+		s.Cursor = opts.Cursor
+	}
 }
 
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
