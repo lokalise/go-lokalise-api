@@ -1,5 +1,7 @@
 package lokalise
 
+import "fmt"
+
 const (
 	pathTeams = "teams"
 )
@@ -30,6 +32,20 @@ type Quota struct {
 	MAU      int64 `json:"mau"`
 }
 
+type PermissionRole struct {
+	ID                             int      `json:"id"`
+	Role                           string   `json:"role"`
+	Permissions                    []string `json:"permissions"`
+	Description                    string   `json:"description"`
+	Tag                            string   `json:"tag"`
+	TagColor                       string   `json:"tagColor"`
+	DoesEnableAllReadOnlyLanguages bool     `json:"doesEnableAllReadOnlyLanguages"`
+}
+
+type PermissionRoleResponse struct {
+	Roles []PermissionRole `json:"roles"`
+}
+
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 // Service request/response objects
 // _____________________________________________________________________________________________________________________
@@ -52,4 +68,18 @@ func (c *TeamService) List() (r TeamsResponse, err error) {
 	}
 	applyPaged(resp, &r.Paged)
 	return r, apiError(resp)
+}
+
+// List all possible permission roles
+func (c *TeamService) ListPermissionRoles(teamID int64) (r PermissionRoleResponse, err error) {
+	resp, err := c.getWithOptions(c.Ctx(), pathPermissionRoles(teamID), &r, c.PageOpts())
+
+	if err != nil {
+		return r, err
+	}
+	return r, apiError(resp)
+}
+
+func pathPermissionRoles(teamID int64) string {
+	return fmt.Sprintf("teams/%d/roles", teamID)
 }

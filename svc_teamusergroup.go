@@ -26,12 +26,14 @@ type TeamUserGroup struct {
 }
 
 type Permission struct {
-	IsAdmin    bool       `json:"is_admin"`
+	// IsAdmin is deprecated, and will be removed in next release. Use AdminRights for more granular control.
+	IsAdmin bool `json:"is_admin"`
+	// IsReviewer is deprecated, and will be removed in next release. Use the appropriate permissions in AdminRights instead.
 	IsReviewer bool       `json:"is_reviewer"`
 	Languages  []Language `json:"languages,omitempty"`
-
-	// Possible values are upload, activity, download, settings, statistics, keys, screenshots, contributors, languages
+	// Possible values are activity, branches_main_modify, branches_create, branches_merge, statistics, tasks, contributors, settings, manage_languages, download, upload, glossary_delete, glossary_edit, manage_keys, screenshots, custom_status_modify, review
 	AdminRights []string `json:"admin_rights,omitempty"` // todo make admin rights as constants available in the lib
+	RoleId      int64    `json:"role_id,omitempty"`
 }
 
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
@@ -43,9 +45,13 @@ type NewGroupLanguages struct {
 }
 
 type NewGroup struct {
-	Name        string            `json:"name"`
-	IsAdmin     bool              `json:"is_admin"`
-	IsReviewer  bool              `json:"is_reviewer"`
+	Name string `json:"name"`
+	// IsAdmin is deprecated, and will be removed in next release. Use AdminRights for more granular control.
+	IsAdmin bool `json:"is_admin"`
+	// IsReviewer is deprecated, and will be removed in next release. Use the appropriate permissions in AdminRights instead.
+	IsReviewer bool `json:"is_reviewer"`
+
+	// Possible values are activity, branches_main_modify, branches_create, branches_merge, statistics, tasks, contributors, settings, manage_languages, download, upload, glossary_delete, glossary_edit, manage_keys, screenshots, custom_status_modify, review
 	AdminRights []string          `json:"admin_rights,omitempty"`
 	Languages   NewGroupLanguages `json:"languages,omitempty"`
 }
