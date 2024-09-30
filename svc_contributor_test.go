@@ -312,8 +312,7 @@ func TestContributorService_Update(t *testing.T) {
 			testHeader(t, r, apiTokenHeader, testApiToken)
 			data := `{
 				"is_admin": true,
-				"is_reviewer":false,
-				"role_id":null
+				"is_reviewer":false
 			}`
 
 			req := new(bytes.Buffer)
