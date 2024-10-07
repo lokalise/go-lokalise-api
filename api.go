@@ -26,6 +26,7 @@ type Api struct {
 	Teams                func() *TeamService
 	TeamUserGroups       func() *TeamUserGroupService
 	TeamUsers            func() *TeamUserService
+	PermissionTemplates  func() *PermissionTemplateService
 	TranslationProviders func() *TranslationProviderService
 	Translations         func() *TranslationService
 	TranslationStatuses  func() *TranslationStatusService
@@ -57,6 +58,7 @@ func New(apiToken string, options ...ClientOption) (*Api, error) {
 	c.Projects = func() *ProjectService { return &ProjectService{BaseService: bs, opts: prjOpts} }
 	c.Branches = func() *BranchService { return &BranchService{bs} }
 	c.Teams = func() *TeamService { return &TeamService{bs} }
+	c.PermissionTemplates = func() *PermissionTemplateService { return &PermissionTemplateService{bs} }
 	c.TeamUsers = func() *TeamUserService { return &TeamUserService{bs} }
 	c.TeamUserGroups = func() *TeamUserGroupService { return &TeamUserGroupService{bs} }
 

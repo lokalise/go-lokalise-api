@@ -100,6 +100,101 @@ func TestContributorService_Create(t *testing.T) {
 	}
 }
 
+func TestContributorService_CreateWithRoleId(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc(
+		fmt.Sprintf("/projects/%s/contributors", testProjectID),
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			testMethod(t, r, "POST")
+			testHeader(t, r, apiTokenHeader, testApiToken)
+			data := `{
+				"contributors": [
+					{
+						"email": "translator@mycompany.com",
+						"fullname": "Mr. Translator",
+						"is_admin": false,
+						"is_reviewer": true,
+						"languages": [
+							{
+								"lang_iso": "en",
+								"is_writable": false
+							}
+						],
+						"role_id": 2
+					}
+				]
+			}`
+
+			req := new(bytes.Buffer)
+			_ = json.Compact(req, []byte(data))
+
+			testBody(t, r, req.String())
+
+			_, _ = fmt.Fprint(w, `{
+				"project_id": "`+testProjectID+`",
+				"contributors": [{
+					"user_id": 421,
+					"email": "translator@mycompany.com",
+					"fullname": "Mr. Translator",
+					"is_admin": false,
+					"is_reviewer": true,
+					"languages": [
+						{
+							"lang_iso": "en",
+							"is_writable": false
+						}
+					],
+					"role_id": 2
+				}]
+			}`)
+		})
+
+	r, err := client.Contributors().Create(testProjectID, []NewContributor{
+		{
+			Email:    "translator@mycompany.com",
+			Fullname: "Mr. Translator",
+			Permission: Permission{
+				IsAdmin:    false,
+				IsReviewer: true,
+				Languages: []Language{{
+					LangISO:    "en",
+					IsWritable: false,
+				}},
+				AdminRights: nil,
+				RoleId:      2,
+			},
+		},
+	})
+	if err != nil {
+		t.Errorf("Contributors.Create returned error: %v", err)
+	}
+
+	want := []Contributor{
+		{
+			WithUserID: WithUserID{UserID: 421},
+			Email:      "translator@mycompany.com",
+			Fullname:   "Mr. Translator",
+			Permission: Permission{
+				IsAdmin:    false,
+				IsReviewer: true,
+				Languages: []Language{{
+					LangISO:    "en",
+					IsWritable: false,
+				}},
+				AdminRights: nil,
+				RoleId:      2,
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(r.Contributors, want) {
+		t.Errorf("Contributors.Create returned %+v, want %+v", r.Contributors, want)
+	}
+}
+
 func TestContributorService_Delete(t *testing.T) {
 	client, mux, _, teardown := setup()
 	defer teardown()
