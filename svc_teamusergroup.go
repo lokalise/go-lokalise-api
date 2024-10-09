@@ -49,7 +49,8 @@ type NewGroup struct {
 	// IsAdmin is deprecated, and will be removed in next release. Use AdminRights for more granular control.
 	IsAdmin bool `json:"is_admin"`
 	// IsReviewer is deprecated, and will be removed in next release. Use the appropriate permissions in AdminRights instead.
-	IsReviewer bool `json:"is_reviewer"`
+	IsReviewer bool  `json:"is_reviewer"`
+	RoleId     int64 `json:"role_id,omitempty"`
 
 	// Possible values are activity, branches_main_modify, branches_create, branches_merge, statistics, tasks, contributors, settings, manage_languages, download, upload, glossary_delete, glossary_edit, manage_keys, screenshots, custom_status_modify, review
 	AdminRights []string          `json:"admin_rights,omitempty"`
