@@ -203,6 +203,64 @@ func TestTeamUserGroupService_Create(t *testing.T) {
 	}
 }
 
+func TestTeamUserGroupService_CreateWithRoleId(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc(
+		fmt.Sprintf("/teams/%d/groups", 444),
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			testMethod(t, r, "POST")
+			testHeader(t, r, apiTokenHeader, testApiToken)
+			data := `{
+				"name": "Proofreaders",
+				"is_admin": false,
+				"is_reviewer": true,
+				"role_id": 3,
+				"languages": {
+					"reference": [],
+					"contributable": [640]
+				}
+			}`
+
+			req := new(bytes.Buffer)
+			_ = json.Compact(req, []byte(data))
+
+			testBody(t, r, req.String())
+
+			_, _ = fmt.Fprint(w, `{
+				"team_id": 444,
+				"group": {
+					"group_id": 50031
+				}
+			}`)
+		})
+
+	r, err := client.TeamUserGroups().Create(444, NewGroup{
+		Name:        "Proofreaders",
+		IsAdmin:     false,
+		IsReviewer:  true,
+		AdminRights: nil,
+		RoleId:      3,
+		Languages: NewGroupLanguages{
+			Reference:     []int64{},
+			Contributable: []int64{640},
+		},
+	})
+	if err != nil {
+		t.Errorf("TeamUserGroups.Create returned error: %v", err)
+	}
+
+	want := TeamUserGroup{
+		GroupID: 50031,
+	}
+
+	if !reflect.DeepEqual(r.Group, want) {
+		t.Errorf("TeamUserGroups.Create returned %+v, want %+v", r.Group, want)
+	}
+}
+
 func TestTeamUserGroupService_Delete(t *testing.T) {
 	client, mux, _, teardown := setup()
 	defer teardown()
