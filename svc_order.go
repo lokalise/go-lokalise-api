@@ -23,7 +23,7 @@ type Order struct {
 
 	OrderID             string           `json:"order_id"`
 	CardID              int64            `json:"card_id"`
-	PaymentMethod	  	string   		 `json:"payment_method"`
+	PaymentMethod       string           `json:"payment_method"`
 	Status              string           `json:"status"`
 	SourceLangISO       string           `json:"source_language_iso"`
 	TargetLangISOs      []string         `json:"target_language_isos"`
@@ -44,7 +44,7 @@ type Order struct {
 type CreateOrder struct {
 	ProjectID         string   `json:"project_id"`
 	CardID            int64    `json:"card_id"`
-	PaymentMethod	  string   `json:"payment_method"`
+	PaymentMethod     string   `json:"payment_method"`
 	Briefing          string   `json:"briefing"`
 	SourceLangISO     string   `json:"source_language_iso"`
 	TargetLangISOs    []string `json:"target_language_isos"`

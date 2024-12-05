@@ -84,7 +84,7 @@ func TestOrderService_Create(t *testing.T) {
 
 	r, err := client.Orders().Create(1, CreateOrder{
 		ProjectID:         testProjectID,
-		PaymentMethod: 	   "credit_card",
+		PaymentMethod:     "credit_card",
 		CardID:            12345,
 		Briefing:          "Terms of use of our app.",
 		SourceLangISO:     "en_US",
