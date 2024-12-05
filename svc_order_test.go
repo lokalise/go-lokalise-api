@@ -22,6 +22,7 @@ func TestOrderService_Create(t *testing.T) {
 			data := `{
 				"project_id": "` + testProjectID + `",
 				"card_id": 12345,
+				"payment_method": "credit_card",
 				"briefing": "Terms of use of our app.",
 				"source_language_iso": "en_US",
 				"target_language_isos": [
@@ -47,6 +48,7 @@ func TestOrderService_Create(t *testing.T) {
 			_, _ = fmt.Fprint(w, `{
 				"order_id": "20181231AAAA",
 				"project_id": "`+testProjectID+`",
+				"payment_method": "credit_card",
 				"card_id": 12345,
 				"status": "in progress",
 				"created_at": "2018-12-31 12:00:00 (Etc/UTC)",
@@ -82,6 +84,7 @@ func TestOrderService_Create(t *testing.T) {
 
 	r, err := client.Orders().Create(1, CreateOrder{
 		ProjectID:         testProjectID,
+		PaymentMethod: 	   "credit_card",
 		CardID:            12345,
 		Briefing:          "Terms of use of our app.",
 		SourceLangISO:     "en_US",
@@ -107,6 +110,7 @@ func TestOrderService_Create(t *testing.T) {
 			CreatedByEmail: "jonn@company.com",
 		},
 		OrderID:       "20181231AAAA",
+		PaymentMethod: "credit_card",
 		CardID:        12345,
 		Status:        "in progress",
 		SourceLangISO: "en_US",
