@@ -191,7 +191,8 @@ func TestOrderService_Retrieve(t *testing.T) {
 			testHeader(t, r, apiTokenHeader, testApiToken)
 
 			_, _ = fmt.Fprint(w, `{
-				"order_id": "20181231AAAA"
+				"order_id": "20181231AAAA",
+				"payment_method": "credit_card"
 			}`)
 		})
 
@@ -201,7 +202,8 @@ func TestOrderService_Retrieve(t *testing.T) {
 	}
 
 	want := Order{
-		OrderID: "20181231AAAA",
+		OrderID:       "20181231AAAA",
+		PaymentMethod: "credit_card",
 	}
 
 	if !reflect.DeepEqual(r, want) {
