@@ -159,6 +159,20 @@ func (c *FileService) Download(projectID string, downloadOptions FileDownload) (
 	return r, apiError(resp)
 }
 
+func (c *FileService) AsyncDownload(projectID string, downloadOptions FileDownload) (string, err error) {
+	url := fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathFiles, "async-download")
+	var response struct {
+        ProcessID string `json:"process_id"`
+    }
+
+    resp, err := c.post(c.Ctx(), url, &response, downloadOptions)
+    if err != nil {
+        return "", err
+    }
+
+	return response.ProcessID, apiError(resp)
+}
+
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 // Additional service structs & methods
 // _____________________________________________________________________________________________________________________
