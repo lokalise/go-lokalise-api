@@ -167,9 +167,9 @@ func (c *FileService) AsyncDownload(projectID string, downloadOptions FileDownlo
 	url := fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathFiles, "async-download")
 	resp, err := c.post(c.Ctx(), url, &r, downloadOptions)
 
-    if err != nil {
-        return
-    }
+	if err != nil {
+		return
+	}
 
 	return r, apiError(resp)
 }
