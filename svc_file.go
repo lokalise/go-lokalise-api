@@ -87,6 +87,7 @@ type FileDownload struct {
 	JavaPropertiesEncoding     string            `json:"java_properties_encoding,omitempty"`
 	JavaPropertiesSeparator    string            `json:"java_properties_separator,omitempty"`
 	BundleDescription          string            `json:"bundle_description,omitempty"`
+	Compact                    bool              `json:"compact,omitempty"`
 }
 
 type LanguageMapping struct {
