@@ -17,11 +17,11 @@ type QueuedProcessService struct {
 // _____________________________________________________________________________________________________________________
 
 type ProcessDetails struct {
-    ItemsToProcess *int   `json:"items_to_process",omitempty`
-    ItemsProcessed *int   `json:"items_processed",omitempty`
-    DownloadUrl    string `json:"download_url",omitempty`
-    Progress       string `json:"progress",omitempty`
-    Stage          string `json:"stage",omitempty`
+	ItemsToProcess *int   `json:"items_to_process",omitempty`
+	ItemsProcessed *int   `json:"items_processed",omitempty`
+	DownloadUrl    string `json:"download_url",omitempty`
+	Progress       string `json:"progress",omitempty`
+	Stage          string `json:"stage",omitempty`
 }
 
 type QueuedProcess struct {
