@@ -248,6 +248,43 @@ func TestNewTranslation_MarshalJSON(t *testing.T) {
 	}
 }
 
+func TestNewTranslationNumericStrings_MarshalJSON(t *testing.T) {
+	translations := []NewTranslation{
+		{
+			LanguageISO: "en",
+			Translation: "123456",
+		},
+		{
+			LanguageISO: "en",
+			Translation: "{\"one\":\"123456\",\"other\":\"78910\"}",
+		},
+	}
+
+	want := JsonCompact(`
+	[
+		{
+		   "language_iso": "en",
+		   "translation": "123456"
+		},
+		{
+		   "language_iso": "en",
+		   "translation": {
+			  "one": "123456",
+			  "other": "78910"
+		   }
+		}
+ 	]`)
+
+	marshal, err := json.Marshal(translations)
+	if err != nil {
+		t.Errorf("NewTranslation marshalling returned error %s", err)
+	}
+
+	if string(marshal) != want {
+		t.Errorf("NewTranslation marshalling mismatch: %+v, want %+v", string(marshal), want)
+	}
+}
+
 func TestUpdateTranslation_MarshalJSON(t *testing.T) {
 	translations := []UpdateTranslation{
 		{
@@ -267,6 +304,39 @@ func TestUpdateTranslation_MarshalJSON(t *testing.T) {
 		   "translation": {
 			  "one": "oneText",
 			  "other": "otherText"
+		   }
+		}
+ 	]`)
+
+	marshal, err := json.Marshal(translations)
+	if err != nil {
+		t.Errorf("UpdateTranslation marshalling returned error %s", err)
+	}
+
+	if string(marshal) != want {
+		t.Errorf("UpdateTranslation marshalling mismatch: %+v, want %+v", string(marshal), want)
+	}
+}
+
+func TestUpdateTranslationNumericStrings_MarshalJSON(t *testing.T) {
+	translations := []UpdateTranslation{
+		{
+			Translation: "123456",
+		},
+		{
+			Translation: "{\"one\":\"123456\",\"other\":\"78910\"}",
+		},
+	}
+
+	want := JsonCompact(`
+	[
+		{
+		   "translation": "123456"
+		},
+		{
+		   "translation": {
+			  "one": "123456",
+			  "other": "78910"
 		   }
 		}
  	]`)
