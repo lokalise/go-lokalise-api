@@ -163,7 +163,7 @@ func (c *FileService) Download(projectID string, downloadOptions FileDownload) (
 	return r, apiError(resp)
 }
 
-func (c *FileService) InitAsyncDownload(projectID string, downloadOptions FileDownload) (r FileAsyncDownloadResponse, err error) {
+func (c *FileService) AsyncDownload(projectID string, downloadOptions FileDownload) (r FileAsyncDownloadResponse, err error) {
 	url := fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathFiles, "async-download")
 	resp, err := c.post(c.Ctx(), url, &r, downloadOptions)
 
