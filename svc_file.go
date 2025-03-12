@@ -114,6 +114,10 @@ type FileDownloadResponse struct {
 	BundleURL string `json:"bundle_url"`
 }
 
+type FileAsyncDownloadResponse struct {
+	ProcessID string `json:"process_id"`
+}
+
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 // Service methods
 // _____________________________________________________________________________________________________________________
@@ -156,6 +160,17 @@ func (c *FileService) Download(projectID string, downloadOptions FileDownload) (
 	if err != nil {
 		return
 	}
+	return r, apiError(resp)
+}
+
+func (c *FileService) AsyncDownload(projectID string, downloadOptions FileDownload) (r FileAsyncDownloadResponse, err error) {
+	url := fmt.Sprintf("%s/%s/%s/%s", pathProjects, projectID, pathFiles, "async-download")
+	resp, err := c.post(c.Ctx(), url, &r, downloadOptions)
+
+	if err != nil {
+		return
+	}
+
 	return r, apiError(resp)
 }
 
