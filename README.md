@@ -266,3 +266,11 @@ permissionUpdate := lokalise.Permission{
 }
 resp, err := Api.Contributors().Update(projectId, userId, permissionUpdate)
 ```
+
+## Releasing new version
+
+- merge your approval changes into master
+- go to [Tags > Releases](https://github.com/lokalise/go-lokalise-api/releases) -> *Draft new release*
+- in tags dropdown enter next version in format `vX.X.X` and choose to create new tag
+- press `Generate release notes`, then adjust generated notes if needed
+- press `Publish Release`
