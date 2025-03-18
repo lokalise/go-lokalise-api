@@ -22,6 +22,7 @@ type FileService struct {
 // _____________________________________________________________________________________________________________________
 
 type File struct {
+	FileId   int64  `json:"file_id"`
 	Filename string `json:"filename"`
 	KeyCount int64  `json:"key_count"`
 }
