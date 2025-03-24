@@ -67,3 +67,7 @@ type WithProjectID struct {
 type WithUserID struct {
 	UserID int64 `json:"user_id,omitempty"`
 }
+
+type WithWarning struct {
+	Warning string
+}

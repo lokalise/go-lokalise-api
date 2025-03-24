@@ -2,9 +2,8 @@ package lokalise
 
 import (
 	"fmt"
-	"github.com/google/go-querystring/query"
-
 	"github.com/go-resty/resty/v2"
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -111,6 +110,7 @@ type FileUploadResponse struct {
 
 type FileDownloadResponse struct {
 	WithProjectID
+	WithWarning
 	BundleURL string `json:"bundle_url"`
 }
 
@@ -160,6 +160,9 @@ func (c *FileService) Download(projectID string, downloadOptions FileDownload) (
 	if err != nil {
 		return
 	}
+
+	r.Warning = resp.Header().Get("X-Response-Too-Big")
+
 	return r, apiError(resp)
 }
 

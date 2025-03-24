@@ -258,3 +258,50 @@ func TestFileServiceDefaults_Upload(t *testing.T) {
 		t.Errorf("Files.Upload returned %+v, want %+v", r, want)
 	}
 }
+
+func TestFileService_Download_WithWarning(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc(
+		fmt.Sprintf("/projects/%s/files/download", testProjectID),
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			testMethod(t, r, "POST")
+			testHeader(t, r, apiTokenHeader, testApiToken)
+			data := `{
+				"format": "json",
+				"original_filenames": true
+			}`
+
+			req := new(bytes.Buffer)
+			_ = json.Compact(req, []byte(data))
+
+			testBody(t, r, req.String())
+
+			w.Header().Set("X-Response-Too-Big", "Project too big for sync export. Please use our async export endpoint instead. (/files/async-download)")
+
+			_, _ = fmt.Fprint(w, `{
+				"project_id": "`+testProjectID+`",
+				"bundle_url": "https://s3-eu-west-1.amazonaws.com/lokalise-assets/export/MyApp-locale.zip"
+			}`)
+		})
+
+	r, err := client.Files().Download(testProjectID, FileDownload{
+		Format:            "json",
+		OriginalFilenames: Bool(true),
+	})
+	if err != nil {
+		t.Errorf("Files.Download returned error: %v", err)
+	}
+
+	want := FileDownloadResponse{
+		WithProjectID: WithProjectID{ProjectID: testProjectID},
+		WithWarning:   WithWarning{Warning: "Project too big for sync export. Please use our async export endpoint instead. (/files/async-download)"},
+		BundleURL:     "https://s3-eu-west-1.amazonaws.com/lokalise-assets/export/MyApp-locale.zip",
+	}
+
+	if !reflect.DeepEqual(r, want) {
+		t.Errorf("Files.Download returned %+v, want %+v", r, want)
+	}
+}
