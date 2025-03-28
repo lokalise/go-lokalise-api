@@ -246,7 +246,7 @@ func (k BulkUpdateKey) MarshalJSON() ([]byte, error) {
 
 // MarshalJSON Remove null tags array, preserve empty array in json
 func (k NewKey) MarshalJSON() ([]byte, error) {
-	data := map[string]interface{}
+	data := make(map[string]interface{})
 
 	if k.KeyName != nil {
 		data["key_name"] = k.KeyName
