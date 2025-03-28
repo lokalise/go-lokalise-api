@@ -76,7 +76,7 @@ func WithAutomations(UseAutomations bool) KeyRequestOption {
 
 type NewKey struct {
 	// KeyName could be string or PlatformStrings
-	KeyName          *interface{}
+	KeyName          interface{}
 	IsPlural         *bool
 	PluralName       *string
 	IsHidden         *bool
