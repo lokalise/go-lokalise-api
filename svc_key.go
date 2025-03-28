@@ -89,7 +89,7 @@ type NewKey struct {
 	IsPlural         bool   `json:"is_plural,omitempty"`
 	PluralName       string `json:"plural_name,omitempty"`
 	IsHidden         bool   `json:"is_hidden,omitempty"`
-	IsArchived       bool   `json:"is_archived,omitempty"`
+	IsArchived       *bool   `json:"is_archived"`
 	Context          string `json:"context,omitempty"`
 	BaseWords        int    `json:"base_words,omitempty"`
 	CharLimit        int    `json:"char_limit,omitempty"`
