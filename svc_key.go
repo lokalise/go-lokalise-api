@@ -76,24 +76,23 @@ func WithAutomations(UseAutomations bool) KeyRequestOption {
 
 type NewKey struct {
 	// KeyName could be string or PlatformStrings
-	KeyName      interface{}      `json:"key_name,omitempty"` // could be empty in case of updating
-	Description  string           `json:"description,omitempty"`
-	Platforms    []string         `json:"platforms,omitempty"` // could be empty in case of updating
-	Filenames    *PlatformStrings `json:"filenames,omitempty"`
-	Tags         []string         `json:"tags"`
-	MergeTags    bool             `json:"merge_tags,omitempty"`
-	Comments     []NewComment     `json:"comments,omitempty"`
-	Screenshots  []NewScreenshot  `json:"screenshots,omitempty"`
-	Translations []NewTranslation `json:"translations,omitempty"`
-
-	IsPlural         bool   `json:"is_plural,omitempty"`
-	PluralName       string `json:"plural_name,omitempty"`
-	IsHidden         bool   `json:"is_hidden,omitempty"`
-	IsArchived       bool   `json:"is_archived,omitempty"`
-	Context          string `json:"context,omitempty"`
-	BaseWords        int    `json:"base_words,omitempty"`
-	CharLimit        int    `json:"char_limit,omitempty"`
-	CustomAttributes string `json:"custom_attributes,omitempty"`
+	KeyName          interface{}
+	IsPlural         *bool
+	PluralName       *string
+	IsHidden         *bool
+	IsArchived       *bool
+	Context          *string
+	BaseWords        *int
+	CharLimit        *int
+	CustomAttributes *string
+	MergeTags        *bool
+	Filenames        *PlatformStrings
+	Description      *string
+	Platforms        *[]string
+	Tags             *[]string
+	Comments         *[]NewComment
+	Screenshots      *[]NewScreenshot
+	Translations     *[]NewTranslation
 }
 
 type CreateKeysRequest struct {
@@ -247,20 +246,77 @@ func (k BulkUpdateKey) MarshalJSON() ([]byte, error) {
 
 // MarshalJSON Remove null tags array, preserve empty array in json
 func (k NewKey) MarshalJSON() ([]byte, error) {
-	type Alias NewKey
+	data := make(map[string]interface{})
+
+	if k.KeyName != nil {
+		data["key_name"] = k.KeyName
+	}
+
+	if k.IsPlural != nil {
+		data["is_plural"] = k.IsPlural
+	}
+
+	if k.PluralName != nil {
+		data["plural_name"] = k.PluralName
+	}
+
+	if k.IsHidden != nil {
+		data["is_hidden"] = k.IsHidden
+	}
+
+	if k.IsArchived != nil {
+		data["is_archived"] = k.IsArchived
+	}
+
+	if k.Context != nil {
+		data["context"] = k.Context
+	}
+
+	if k.BaseWords != nil {
+		data["base_words"] = k.BaseWords
+	}
+
+	if k.CharLimit != nil {
+		data["char_limit"] = k.CharLimit
+	}
+
+	if k.CustomAttributes != nil {
+		data["custom_attributes"] = k.CustomAttributes
+	}
+
+	if k.MergeTags != nil {
+		data["merge_tags"] = k.MergeTags
+	}
+
+	if k.Filenames != nil {
+		data["filenames"] = k.Filenames
+	}
+
+	if k.Description != nil {
+		data["description"] = k.Description
+	}
+
+	if k.Platforms != nil {
+		data["platforms"] = k.Platforms
+	}
+
 	if k.Tags != nil {
-		return json.Marshal((Alias)(k))
+		data["tags"] = k.Tags
 	}
 
-	c := struct {
-		*Alias
-		Tags []string `json:"tags,omitempty"`
-	}{
-		Tags:  []string(nil),
-		Alias: (*Alias)(&k),
+	if k.Comments != nil {
+		data["comments"] = k.Comments
 	}
 
-	return json.Marshal(c)
+	if k.Screenshots != nil {
+		data["screenshots"] = k.Screenshots
+	}
+
+	if k.Translations != nil {
+		data["translations"] = k.Translations
+	}
+
+	return json.Marshal(data)
 }
 
 // ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
