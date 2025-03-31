@@ -68,8 +68,8 @@ func TestKeyService_BulkUpdate(t *testing.T) {
 				"keys": [
 					{
 						"key_id": 331223,
-						"key_name": "index.welcome",
 						"description": "Index app welcome",
+						"key_name": "index.welcome",
 						"platforms": [
 							"web"
 					   ],
@@ -100,26 +100,32 @@ func TestKeyService_BulkUpdate(t *testing.T) {
 			}`)
 		})
 
+	KeyName := "index.welcome"
+	Description := "Index app welcome"
+	Platforms := []string{
+		"web",
+	}
+	Translations := []NewTranslation{
+		{
+			LanguageISO:                    "en",
+			Translation:                    "Welcome",
+			CustomTranslationStatusIds:     []int64{1, 2, 3},
+			MergeCustomTranslationStatuses: true,
+		},
+	}
+
 	r, err := client.Keys().BulkUpdate(testProjectID, []BulkUpdateKey{
 		{
 			KeyID: 331223,
 			NewKey: NewKey{
-				KeyName:     "index.welcome",
-				Description: "Index app welcome",
-				Platforms: []string{
-					"web",
-				},
-				Translations: []NewTranslation{
-					{
-						LanguageISO:                    "en",
-						Translation:                    "Welcome",
-						CustomTranslationStatusIds:     []int64{1, 2, 3},
-						MergeCustomTranslationStatuses: true,
-					},
-				},
+				KeyName:      &KeyName,
+				Description:  &Description,
+				Platforms:    &Platforms,
+				Translations: &Translations,
 			},
 		},
 	})
+
 	if err != nil {
 		t.Errorf("Keys.BulkUpdate returned error: %v", err)
 	}
@@ -149,8 +155,8 @@ func TestKeyService_BulkUpdate_AutomationsDisabled(t *testing.T) {
 				"keys": [
 					{
 						"key_id": 331223,
-						"key_name": "index.welcome",
 						"description": "Index app welcome",
+						"key_name": "index.welcome",
 						"platforms": [
 							"web"
 					   ],
@@ -182,26 +188,32 @@ func TestKeyService_BulkUpdate_AutomationsDisabled(t *testing.T) {
 			}`)
 		})
 
+	KeyName := "index.welcome"
+	Description := "Index app welcome"
+	Platforms := []string{
+		"web",
+	}
+	Translations := []NewTranslation{
+		{
+			LanguageISO:                    "en",
+			Translation:                    "Welcome",
+			CustomTranslationStatusIds:     []int64{1, 2, 3},
+			MergeCustomTranslationStatuses: true,
+		},
+	}
+
 	r, err := client.Keys().BulkUpdate(testProjectID, []BulkUpdateKey{
 		{
 			KeyID: 331223,
 			NewKey: NewKey{
-				KeyName:     "index.welcome",
-				Description: "Index app welcome",
-				Platforms: []string{
-					"web",
-				},
-				Translations: []NewTranslation{
-					{
-						LanguageISO:                    "en",
-						Translation:                    "Welcome",
-						CustomTranslationStatusIds:     []int64{1, 2, 3},
-						MergeCustomTranslationStatuses: true,
-					},
-				},
+				KeyName:      &KeyName,
+				Description:  &Description,
+				Platforms:    &Platforms,
+				Translations: &Translations,
 			},
 		},
 	}, WithAutomations(false))
+
 	if err != nil {
 		t.Errorf("Keys.BulkUpdate.AutomationsDisabled returned error: %v", err)
 	}
@@ -230,8 +242,8 @@ func TestKeyService_Create(t *testing.T) {
 			data := `{
 				"keys": [
 					{
+					    "description": "Index app welcome",
 						"key_name": "index.welcome",
-						"description": "Index app welcome",
 						"platforms": [
 							"web"
 						],
@@ -306,20 +318,26 @@ func TestKeyService_Create(t *testing.T) {
 			}`)
 		})
 
+	KeyName := "index.welcome"
+	Description := "Index app welcome"
+	Platforms := []string{"web"}
+	Translations := []NewTranslation{
+		{
+			LanguageISO:                "en",
+			Translation:                "Welcome",
+			CustomTranslationStatusIds: []int64{1, 2, 3},
+		},
+	}
+
 	r, err := client.Keys().Create(testProjectID, []NewKey{
 		{
-			KeyName:     "index.welcome",
-			Description: "Index app welcome",
-			Platforms:   []string{"web"},
-			Translations: []NewTranslation{
-				{
-					LanguageISO:                "en",
-					Translation:                "Welcome",
-					CustomTranslationStatusIds: []int64{1, 2, 3},
-				},
-			},
+			KeyName:      &KeyName,
+			Description:  &Description,
+			Platforms:    &Platforms,
+			Translations: &Translations,
 		},
 	})
+
 	if err != nil {
 		t.Errorf("Keys.Create returned error: %v", err)
 	}
@@ -386,8 +404,8 @@ func TestKeyService_Create_AutomationsDisabled(t *testing.T) {
 			data := `{
 				"keys": [
 					{
-						"key_name": "index.welcome",
 						"description": "Index app welcome",
+						"key_name": "index.welcome",
 						"platforms": [
 							"web"
 						],
@@ -463,20 +481,26 @@ func TestKeyService_Create_AutomationsDisabled(t *testing.T) {
 			}`)
 		})
 
+	KeyName := "index.welcome"
+	Description := "Index app welcome"
+	Platforms := []string{"web"}
+	Translations := []NewTranslation{
+		{
+			LanguageISO:                "en",
+			Translation:                "Welcome",
+			CustomTranslationStatusIds: []int64{1, 2, 3},
+		},
+	}
+
 	r, err := client.Keys().Create(testProjectID, []NewKey{
 		{
-			KeyName:     "index.welcome",
-			Description: "Index app welcome",
-			Platforms:   []string{"web"},
-			Translations: []NewTranslation{
-				{
-					LanguageISO:                "en",
-					Translation:                "Welcome",
-					CustomTranslationStatusIds: []int64{1, 2, 3},
-				},
-			},
+			KeyName:      &KeyName,
+			Description:  &Description,
+			Platforms:    &Platforms,
+			Translations: &Translations,
 		},
 	}, WithAutomations(false))
+
 	if err != nil {
 		t.Errorf("Keys.Create.AutomationsDisabled returned error: %v", err)
 	}
@@ -543,8 +567,9 @@ func TestKeyService_Create_PluralTranslationEncoded(t *testing.T) {
 			data := `{
 			   "keys": [
 				  {
+				  	 "description": "Index app welcome",
+				  	 "is_plural": true,
 					 "key_name": "index.welcome",
-					 "description": "Index app welcome",
 					 "platforms": [
 						"web"
 					 ],
@@ -556,8 +581,7 @@ func TestKeyService_Create_PluralTranslationEncoded(t *testing.T) {
 							  "other": "otherText"
 						   }
 						}
-					 ],
-					 "is_plural": true
+					 ]
 				  }
 			   ]
 			}`
@@ -622,18 +646,24 @@ func TestKeyService_Create_PluralTranslationEncoded(t *testing.T) {
 			}`)
 		})
 
+	KeyName := "index.welcome"
+	Description := "Index app welcome"
+	Platforms := []string{"web"}
+	IsPlural := true
+	Translations := []NewTranslation{
+		{
+			LanguageISO: "en",
+			Translation: "{\"one\":\"oneText\",\"other\":\"otherText\"}",
+		},
+	}
+
 	_, _ = client.Keys().Create(testProjectID, []NewKey{
 		{
-			KeyName:     "index.welcome",
-			Description: "Index app welcome",
-			Platforms:   []string{"web"},
-			IsPlural:    true,
-			Translations: []NewTranslation{
-				{
-					LanguageISO: "en",
-					Translation: "{\"one\":\"oneText\",\"other\":\"otherText\"}",
-				},
-			},
+			KeyName:      &KeyName,
+			Description:  &Description,
+			Platforms:    &Platforms,
+			IsPlural:     &IsPlural,
+			Translations: &Translations,
 		},
 	})
 
@@ -774,10 +804,14 @@ func TestKeyService_Update(t *testing.T) {
 			}`)
 		})
 
+	Platforms := []string{"web", "other"}
+	Description := "Index app welcome"
+
 	r, err := client.Keys().Update(testProjectID, 640, NewKey{
-		Platforms:   []string{"web", "other"},
-		Description: "Index app welcome",
+		Platforms:   &Platforms,
+		Description: &Description,
 	})
+
 	if err != nil {
 		t.Errorf("Keys.Update returned error: %v", err)
 	}
@@ -822,11 +856,16 @@ func TestKeyService_Update_Empty_Tags(t *testing.T) {
 			}`)
 		})
 
+	Platforms := []string{"web", "other"}
+	Description := "Index app welcome"
+	Tags := []string{}
+
 	r, err := client.Keys().Update(testProjectID, 640, NewKey{
-		Platforms:   []string{"web", "other"},
-		Description: "Index app welcome",
-		Tags:        []string{},
+		Platforms:   &Platforms,
+		Description: &Description,
+		Tags:        &Tags,
 	})
+
 	if err != nil {
 		t.Errorf("Keys.Update returned error: %v", err)
 	}
