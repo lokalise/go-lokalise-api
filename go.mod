@@ -1,9 +1,12 @@
-module github.com/lokalise/go-lokalise-api/v4
+module github.com/lokalise/go-lokalise-api/v5
 
 require (
-	github.com/go-resty/resty/v2 v2.1.0
-	github.com/google/go-querystring v1.0.0
-	golang.org/x/net v0.0.0-20191119073136-fc4aabc6c914 // indirect
+	github.com/go-resty/resty/v2 v2.16.5
+	github.com/google/go-querystring v1.1.0
 )
 
-go 1.13
+require golang.org/x/net v0.39.0 // indirect
+
+go 1.23.0
+
+toolchain go1.23.2
