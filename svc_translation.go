@@ -38,7 +38,6 @@ type Translation struct {
 	Words           int64  `json:"words"`
 	TaskID          int64  `json:"task_id"`
 	SegmentNumber   int64  `json:"segment_number"`
-	IsUntranslated  int64  `json:"is_untranslated"` // Should be a boolean, but it's not.
 
 	CustomTranslationStatuses []TranslationStatus `json:"custom_translation_statuses"`
 }
