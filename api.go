@@ -2,6 +2,7 @@ package lokalise
 
 import (
 	"errors"
+	"net/http"
 	"time"
 )
 
@@ -128,6 +129,13 @@ func WithConnectionTimeout(t time.Duration) ClientOption {
 func WithDebug(dbg bool) ClientOption {
 	return func(c *Api) error {
 		c.httpClient.Client.SetDebug(dbg)
+		return nil
+	}
+}
+
+func WithTransport(rt http.RoundTripper) ClientOption {
+	return func(c *Api) error {
+		c.httpClient.SetTransport(rt)
 		return nil
 	}
 }
