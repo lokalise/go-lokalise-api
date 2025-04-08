@@ -135,7 +135,7 @@ func WithDebug(dbg bool) ClientOption {
 
 func WithTransport(rt http.RoundTripper) ClientOption {
 	return func(c *Api) error {
-		c.httpClient.Client.SetTransport(rt)
+		c.httpClient.SetTransport(rt)
 		return nil
 	}
 }
