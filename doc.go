@@ -3,7 +3,7 @@ Package lokalise provides functions to access the Lokalise web API.
 
 Usage:
 
-	import "github.com/lokalise/go-lokalise-api/v4"	// with go modules enabled (GO111MODULE=on or outside GOPATH)
+	import "github.com/lokalise/go-lokalise-api/v5"	// with go modules enabled
 	import "github.com/lokalise/go-lokalise-api" // with go modules disabled
 
 Initializing the client
