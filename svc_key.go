@@ -345,6 +345,7 @@ type KeyListOptions struct {
 	FilterPlatforms          string `url:"filter_platforms,omitempty"`
 	FilterUntranslated       string `url:"filter_untranslated,omitempty"`
 	FilterQAIssues           string `url:"filter_qa_issues,omitempty"`
+	FilterArchived           string `url:"filter_archived,omitempty"`
 }
 
 func (options KeyListOptions) Apply(req *resty.Request) {
