@@ -23,13 +23,25 @@ jobs:
       - name: Ensure dependencies
         run: go mod tidy
 
-      - name: Run go fmt
+      - name: Run go fmt (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
         run: |
           gofmt_out=$(gofmt -d -s .)
           if [ -n "$gofmt_out" ]; then
             echo "$gofmt_out"
             exit 1
           fi
+
+      - name: Run go fmt (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $gofmt_out = gofmt -d -s .
+          if ($gofmt_out) {
+            Write-Output $gofmt_out
+            exit 1
+          }
 
       - name: Run go vet
         run: go vet ./...
