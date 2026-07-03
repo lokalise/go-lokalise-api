@@ -5,8 +5,6 @@ require (
 	github.com/google/go-querystring v1.1.0
 )
 
-require golang.org/x/net v0.39.0 // indirect
+require golang.org/x/net v0.55.0 // indirect
 
-go 1.23.0
-
-toolchain go1.23.2
+go 1.25.0
