@@ -17,11 +17,24 @@ type QueuedProcessService struct {
 // _____________________________________________________________________________________________________________________
 
 type ProcessDetails struct {
-	ItemsToProcess *int   `json:"items_to_process,omitempty"`
-	ItemsProcessed *int   `json:"items_processed,omitempty"`
-	DownloadUrl    string `json:"download_url,omitempty"`
-	Progress       string `json:"progress,omitempty"`
-	Stage          string `json:"stage,omitempty"`
+	ItemsToProcess *int                 `json:"items_to_process,omitempty"`
+	ItemsProcessed *int                 `json:"items_processed,omitempty"`
+	DownloadUrl    string               `json:"download_url,omitempty"`
+	Progress       string               `json:"progress,omitempty"`
+	Stage          string               `json:"stage,omitempty"`
+	Files          []ProcessDetailsFile `json:"files,omitempty"`
+}
+
+type ProcessDetailsFile struct {
+	Status           string `json:"status"`
+	Message          string `json:"message"`
+	NameOriginal     string `json:"name_original"`
+	NameCustom       string `json:"name_custom"`
+	WordCountTotal   int    `json:"word_count_total"`
+	KeyCountTotal    int    `json:"key_count_total"`
+	KeyCountInserted int    `json:"key_count_inserted"`
+	KeyCountUpdated  int    `json:"key_count_updated"`
+	KeyCountSkipped  int    `json:"key_count_skipped"`
 }
 
 type QueuedProcess struct {

@@ -85,7 +85,22 @@ func TestQueuedProcessService_Retrieve(t *testing.T) {
 					"created_by": 1234,
 					"created_by_email": "example@example.com",
 					"created_at": "2020-04-20 13:43:43 (Etc/UTC)",
-					"created_at_timestamp": 1587390223
+					"created_at_timestamp": 1587390223,
+					"details": {
+						"files": [
+							{
+								"status": "finished",
+								"message": "",
+								"name_original": "index.json",
+								"name_custom": "index.json",
+								"word_count_total": 2,
+								"key_count_total": 1,
+								"key_count_inserted": 0,
+								"key_count_updated": 0,
+								"key_count_skipped": 1
+							}
+						]
+					}
 				}
 			}`)
 		})
@@ -100,6 +115,21 @@ func TestQueuedProcessService_Retrieve(t *testing.T) {
 		Type:    "file-import",
 		Status:  "finished",
 		Message: "",
+		Details: ProcessDetails{
+			Files: []ProcessDetailsFile{
+				{
+					Status:           "finished",
+					Message:          "",
+					NameOriginal:     "index.json",
+					NameCustom:       "index.json",
+					WordCountTotal:   2,
+					KeyCountTotal:    1,
+					KeyCountInserted: 0,
+					KeyCountUpdated:  0,
+					KeyCountSkipped:  1,
+				},
+			},
+		},
 		WithCreationUser: WithCreationUser{
 			CreatedBy:      1234,
 			CreatedByEmail: "example@example.com",
