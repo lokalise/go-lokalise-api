@@ -10,6 +10,7 @@ import (
 
 const (
 	apiTokenHeader    = "X-Api-Token"
+	redactedValue     = "[REDACTED]"
 	defaultBaseURL    = "https://api.lokalise.com/api2"
 	defaultRetryCount = 3
 )
@@ -35,9 +36,20 @@ func newClient(apiToken string) *restClient {
 		SetRetryCount(c.retryCount).
 		SetHeader(apiTokenHeader, c.apiToken).
 		SetError(errorResponse{}).
-		AddRetryCondition(requestRetryCondition())
+		AddRetryCondition(requestRetryCondition()).
+		OnRequestLog(redactRequestLog)
 
 	return &c
+}
+
+// redactRequestLog hides the API token from the debug output enabled by WithDebug.
+// The log holds a copy of the headers, so the request itself is not modified.
+func redactRequestLog(rl *resty.RequestLog) error {
+	if rl.Header.Get(apiTokenHeader) != "" {
+		rl.Header.Set(apiTokenHeader, redactedValue)
+	}
+
+	return nil
 }
 
 // requestRetryCondition indicates a retry if the HTTP status code of the response

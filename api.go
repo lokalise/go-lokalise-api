@@ -126,6 +126,9 @@ func WithConnectionTimeout(t time.Duration) ClientOption {
 	}
 }
 
+// WithDebug returns a ClientOption enabling debug output of requests and responses.
+// The X-Api-Token header is redacted, but responses are logged in full: debug output
+// is sensitive, e.g. file download responses contain pre-signed bundle URLs.
 func WithDebug(dbg bool) ClientOption {
 	return func(c *Api) error {
 		c.httpClient.Client.SetDebug(dbg)
